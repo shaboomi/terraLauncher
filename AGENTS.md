@@ -13,8 +13,11 @@ mergeable with upstream: the `upstream` remote points there.
 - **No ArtCraft marks.** The ArtCraft name, logo and "A" mark are trademarks and must not come
   back in a merge (`docs/brand/`, `assets/app-icon/` upstream, the header logo, the tray icon).
 - **No ArtCraft services.** The hosted catalog (`core::hosted_catalog` only answers from the bundled
-  catalog), the release feed (`check_plan` in `native/src/backend.rs` never asks it) and the
-  launcher's self-update (it is not in the check queue) are off. GitHub is the only source.
+  catalog) and the release feed (`check_plan` in `native/src/backend.rs` never asks it) are off.
+  GitHub is the only source.
+- **Launcher updates.** The launcher checks its own repo (`shaboomi/terraLauncher`) and offers the
+  new release as a download. Replacing itself in place stays off: `craft_update`'s launcher entry
+  is ArtCraft's, and Windows only self-updates a signed copy.
 - **Catalog.** `crates/core/catalog.toml` holds the installable apps, with two extra fields:
   `setup_args` and `prereleases`. Link-only cards are `WEB_APPS` and `PRODUCTS` in
   `crates/core/src/catalog.rs`, drawn by `crates/ui-egui/src/links.rs`.

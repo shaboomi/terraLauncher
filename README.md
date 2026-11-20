@@ -88,7 +88,9 @@ Working, checked on Windows 11:
 - Lists terraGen and terraForge, finds installed copies and their versions, and offers updates.
 - Updating terraForge from the launcher.
 - Web apps and Products sections, opening in the browser.
-- No connection to ArtCraft's servers: the hosted catalog, release feed and launcher self-update are off.
+- No connection to ArtCraft's servers: the hosted catalog and release feed are off.
+- Detects a newer terraLauncher release on GitHub and offers it as a download (checked with a
+  pretend older version). It does not replace itself in place.
 
 Not done yet:
 

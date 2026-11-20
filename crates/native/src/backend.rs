@@ -327,6 +327,10 @@ impl NativeBackend {
                 publish_latest(app, latest, from, &self.shared, self.platform);
             }
         }
+        // The launcher's own saved answer, so a known newer release shows its banner at once.
+        if let Some(latest) = self.source.as_ref().and_then(|s| s.cached(LAUNCHER.repo, pre)) {
+            launcher_update(&self.paths, Some(latest), LAUNCHER.repo, &self.shared);
+        }
         if let Some(f) = feed {
             self.shared.emit(Event::Notices { announcements: f.announcements, alerts: f.alerts });
         }
@@ -422,7 +426,9 @@ impl NativeBackend {
                 artcraft_launcher_core::hosted_catalog::apps()
                     .iter()
                     .filter(|a| platform.is_none_or(|p| a.runs_on(p.os)))
-                    // The launcher is not in the queue: it has no releases to update itself from yet.
+                    // The launcher checks its own repo (shaboomi/terraLauncher) like any app; a newer
+                    // release shows the update banner rather than a card.
+                    .chain(std::iter::once(&LAUNCHER))
                     .collect::<Vec<&CraftApp>>(),
             );
             let sources = sweep(&queue, &mirror, feed.as_ref(), fallback, &source, &shared, &paths, (platform, &options), force, now);

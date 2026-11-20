@@ -60,14 +60,36 @@ impl AppEntry {
         }
     }
 
-    /// The newer release an installed copy can't be updated to from here, so it isn't offered as
-    /// an update. `None` unless a newer release is out, an install wouldn't go ahead, and the copy
-    /// isn't one its repository updates (whose own latest the release feed doesn't know).
-    pub fn newer_out_of_reach(&self, platform: Option<Platform>) -> Option<String> {
+    /// The newer release out for an installed copy that the launcher won't install over it.
+    /// `None` unless a newer release is out, an install wouldn't go ahead, and the copy isn't one
+    /// its repository updates (whose own latest the release feed doesn't know).
+    fn newer_not_installable(&self, platform: Option<Platform>) -> Option<&Release> {
         let installed = self.installed.as_ref().filter(|i| !i.externally_managed)?;
-        let newer =
-            self.release()?.version.as_ref().zip(installed.version.as_ref()).is_some_and(|(l, i)| artcraft_launcher_core::version::is_update(l, i));
-        (newer && !self.installs_here(platform)).then(|| self.latest_label()).flatten()
+        let release = self.release()?;
+        let newer = release.version.as_ref().zip(installed.version.as_ref()).is_some_and(|(l, i)| artcraft_launcher_core::version::is_update(l, i));
+        (newer && !self.installs_here(platform)).then_some(release)
+    }
+
+    /// The release page of a newer release the user can install by hand: the release has a
+    /// package for `platform`, but one the launcher won't install for this app (a macOS build
+    /// with no signing team recorded to check it against). It is shown as an update whose button
+    /// opens this page instead of installing.
+    pub fn manual_update(&self, platform: Option<Platform>) -> Option<&str> {
+        let release = self.newer_not_installable(platform)?;
+        let p = platform?;
+        let stems: Vec<&str> = self.app.stems().collect();
+        let refused: Vec<_> = p.download_kinds().iter().copied().filter(|k| !self.app.installs(*k)).collect();
+        (!refused.is_empty() && pick_asset(release, &stems, p, &refused).is_some()).then_some(release.html_url.as_str())
+    }
+
+    /// The newer release an installed copy can't be updated to from here, so it isn't offered as
+    /// an update: one the launcher won't install that isn't a [`manual update`](Self::manual_update)
+    /// either.
+    pub fn newer_out_of_reach(&self, platform: Option<Platform>) -> Option<String> {
+        if self.manual_update(platform).is_some() {
+            return None;
+        }
+        self.newer_not_installable(platform).map(Release::version_label)
     }
 
     pub fn status(&self, platform: Option<Platform>, manage_apps: bool) -> AppStatus {
@@ -78,7 +100,9 @@ impl AppEntry {
             None => Latest::Pending,
             Some(LatestRelease::Failed(_)) => Latest::Failed,
             Some(LatestRelease::None) => Latest::NoRelease,
-            Some(LatestRelease::Found(r)) => Latest::Found { version: r.version.as_ref(), has_asset: self.installs_here(platform) },
+            Some(LatestRelease::Found(r)) => {
+                Latest::Found { version: r.version.as_ref(), has_asset: self.installs_here(platform) || self.manual_update(platform).is_some() }
+            }
         };
         status::status(self.installed.as_ref(), latest)
     }
@@ -144,5 +168,89 @@ pub fn status_rank(status: &AppStatus) -> u8 {
         AppStatus::Checking => 4,
         AppStatus::Unavailable => 5,
         AppStatus::NoRelease => 6,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use artcraft_launcher_core::release::Asset;
+    use artcraft_launcher_core::{Arch, CraftApp, InstallSource, Os, version};
+
+    use super::*;
+
+    const MAC: Option<Platform> = Some(Platform { os: Os::MacOs, arch: Arch::Arm64 });
+    const WINDOWS: Option<Platform> = Some(Platform { os: Os::Windows, arch: Arch::X64 });
+    const PAGE: &str = "https://github.com/shaboomi/terragen-releases/releases/tag/v0.3.0";
+
+    /// terraGen (no macOS signing team) at `installed`, with 0.3.0 out as `files`.
+    fn terragen(installed: &str, source: InstallSource, files: &[&str]) -> AppEntry {
+        let app = CraftApp::by_id("terragen").unwrap();
+        assert!(app.mac_team.is_none(), "these tests are about an app whose macOS build isn't signed");
+        let mut e = AppEntry::new(app);
+        e.detected = true;
+        e.installed = Some(Installed {
+            version: version::parse(installed),
+            source,
+            location: String::new(),
+            package: None,
+            externally_managed: false,
+            origin: None,
+            installation: None,
+        });
+        let assets = files
+            .iter()
+            .map(|name| Asset {
+                name: (*name).to_string(),
+                size: 1,
+                url: format!("https://github.com/shaboomi/terragen-releases/releases/download/v0.3.0/{name}"),
+                sha256: None,
+            })
+            .collect();
+        e.latest = Some(LatestRelease::Found(Release {
+            tag: "v0.3.0".into(),
+            version: version::parse("0.3.0"),
+            html_url: PAGE.into(),
+            assets,
+            ..Default::default()
+        }));
+        e
+    }
+
+    const FILES: &[&str] = &["TerraGen_0.3.0_universal.dmg", "TerraGen_0.3.0_x64-setup.exe"];
+
+    #[test]
+    fn an_unsigned_mac_build_is_an_update_that_opens_the_release_page() {
+        let mut e = terragen("0.2.0", InstallSource::MacApp, FILES);
+        // The backend won't install the .dmg over the copy in Applications.
+        e.installable = Some(false);
+        assert_eq!(e.manual_update(MAC), Some(PAGE));
+        assert_eq!(e.status(MAC, true), AppStatus::UpdateAvailable);
+        // Shown as an update, so not also noted as out of reach.
+        assert_eq!(e.newer_out_of_reach(MAC), None);
+    }
+
+    #[test]
+    fn an_up_to_date_mac_copy_has_no_manual_update() {
+        let mut e = terragen("0.3.0", InstallSource::MacApp, FILES);
+        e.installable = Some(false);
+        assert_eq!(e.manual_update(MAC), None);
+        assert_eq!(e.status(MAC, true), AppStatus::UpToDate);
+    }
+
+    #[test]
+    fn a_release_without_a_mac_build_stays_out_of_reach() {
+        let mut e = terragen("0.2.0", InstallSource::MacApp, &["TerraGen_0.3.0_x64-setup.exe"]);
+        e.installable = Some(false);
+        assert_eq!(e.manual_update(MAC), None);
+        assert_eq!(e.status(MAC, true), AppStatus::Installed);
+        assert_eq!(e.newer_out_of_reach(MAC).as_deref(), Some("0.3.0"));
+    }
+
+    #[test]
+    fn windows_installs_the_update_itself() {
+        let mut e = terragen("0.2.0", InstallSource::Setup, FILES);
+        e.installable = Some(true);
+        assert_eq!(e.manual_update(WINDOWS), None);
+        assert_eq!(e.status(WINDOWS, true), AppStatus::UpdateAvailable);
     }
 }

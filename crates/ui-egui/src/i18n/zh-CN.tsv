@@ -38,6 +38,7 @@
 	Open {version}	打开 {version}
 	Open {installed} without updating. {latest} stays available.	打开 {installed}，不更新。{latest} 仍可稍后安装。
 	{latest} is out, but terraLauncher can't install it over this copy.	{latest} 已发布，但 terraLauncher 无法用它替换此副本。
+	terraLauncher can't install this build itself. This opens its release page, to download and install it yourself.	terraLauncher 无法自行安装此版本。这会打开它的发布页面，请自行下载并安装。
 	terraLauncher can't install version {version} over this copy.	terraLauncher 无法用版本 {version} 替换此副本。
 	Download for {os}	下载 {os} 版
 	Download	下载

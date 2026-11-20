@@ -811,7 +811,7 @@ impl LauncherUi {
         let to_update: Vec<(String, String)> = self
             .entries
             .iter()
-            .filter(|e| self.in_filter(e, Filter::Updates) && e.job.is_none() && !e.ready)
+            .filter(|e| self.installs_update(e) && e.job.is_none() && !e.ready)
             .filter_map(|e| {
                 let v = e.latest_label()?;
                 if self.auto_update_attempted.contains(&(e.app.id.to_string(), v.clone())) { None } else { Some((e.app.id.to_string(), v)) }
@@ -1092,8 +1092,10 @@ impl LauncherUi {
         }
     }
 
-    pub(crate) fn count(&self, filter: Filter) -> usize {
-        self.entries.iter().filter(|e| self.in_filter(e, filter)).count()
+    /// Whether `entry` has an update waiting that the launcher installs itself, for "Update all"
+    /// and auto-update: a [manual update](AppEntry::manual_update) only opens its release page.
+    pub(crate) fn installs_update(&self, entry: &AppEntry) -> bool {
+        self.in_filter(entry, Filter::Updates) && entry.manual_update(self.platform).is_none()
     }
 
     /// Whether `entry` belongs in `filter`. Hidden apps stay out of every list except Hidden.

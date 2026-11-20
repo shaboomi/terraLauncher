@@ -53,6 +53,7 @@
 	Open {version}	Abrir {version}
 	Open {installed} without updating. {latest} stays available.	Abrir {installed} sin actualizar. {latest} sigue disponible.
 	{latest} is out, but terraLauncher can't install it over this copy.	{latest} ya está disponible, pero terraLauncher no puede instalarla sobre esta copia.
+	terraLauncher can't install this build itself. This opens its release page, to download and install it yourself.	terraLauncher no puede instalar esta versión por sí mismo. Esto abre su página de publicación para que la descargues e instales tú.
 	terraLauncher can't install version {version} over this copy.	terraLauncher no puede instalar la versión {version} sobre esta copia.
 	Download for {os}	Descargar para {os}
 	Download	Descargar

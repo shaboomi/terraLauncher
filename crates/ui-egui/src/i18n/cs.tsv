@@ -40,6 +40,7 @@
 	Open {version}	Otevřít {version}
 	Open {installed} without updating. {latest} stays available.	Otevřít {installed} bez aktualizace. Verze {latest} zůstane k dispozici.
 	{latest} is out, but terraLauncher can't install it over this copy.	Verze {latest} je venku, ale terraLauncher ji nemůže nainstalovat přes tuto kopii.
+	terraLauncher can't install this build itself. This opens its release page, to download and install it yourself.	terraLauncher tuto verzi sám nainstalovat nemůže. Otevře se stránka vydání, odkud ji stáhnete a nainstalujete sami.
 	terraLauncher can't install version {version} over this copy.	terraLauncher nemůže verzi {version} nainstalovat přes tuto kopii.
 	Download for {os}	Stáhnout pro {os}
 	Download	Stáhnout

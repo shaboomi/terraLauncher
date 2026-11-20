@@ -422,6 +422,7 @@ materialcraft	Preview materials in 2D and on 3D models.	Pregledajte materijale u
 	The Craft gateway (craft-ai-mcp) is not installed beside the launcher.	Craft gateway (craft-ai-mcp) nije instaliran pored pokretača.
 	Waiting for another download…	Čeka se drugo preuzimanje…
 	{latest} is out, but terraLauncher can't install it over this copy.	Izašla je verzija {latest}, ali terraLauncher je ne može instalirati preko ove kopije.
+	terraLauncher can't install this build itself. This opens its release page, to download and install it yourself.	terraLauncher ne može sam instalirati ovu verziju. Ovo otvara njenu stranicu izdanja, da je preuzmete i instalirate sami.
 	{name} launch options	{name}: opcije pokretanja
 	{name} wasn't opened: a quote in its launch options isn't closed.	{name} nije otvoren: navodnik u opcijama pokretanja nije zatvoren.
 

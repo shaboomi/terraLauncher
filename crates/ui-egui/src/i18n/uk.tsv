@@ -52,6 +52,7 @@
 	Open {version}	Відкрити {version}
 	Open {installed} without updating. {latest} stays available.	Відкрити {installed} без оновлення. Версія {latest} залишиться доступною.
 	{latest} is out, but terraLauncher can't install it over this copy.	Версія {latest} уже вийшла, але terraLauncher не може встановити її поверх цієї копії.
+	terraLauncher can't install this build itself. This opens its release page, to download and install it yourself.	terraLauncher не може сам установити цю збірку. Відкриється сторінка випуску, щоб ви завантажили й установили її самі.
 	terraLauncher can't install version {version} over this copy.	terraLauncher не може встановити версію {version} поверх цієї копії.
 	Download for {os}	Завантажити для {os}
 	Download	Завантажити

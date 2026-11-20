@@ -65,6 +65,9 @@ enum Primary {
     /// and shorter ones for when it doesn't fit.
     Retry(String, Vec<&'static str>),
     Update(String),
+    /// A newer release the launcher won't install for this app (an unsigned macOS build): the
+    /// version, and its release page, which the button opens for the user to install it by hand.
+    ManualUpdate(String, String),
     /// A pinned release only installs after the backend has checked that exact tag.
     SelectedVersion {
         tag: String,
@@ -103,6 +106,8 @@ struct UpdateLabels {
     label: String,
     shorter: Vec<&'static str>,
     tip: Option<&'static str>,
+    /// The page the button opens instead of installing (a manual update).
+    link: Option<String>,
 }
 
 impl UpdateLabels {
@@ -110,9 +115,16 @@ impl UpdateLabels {
     fn of(primary: Primary) -> Option<Self> {
         match primary {
             Primary::Retry(label, shorter) => {
-                Some(Self { label, shorter, tip: Some(tl!("The download is still here. It's checked again, then installed.")) })
+                Some(Self { label, shorter, tip: Some(tl!("The download is still here. It's checked again, then installed.")), link: None })
             }
-            Primary::Update(v) => Some(Self { label: fmt(tl!("Update to {v}"), &[("v", &v)]), shorter: vec![tl!("Update")], tip: None }),
+            Primary::Update(v) => Some(Self { label: fmt(tl!("Update to {v}"), &[("v", &v)]), shorter: vec![tl!("Update")], tip: None, link: None }),
+            // The arrow says the button leaves for a web page, as the GitHub links do.
+            Primary::ManualUpdate(v, url) => Some(Self {
+                label: format!("{} ↗", fmt(tl!("Update to {v}"), &[("v", &v)])),
+                shorter: vec![tl!("Update")],
+                tip: Some(tl!("terraLauncher can't install this build itself. This opens its release page, to download and install it yourself.")),
+                link: Some(url),
+            }),
             _ => None,
         }
     }
@@ -188,10 +200,8 @@ impl TableColumns {
     /// The table's least width with these columns.
     fn width(self, actions_w: f32, gap: f32) -> f32 {
         let optional = [(self.status, Self::STATUS_W), (self.released, Self::RELEASED_W), (self.author, Self::AUTHOR_W)];
-        let shown: Vec<f32> = [Self::APP_MIN_W, Self::VERSION_W, actions_w]
-            .into_iter()
-            .chain(optional.into_iter().filter(|(on, _)| *on).map(|(_, w)| w))
-            .collect();
+        let shown: Vec<f32> =
+            [Self::APP_MIN_W, Self::VERSION_W, actions_w].into_iter().chain(optional.into_iter().filter(|(on, _)| *on).map(|(_, w)| w)).collect();
         shown.iter().sum::<f32>() + gap * (shown.len() - 1) as f32
     }
 }
@@ -259,7 +269,7 @@ impl LauncherUi {
             ui.add_space(14.0);
         }
         self.announcements(ui);
-        let updates = self.count(Filter::Updates);
+        let updates = self.entries.iter().filter(|e| self.installs_update(e)).count();
         let compact = self.toolbar_row(ui, &t, updates);
         if compact {
             self.toolbar_compact_row(ui, &t, updates);
@@ -435,8 +445,7 @@ impl LauncherUi {
     fn update_all_button(&mut self, ui: &mut Ui, updates: usize) {
         let label = if updates == 1 { tl!("Update 1 app").to_string() } else { fmt(tl!("Update all ({count})"), &[("count", &updates.to_string())]) };
         if widgets::button(ui, &label, Kind::Primary, 0.0).clicked() {
-            let ids: Vec<String> =
-                self.entries.iter().filter(|e| self.in_filter(e, Filter::Updates) && e.job.is_none()).map(|e| e.app.id.to_string()).collect();
+            let ids: Vec<String> = self.entries.iter().filter(|e| self.installs_update(e) && e.job.is_none()).map(|e| e.app.id.to_string()).collect();
             if self.settings.updates_batched() {
                 self.act_command(Command::InstallAll { apps: ids });
             } else {
@@ -1078,6 +1087,11 @@ impl LauncherUi {
                 && !matches!(status, AppStatus::Checking | AppStatus::NoRelease | AppStatus::Unavailable);
             return Primary::SelectedVersion { tag: tag.clone(), checked };
         }
+        if *status == AppStatus::UpdateAvailable
+            && let Some(url) = entry.manual_update(self.platform)
+        {
+            return Primary::ManualUpdate(entry.latest_label().unwrap_or_default(), url.to_string());
+        }
         match status {
             AppStatus::Available if entry.ready => Primary::Retry(tl!("Retry install").into(), vec![tl!("Install")]),
             AppStatus::UpdateAvailable if entry.ready => Primary::Retry(
@@ -1333,7 +1347,7 @@ impl LauncherUi {
                     self.install_app(id);
                 }
             }
-            update @ (Primary::Retry(..) | Primary::Update(_)) => {
+            update @ (Primary::Retry(..) | Primary::Update(_) | Primary::ManualUpdate(..)) => {
                 if let Some(labels) = UpdateLabels::of(update) {
                     self.update_button(ui, entry, status, &labels, main_w, place);
                 }
@@ -1392,9 +1406,7 @@ impl LauncherUi {
                 Some(tip) => install.on_hover_text(tip),
                 None => install,
             };
-            if self.size_hint(install, entry).clicked() {
-                self.install_app(id);
-            }
+            self.update_clicked(ui, install, entry, update);
             return;
         }
         // Shortened to fit, it is still read out in full.
@@ -1403,8 +1415,23 @@ impl LauncherUi {
             Some(tip) => resp.on_hover_text(tip),
             None => resp,
         };
-        if self.size_hint(resp, entry).clicked() {
-            self.install_app(id);
+        self.update_clicked(ui, resp, entry, update);
+    }
+
+    /// Installs the update when its button (`resp`) is clicked, or opens the release page of a
+    /// manual one.
+    fn update_clicked(&mut self, ui: &Ui, resp: egui::Response, entry: &AppEntry, update: &UpdateLabels) {
+        match &update.link {
+            Some(url) => {
+                if resp.clicked() {
+                    widgets::open_external_link(ui.ctx(), url);
+                }
+            }
+            None => {
+                if self.size_hint(resp, entry).clicked() {
+                    self.install_app(entry.app.id);
+                }
+            }
         }
     }
 

@@ -34,7 +34,7 @@ The builds come from [`.github/workflows/release.yml`](.github/workflows/release
 
 | App | What it's for | Source |
 |---|---|---|
-| **terraGen** | Generative plotter art | [shaboomi/terraGen](https://github.com/shaboomi/terraGen) |
+| **terraGen** | Generative plotter art | [shaboomi/terragen-releases](https://github.com/shaboomi/terragen-releases) |
 | **terraForge** | Plotter control and G-code generator | [theworkisthework/terraForge](https://github.com/theworkisthework/terraForge) |
 
 **Web apps** — opened in your browser.
@@ -95,12 +95,15 @@ Not done yet:
 - **Only updating has been run end to end**: terraForge 1.5.1-pen-preview.1 to 1.5.1 on Windows 11
   (download, checksum, silent install, re-detection). A fresh install, uninstall and the Open
   button have not been run yet, and nothing has been run for terraGen.
-- **terraGen's repository is private.** Without a public repo the launcher can't see or download its
-  releases; it only shows the installed copy.
+- terraGen's source repository is private, so the launcher reads its releases from the public
+  [shaboomi/terragen-releases](https://github.com/shaboomi/terragen-releases). Updating terraGen
+  from the launcher has not been run yet.
 - macOS installs need each app's Apple Developer team ID in the catalog.
-- The release builds are plain archives (zip, dmg, tar.gz) and are not signed or notarized. The macOS
-  and Linux builds have not been run by anyone yet. Upstream's installer scripts in `packaging/`
-  (MSI, .deb, .rpm, AppImage, Flatpak) have not been adapted.
+- From the next release, Windows gets a per-user MSI installer (`packaging/windows/terralauncher.wxs`,
+  built by `build-msi.ps1`); a local build installed and uninstalled cleanly on Windows 11, but the
+  release workflow's MSI step has not run yet. macOS (dmg) and Linux (tar.gz) are still plain
+  archives. Nothing is signed or notarized. Upstream's other installer scripts in `packaging/`
+  (.deb, .rpm, AppImage, Flatpak) have not been adapted.
 - Most of the upstream test suite still refers to the Craft apps and fails or needs rewriting.
 - New interface text is English only; the 14 translation catalogs have not been updated for it.
 - The app icon is a placeholder.

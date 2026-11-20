@@ -148,6 +148,53 @@ fn main_width(ui: &Ui, width: f32) -> f32 {
 
 /// The width of a table row's actions, after a pinned row's grip.
 const TABLE_ACTIONS_W: f32 = 204.0;
+
+/// Which of the table's optional columns fit. The app, version and actions columns are always
+/// shown; when the window is too narrow for the rest, Author goes first, then Released, then
+/// Status, so the actions are never pushed out of the window.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+struct TableColumns {
+    status: bool,
+    released: bool,
+    author: bool,
+}
+
+impl TableColumns {
+    const APP_MIN_W: f32 = 220.0;
+    const STATUS_W: f32 = 176.0;
+    const VERSION_W: f32 = 150.0;
+    const RELEASED_W: f32 = 132.0;
+    const AUTHOR_W: f32 = 104.0;
+
+    /// The columns that fit in `room` beside the always-shown ones, `gap` apart.
+    fn fitting(room: f32, actions_w: f32, gap: f32) -> Self {
+        let mut cols = Self { status: true, released: true, author: true };
+        loop {
+            if cols.width(actions_w, gap) <= room {
+                return cols;
+            }
+            if cols.author {
+                cols.author = false;
+            } else if cols.released {
+                cols.released = false;
+            } else if cols.status {
+                cols.status = false;
+            } else {
+                return cols;
+            }
+        }
+    }
+
+    /// The table's least width with these columns.
+    fn width(self, actions_w: f32, gap: f32) -> f32 {
+        let optional = [(self.status, Self::STATUS_W), (self.released, Self::RELEASED_W), (self.author, Self::AUTHOR_W)];
+        let shown: Vec<f32> = [Self::APP_MIN_W, Self::VERSION_W, actions_w]
+            .into_iter()
+            .chain(optional.into_iter().filter(|(on, _)| *on).map(|(_, w)| w))
+            .collect();
+        shown.iter().sum::<f32>() + gap * (shown.len() - 1) as f32
+    }
+}
 /// The height of a table row.
 const TABLE_ROW_H: f32 = 62.0;
 
@@ -700,19 +747,31 @@ impl LauncherUi {
         let grip_w = self.grip_w(ui, ids);
         let pin_w = self.pin_slot_w(ui);
 
+        let actions_w = TABLE_ACTIONS_W + grip_w + pin_w;
+        // Inside the frame's 16-point margins and its hairline.
+        let room = ui.available_width() - 2.0 * 16.0 - 2.0;
+        let cols = TableColumns::fitting(room, actions_w, ui.spacing().item_spacing.x);
+
         egui::Frame::new().fill(t.bg).stroke(t.hairline()).inner_margin(egui::Margin::symmetric(16, 0)).show(ui, |ui| {
-            TableBuilder::new(ui)
+            let mut table = TableBuilder::new(ui)
                 .striped(false)
                 .vscroll(false)
                 .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
-                .column(Column::remainder().at_least(220.0).clip(true))
-                .column(Column::exact(176.0))
-                .column(Column::exact(150.0))
-                .column(Column::exact(132.0))
-                .column(Column::exact(104.0))
-                .column(Column::exact(206.0 + grip_w + pin_w))
-                .header(42.0, |header| self.table_header(header, &mut sort_clicked, &t, span, clip))
-                .body(|body| self.table_rows(body, ids, &t, (title_h, tagline_h), now, (span, clip)));
+                .column(Column::remainder().at_least(TableColumns::APP_MIN_W).clip(true));
+            if cols.status {
+                table = table.column(Column::exact(TableColumns::STATUS_W));
+            }
+            table = table.column(Column::exact(TableColumns::VERSION_W));
+            if cols.released {
+                table = table.column(Column::exact(TableColumns::RELEASED_W));
+            }
+            if cols.author {
+                table = table.column(Column::exact(TableColumns::AUTHOR_W));
+            }
+            table
+                .column(Column::exact(actions_w))
+                .header(42.0, |header| self.table_header(header, &mut sort_clicked, &t, span, clip, cols))
+                .body(|body| self.table_rows(body, ids, &t, (title_h, tagline_h), now, (span, clip, cols)));
         });
         if let Some(k) = sort_clicked {
             if self.settings.sort == k {
@@ -786,15 +845,19 @@ impl LauncherUi {
         t: &Tokens,
         span: egui::emath::Rangef,
         clip: egui::Rect,
+        cols: TableColumns,
     ) {
-        for (key, label) in [
-            (Some(SortKey::Name), tl!("App")),
-            (Some(SortKey::Status), tl!("Status")),
-            (None, tr_ctx(current(), "column", "Version")),
-            (Some(SortKey::Released), tr_ctx(current(), "column", "Released")),
-            (None, tr_ctx(current(), "column", "Author")),
-            (None, ""),
+        for (shown, key, label) in [
+            (true, Some(SortKey::Name), tl!("App")),
+            (cols.status, Some(SortKey::Status), tl!("Status")),
+            (true, None, tr_ctx(current(), "column", "Version")),
+            (cols.released, Some(SortKey::Released), tr_ctx(current(), "column", "Released")),
+            (cols.author, None, tr_ctx(current(), "column", "Author")),
+            (true, None, ""),
         ] {
+            if !shown {
+                continue;
+            }
             header.col(|ui| {
                 if key == Some(SortKey::Name) {
                     Self::table_rule(ui, t, span, clip);
@@ -815,8 +878,9 @@ impl LauncherUi {
         t: &Tokens,
         fonts: (f32, f32),
         now: i64,
-        rule: (egui::emath::Rangef, egui::Rect),
+        (span, clip, cols): (egui::emath::Rangef, egui::Rect, TableColumns),
     ) {
+        let rule = (span, clip);
         let last = ids.len().saturating_sub(1);
         let grip_w = self.grip_w(body.ui_mut(), ids);
         let pin_w = self.pin_slot_w(body.ui_mut());
@@ -826,12 +890,18 @@ impl LauncherUi {
             let row_h = self.table_row_h(body.ui_mut(), &entry, &status);
             body.row(row_h, |mut row| {
                 row.col(|ui| self.table_app_cell(ui, &entry, id, i < last, t, (fonts.0, fonts.1, rule.0, rule.1)));
-                row.col(|ui| self.table_status_cell(ui, &entry, &status, t));
+                if cols.status {
+                    row.col(|ui| self.table_status_cell(ui, &entry, &status, t));
+                }
                 row.col(|ui| self.table_version_cell(ui, &entry, &status, t));
-                row.col(|ui| self.table_released_cell(ui, &entry, now, t));
-                row.col(|ui| {
-                    ui.label(RichText::new(entry.app.publisher).color(t.muted));
-                });
+                if cols.released {
+                    row.col(|ui| self.table_released_cell(ui, &entry, now, t));
+                }
+                if cols.author {
+                    row.col(|ui| {
+                        ui.label(RichText::new(entry.app.publisher).color(t.muted));
+                    });
+                }
                 // A pinned row's grip leads its actions; the other rows leave its room empty, so
                 // every row's buttons stay in line. Every row also reserves the pin-toggle square.
                 row.col(|ui| {
@@ -1052,7 +1122,8 @@ impl LauncherUi {
             width -= theme::CONTROL_H + gap;
         }
         let squares = 1.0 + if show_pin { 1.0 } else { 0.0 };
-        let main_w = (width - squares * (theme::CONTROL_H + gap) + gap).max(120.0);
+        // The main button, then each square after a gap: together exactly `width`.
+        let main_w = (width - squares * (theme::CONTROL_H + gap)).max(120.0);
         if entry.job.is_some() {
             self.job_actions(ui, entry, &id, main_w, width);
             return;
@@ -1228,7 +1299,7 @@ impl LauncherUi {
         // The square pin button is not shown; pinning stays in the ⋯ menu.
         let show_pin = false;
         let squares = 2.0 + if show_pin { 1.0 } else { 0.0 };
-        let resume_w = (width - squares * (theme::CONTROL_H + gap) + gap).max(90.0);
+        let resume_w = (width - squares * (theme::CONTROL_H + gap)).max(90.0);
         // Narrow (the table): just tl!("Resume"); the tooltip says how far it got.
         let label = match resume_w {
             w if w < 150.0 => tl!("Resume").to_string(),
@@ -1589,6 +1660,30 @@ fn centered_lines(ui: &mut Ui, fonts: &[&FontId], gap: f32, add_contents: impl F
 fn lines_height(ui: &Ui, fonts: &[&FontId], gap: f32) -> f32 {
     let line = |font: &FontId| ui.fonts_mut(|f| f.layout_no_wrap(String::new(), font.clone(), Color32::PLACEHOLDER)).size().y;
     (fonts.iter().map(|font| line(font) + gap).sum::<f32>() - gap).max(0.0)
+}
+
+#[cfg(test)]
+mod table_column_tests {
+    use super::TableColumns;
+
+    #[test]
+    fn a_wide_window_shows_every_column() {
+        let all = TableColumns { status: true, released: true, author: true };
+        assert_eq!(TableColumns::fitting(2000.0, 204.0, 8.0), all);
+        // Exactly wide enough still shows them all.
+        assert_eq!(TableColumns::fitting(all.width(204.0, 8.0), 204.0, 8.0), all);
+    }
+
+    #[test]
+    fn a_narrow_window_drops_author_then_released_then_status() {
+        let fit = |room| TableColumns::fitting(room, 204.0, 8.0);
+        let full = TableColumns { status: true, released: true, author: true }.width(204.0, 8.0);
+        assert_eq!(fit(full - 1.0), TableColumns { status: true, released: true, author: false });
+        assert_eq!(fit(full - 120.0), TableColumns { status: true, released: false, author: false });
+        assert_eq!(fit(700.0), TableColumns { status: false, released: false, author: false });
+        // The always-shown columns fit the narrowest window the launcher allows (720 wide).
+        assert!(TableColumns { status: false, released: false, author: false }.width(204.0, 8.0) <= 720.0 - 2.0 * 28.0 - 34.0);
+    }
 }
 
 #[cfg(test)]

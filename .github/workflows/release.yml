@@ -55,7 +55,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev libxcursor-dev libgl1-mesa-dev
 
-      # ---- Windows: a portable zip (unzip and run; settings stay in the folder).
+      # ---- Windows: a per-user MSI installer (Start menu and desktop shortcuts, uninstall from
+      # Apps & features). Built with WiX v5 by packaging/windows/build-msi.ps1.
       - name: Build (Windows)
         if: matrix.name == 'windows'
         env:
@@ -64,15 +65,11 @@ jobs:
 
       - name: Package (Windows)
         if: matrix.name == 'windows'
+        shell: pwsh
         run: |
-          stage="terraLauncher"
-          mkdir -p "dist/$stage"
-          cp target/release/terralauncher.exe "dist/$stage/"
-          cp LICENSE-MIT LICENSE-APACHE NOTICE "dist/$stage/"
-          # Beside the exe, this file keeps the launcher's settings and downloads in the folder.
-          echo "terraLauncher keeps its data in the terraLauncherData folder beside this file." > "dist/$stage/portable.txt"
-          (cd dist && 7z a -tzip "terralauncher-$VERSION-windows-x64-portable.zip" "$stage" > /dev/null)
-          rm -rf "dist/$stage"
+          dotnet tool install --global wix --version 5.0.2
+          wix extension add -g WixToolset.UI.wixext/5.0.2 WixToolset.Util.wixext/5.0.2
+          ./packaging/windows/build-msi.ps1 -OutDir dist
 
       # ---- macOS: a universal app in a disk image. Not signed with a Developer ID or notarized.
       - name: Build (macOS)
@@ -166,13 +163,13 @@ jobs:
             echo
             echo "| System | File |"
             echo "|---|---|"
-            echo "| Windows 10/11 (64-bit) | [terralauncher-$version-windows-x64-portable.zip]($base/terralauncher-$version-windows-x64-portable.zip) |"
+            echo "| Windows 10/11 (64-bit) | [terralauncher-$version-windows-x64.msi]($base/terralauncher-$version-windows-x64.msi) |"
             echo "| macOS 11+ (Apple silicon and Intel) | [terralauncher-$version-macos-universal.dmg]($base/terralauncher-$version-macos-universal.dmg) |"
             echo "| Linux (x86_64) | [terralauncher-$version-linux-x86_64.tar.gz]($base/terralauncher-$version-linux-x86_64.tar.gz) |"
             echo
             echo "Checksums: [SHA256SUMS.txt]($base/SHA256SUMS.txt)"
             echo
-            echo "- **Windows:** unzip and run \`terralauncher.exe\`. Windows may warn that the app is from an unknown publisher; it is not code-signed."
+            echo "- **Windows:** run the \`.msi\`. It installs for you only (no administrator rights) and adds Start menu and desktop shortcuts. Windows may warn that it is from an unknown publisher; it is not code-signed."
             echo "- **macOS:** open the disk image and drag terraLauncher to Applications. It is not notarized, so the first time, right-click the app and choose Open."
             echo "- **Linux:** \`tar -xzf terralauncher-$version-linux-x86_64.tar.gz --strip-components 1 -C ~/.local\`, then run \`terralauncher\`."
           } > ../notes.md

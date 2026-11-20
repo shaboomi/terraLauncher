@@ -25,7 +25,7 @@ ink_dark = [240, 84, 108]
 kind = "official"
 publisher = "shaboomi"
 msi_publisher = "TerraGen"
-repo = "shaboomi/terraGen"
+repo = "shaboomi/terragen-releases"
 setup_args = ["/P"]
 prereleases = true
 [apps.details]

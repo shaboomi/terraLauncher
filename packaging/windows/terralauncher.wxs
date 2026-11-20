@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  terraLauncher MSI (WiX Toolset v5). Built by build-msi.ps1 (and the release workflow):
+
+    wix build terralauncher.wxs -arch x64 -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext
+      -culture en-US -loc terralauncher.en-us.wxl -d Version=1.2.3 -d DisplayVersion=1.2.3-rc.1
+      -d BinDir=... -d IconPath=... -o out.msi
+
+  Per-user install (no UAC prompt) into %LOCALAPPDATA%\Programs\terraLauncher, with Start menu and
+  desktop shortcuts and an entry in Apps & features to remove it. The shortcuts carry the
+  AppUserModelID xyz.terrapen.terralauncher, which Windows needs to show toast notifications from
+  an unpackaged app. No portable.txt is installed, so settings go to the user's profile.
+
+  Double-clicked, it opens a short wizard: Welcome, a folder page, Ready, progress, and a Finish
+  page with a ticked "Launch terraLauncher" box. A later version upgrades in place.
+
+  Per-user packages can't use a file as a component's KeyPath (ICE38), so each component is keyed
+  on an HKCU value, and the folders we create are removed on uninstall (ICE64).
+
+  This replaces upstream's artcraft-launcher.wxs for this fork; that file is left as it was so
+  upstream changes still merge, but it is not built.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package
+      Name="terraLauncher"
+      Manufacturer="terraPen"
+      Version="$(var.Version)"
+      UpgradeCode="FFF72D30-DA45-4C7E-ABC9-15C1287B9D7F"
+      Scope="perUser"
+      Compressed="yes"
+      Language="1033">
+    <SummaryInformation Description="terraLauncher: install and update the terraPen apps" Manufacturer="terraPen" />
+    <!-- Same-version upgrades let successive pre-releases of one X.Y.Z replace each other. -->
+    <MajorUpgrade AllowSameVersionUpgrades="yes"
+        DowngradeErrorMessage="A newer version of terraLauncher is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <!-- Apps & features icon only; the shortcuts use the exe's own embedded icon, which every
+         update keeps (an MSI <Icon> is deleted by the next major upgrade). -->
+    <Icon Id="terraLauncherIcon.exe" SourceFile="$(var.IconPath)" />
+    <Property Id="ARPPRODUCTICON" Value="terraLauncherIcon.exe" />
+    <Property Id="ARPURLINFOABOUT" Value="https://terrapen.xyz" />
+    <Property Id="ARPURLUPDATEINFO" Value="https://github.com/shaboomi/terraLauncher/releases" />
+
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="LocalProgramsFolder" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="terraLauncher" />
+      </Directory>
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder" />
+    <StandardDirectory Id="DesktopFolder" />
+
+    <!-- An update installs where the user put the previous version. -->
+    <Property Id="INSTALLFOLDER" Secure="yes" />
+    <Property Id="PREVIOUSINSTALLFOLDER" Secure="yes">
+      <RegistrySearch Id="PreviousInstallFolder" Root="HKCU" Key="Software\terraPen\terraLauncher" Name="InstallDir" Type="raw" />
+    </Property>
+    <SetProperty Id="INSTALLFOLDER" Action="RestoreLauncherFolder" Value="[PREVIOUSINSTALLFOLDER]"
+        Before="CostInitialize" Sequence="both" Condition="PREVIOUSINSTALLFOLDER AND NOT INSTALLFOLDER" />
+
+    <Feature Id="Main" Title="terraLauncher" Level="1">
+      <ComponentGroupRef Id="LauncherFiles" />
+    </Feature>
+
+    <!-- WixUI_InstallDir without its licence page (MIT OR Apache-2.0: nothing to accept). A
+         later Publish on the same button wins. -->
+    <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
+    <UI>
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg" Order="2" Condition="NOT Installed" />
+      <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchTerraLauncher"
+          Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed" />
+    </UI>
+
+    <Property Id="LauncherDisplayVersion" Value="$(var.DisplayVersion)" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT" Value="terraLauncher $(var.DisplayVersion) is installed. Start it any time from the Start menu." />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch terraLauncher" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+    <Property Id="WixShellExecTarget" Value="[#LauncherExe]" />
+    <!-- Runs in the wizard's own process, so the launcher starts as the user. -->
+    <CustomAction Id="LaunchTerraLauncher" BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)" DllEntry="WixShellExec" Impersonate="yes" Return="ignore" />
+  </Package>
+
+  <Fragment>
+    <ComponentGroup Id="LauncherFiles">
+      <Component Id="LauncherApp" Directory="INSTALLFOLDER" Guid="27DCF77A-0636-4876-A097-6B00839928A3">
+        <File Id="LauncherExe" Source="$(var.BinDir)\terralauncher.exe" KeyPath="no" />
+        <File Id="LauncherNotice" Source="$(var.BinDir)\NOTICE" KeyPath="no" />
+        <File Id="LauncherLicenseMit" Source="$(var.BinDir)\LICENSE-MIT" KeyPath="no" />
+        <File Id="LauncherLicenseApache" Source="$(var.BinDir)\LICENSE-APACHE" KeyPath="no" />
+        <RegistryValue Root="HKCU" Key="Software\terraPen\terraLauncher" Name="InstallDir" Value="[INSTALLFOLDER]" Type="string" KeyPath="yes" />
+        <!-- Win+R "terralauncher". -->
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\terralauncher.exe" Value="[#LauncherExe]" Type="string" />
+        <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveLocalProgramsFolder" Directory="LocalProgramsFolder" On="uninstall" />
+      </Component>
+
+      <Component Id="LauncherStartMenuShortcut" Directory="ProgramMenuFolder" Guid="8C7DE9A2-4664-4D5D-B461-AA48D7A50C7D">
+        <Shortcut Id="StartMenuShortcut" Name="terraLauncher"
+            Description="Install and update the terraPen apps"
+            Target="[#LauncherExe]" WorkingDirectory="INSTALLFOLDER">
+          <ShortcutProperty Key="System.AppUserModel.ID" Value="xyz.terrapen.terralauncher" />
+        </Shortcut>
+        <RegistryValue Root="HKCU" Key="Software\terraPen\terraLauncher" Name="StartMenuShortcut" Value="1" Type="integer" KeyPath="yes" />
+      </Component>
+
+      <Component Id="LauncherDesktopShortcut" Directory="DesktopFolder" Guid="7561C47A-9B88-45AE-ADAC-E3B480EA3B38">
+        <Shortcut Id="DesktopShortcut" Name="terraLauncher"
+            Description="Install and update the terraPen apps"
+            Target="[#LauncherExe]" WorkingDirectory="INSTALLFOLDER">
+          <ShortcutProperty Key="System.AppUserModel.ID" Value="xyz.terrapen.terralauncher" />
+        </Shortcut>
+        <RegistryValue Root="HKCU" Key="Software\terraPen\terraLauncher" Name="DesktopShortcut" Value="1" Type="integer" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

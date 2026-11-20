@@ -934,11 +934,18 @@ pub fn more_menu<R>(ui: &mut Ui, app_name: &str, add_contents: impl FnOnce(&mut 
     let t = Tokens::get(ui.ctx());
     let btn =
         egui::Button::new(RichText::new("…").size(15.0).color(t.muted)).fill(Color32::TRANSPARENT).min_size(vec2(theme::CONTROL_H, theme::CONTROL_H));
-    let (response, _) = egui::containers::menu::MenuButton::from_button(btn).ui(ui, |ui| {
-        ui.set_min_width(200.0);
-        add_contents(ui)
+    // Exactly CONTROL_H square, as the rows and cards reserve: with the usual 12-point padding the
+    // "…" made it about 40 wide, and it ran past the edge of a table row.
+    let padding = ui.spacing().button_padding;
+    ui.scope(|ui| {
+        ui.spacing_mut().button_padding.x = 0.0;
+        let (response, _) = egui::containers::menu::MenuButton::from_button(btn).ui(ui, |ui| {
+            ui.spacing_mut().button_padding = padding;
+            ui.set_min_width(200.0);
+            add_contents(ui)
+        });
+        response.accessible_name(crate::i18n::fmt(tl!("More actions for {name}"), &[("name", app_name)]));
     });
-    response.accessible_name(crate::i18n::fmt(tl!("More actions for {name}"), &[("name", app_name)]));
 }
 
 /// ArtCraft's social accounts as a row of small monochrome icons (faint, brighter on hover).

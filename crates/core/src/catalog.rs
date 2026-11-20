@@ -280,7 +280,7 @@ mod tests {
     #[test]
     fn terragen_is_found_under_the_name_its_installer_registers() {
         let app = CraftApp::by_id("terragen").unwrap();
-        assert_eq!(app.repo, "shaboomi/terraGen");
+        assert_eq!(app.repo, "shaboomi/terragen-releases");
         assert_eq!(app.names().collect::<Vec<_>>(), ["terraGen", "TerraGen"]);
         assert_eq!(app.bundle_id(), "app.terragen.desktop");
         assert_eq!(app.mac_bundle_name(), "TerraGen");

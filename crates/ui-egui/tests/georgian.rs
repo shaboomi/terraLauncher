@@ -1,7 +1,7 @@
 //! The Georgian UI, in its own test binary: the UI language is process-wide, so it can't share one
 //! with the English UI tests. Georgian is drawn with the system's Georgian font; where there is
 //! none (minimal Linux installs), the UI stays in English and says why.
-//! `ARTCRAFT_LAUNCHER_SNAPSHOTS=<dir>` also saves screenshots (run with `-- --test-threads=1`).
+//! `TERRALAUNCHER_SNAPSHOTS=<dir>` also saves screenshots (run with `-- --test-threads=1`).
 
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
@@ -143,7 +143,7 @@ fn harness_language(
 }
 
 fn snapshot(h: &mut Harness<'_, Option<LauncherUi>>, name: &str) {
-    let Some(dir) = std::env::var_os("ARTCRAFT_LAUNCHER_SNAPSHOTS") else { return };
+    let Some(dir) = std::env::var_os("TERRALAUNCHER_SNAPSHOTS") else { return };
     let img = h.render().unwrap();
     img.save(std::path::Path::new(&dir).join(format!("{name}.png"))).unwrap();
 }

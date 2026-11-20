@@ -26,6 +26,10 @@ struct App {
     site: Option<String>,
     mac_team: Option<String>,
     mac_bundle_name: Option<String>,
+    #[serde(default)]
+    setup_args: Vec<String>,
+    #[serde(default)]
+    prereleases: bool,
     details: Option<Details>,
 }
 #[derive(Deserialize)]
@@ -68,7 +72,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         };
         writeln!(
             apps,
-            "CraftApp {{ id: {:?}, name: {:?}, tagline: {:?}, color: {:?}, ink_light: {:?}, ink_dark: {:?}, repo: {:?}, former_ids: {}, former_names: {}, kind: AppKind::{kind}, publisher: {:?}, msi_publisher: {}, bundle: {}, former_bundles: {}, site: {}, mac_team: {}, mac_bundle_name: {} }},",
+            "CraftApp {{ id: {:?}, name: {:?}, tagline: {:?}, color: {:?}, ink_light: {:?}, ink_dark: {:?}, repo: {:?}, former_ids: {}, former_names: {}, kind: AppKind::{kind}, publisher: {:?}, msi_publisher: {}, bundle: {}, former_bundles: {}, site: {}, mac_team: {}, mac_bundle_name: {}, setup_args: {}, prereleases: {} }},",
             app.id,
             app.name,
             app.tagline,
@@ -84,7 +88,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             slice(&app.former_bundles),
             optional(&app.site),
             optional(&app.mac_team),
-            optional(&app.mac_bundle_name)
+            optional(&app.mac_bundle_name),
+            slice(&app.setup_args),
+            app.prereleases
         )?;
         if let Some(d) = &app.details {
             write!(

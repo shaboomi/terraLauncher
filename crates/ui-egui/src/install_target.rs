@@ -19,7 +19,7 @@ use crate::model::AppEntry;
 /// depend on its package managers, so none are certain.
 fn platform_kinds(os: Os) -> &'static [PackageKind] {
     match os {
-        Os::Windows => &[PackageKind::Msi, PackageKind::PortableZip],
+        Os::Windows => &[PackageKind::Setup, PackageKind::Msi, PackageKind::PortableZip],
         Os::MacOs => &[PackageKind::Dmg],
         Os::FreeBsd => &[PackageKind::TarGz],
         Os::Linux => &[],
@@ -54,6 +54,7 @@ fn fresh_kinds(app: &CraftApp, os: Os, preferred: &[PackageKind]) -> Vec<Package
 fn installed_kind(os: Os, source: InstallSource) -> Option<PackageKind> {
     match (os, source) {
         (Os::Windows, InstallSource::Msi) => Some(PackageKind::Msi),
+        (Os::Windows, InstallSource::Setup) => Some(PackageKind::Setup),
         (Os::Windows, InstallSource::Launcher) => Some(PackageKind::PortableZip),
         (Os::MacOs, InstallSource::MacApp | InstallSource::Launcher) => Some(PackageKind::Dmg),
         (Os::Linux, InstallSource::AppImage) => Some(PackageKind::AppImage),

@@ -1,4 +1,4 @@
-//! ArtCraft Launcher: install, update and open the Craft App Suite.
+//! terraLauncher: install, update and open the terraPen apps.
 //!
 //! The window can close to the tray (menu bar) and keep checking for updates, or quit entirely.
 
@@ -31,7 +31,7 @@ use artcraft_launcher_ui_egui::theme::Tokens;
 use artcraft_launcher_ui_egui::{Host, LauncherUi, Settings, TitleBar};
 use eframe::wgpu::rwh::{HasDisplayHandle, RawDisplayHandle};
 
-const APP_ID: &str = "ai.storyteller.artcraft-launcher";
+const APP_ID: &str = "xyz.terrapen.terralauncher";
 const SETTINGS_KEY: &str = "settings";
 
 type Wake = Arc<OnceLock<Box<dyn Fn() + Send + Sync>>>;
@@ -61,7 +61,7 @@ fn main() -> ExitCode {
         })
         .collect();
     if args.iter().any(|a| a == "--version" || a == "-V") {
-        println!("artcraft-launcher {}", env!("CARGO_PKG_VERSION"));
+        println!("terralauncher {}", env!("CARGO_PKG_VERSION"));
         return ExitCode::SUCCESS;
     }
     // An elevated copy running one batch of MSI installs ("update all" behind one permission
@@ -103,7 +103,7 @@ fn main() -> ExitCode {
     if let Some(logs) = logs {
         match artcraft_launcher_native::paths::Paths::new() {
             Ok(paths) => match logs.attach_dir(&paths.logs()) {
-                Ok(path) => log::info!("ArtCraft Launcher {}, log file {}", env!("CARGO_PKG_VERSION"), path.display()),
+                Ok(path) => log::info!("terraLauncher {}, log file {}", env!("CARGO_PKG_VERSION"), path.display()),
                 Err(e) => {
                     logs.no_file();
                     log::warn!("no log file: {e}");
@@ -160,7 +160,7 @@ fn main() -> ExitCode {
             let result = {
                 let (waker, launcher) = (waker.clone(), &mut launcher);
                 eframe::run_native(
-                    "ArtCraft Launcher",
+                    "terraLauncher",
                     native_options(hidden, attempt),
                     Box::new(move |cc| {
                         launcher.open(cc, &waker);
@@ -197,10 +197,9 @@ fn main() -> ExitCode {
 /// in charge, and wgpu limits are clamped to the adapter so a short adapter cannot fail device
 /// creation.
 fn native_options(hidden: bool, backends: Option<eframe::wgpu::Backends>) -> eframe::NativeOptions {
-    let icon =
-        eframe::icon_data::from_png_bytes(include_bytes!("../../../assets/app-icon/hicolor/256x256/apps/ai.storyteller.artcraft-launcher.png")).ok();
+    let icon = eframe::icon_data::from_png_bytes(include_bytes!("../../../assets/app-icon/hicolor/256x256/apps/xyz.terrapen.terralauncher.png")).ok();
     let mut viewport = egui::ViewportBuilder::default()
-        .with_title("ArtCraft Launcher")
+        .with_title("terraLauncher")
         .with_app_id(APP_ID)
         .with_inner_size([1120.0, 760.0])
         .with_min_inner_size([720.0, 500.0])
@@ -328,7 +327,7 @@ fn report_startup_failure(backend: Option<eframe::wgpu::Backends>, error: &efram
     let message = startup_failure_message(lang, &backend_label(backend), &error.to_string());
     log::error!("{message}");
     rfd::MessageDialog::new()
-        .set_title("ArtCraft Launcher")
+        .set_title("terraLauncher")
         .set_description(message)
         .set_level(rfd::MessageLevel::Error)
         .set_buttons(rfd::MessageButtons::Ok)
@@ -338,7 +337,7 @@ fn report_startup_failure(backend: Option<eframe::wgpu::Backends>, error: &efram
 /// The startup-failure dialog's text in `lang`: the English message is the lookup key, and the
 /// `@msg` row carries the placeholders over into the translation, as every status message does.
 fn startup_failure_message(lang: i18n::Lang, backend: &str, error: &str) -> String {
-    let english = format!("ArtCraft Launcher couldn't start its window on {backend}: {error}");
+    let english = format!("terraLauncher couldn't start its window on {backend}: {error}");
     i18n::message(lang, &english)
 }
 
@@ -689,7 +688,7 @@ impl Host for DesktopHost {
             #[cfg(target_os = "macos")]
             claim_notification_identity();
             let mut n = notify_rust::Notification::new();
-            n.summary(&title).body(&body).appname("ArtCraft Launcher");
+            n.summary(&title).body(&body).appname("terraLauncher");
             #[cfg(windows)]
             n.app_id(APP_ID);
             #[cfg(all(unix, not(target_os = "macos")))]
@@ -1262,7 +1261,7 @@ mod tests {
         assert_eq!(nearest_existing_folder(None), None);
         // A default like `Program Files\ArtCraft` is often created only by the first install:
         // Browse then starts one level up, where the eye can find it again.
-        let missing = existing.join("artcraft-launcher-does-not-exist-yet");
+        let missing = existing.join("terralauncher-does-not-exist-yet");
         assert_eq!(nearest_existing_folder(missing.to_str()), Some(existing.clone()));
         assert_eq!(nearest_existing_folder(existing.to_str()), Some(existing));
     }
@@ -1409,7 +1408,7 @@ mod tests {
 
     #[test]
     fn with_no_window_changed_settings_are_saved_before_quitting() {
-        let dir = std::env::temp_dir().join(format!("artcraft-launcher-tray-save-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("terralauncher-tray-save-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         let path = dir.join("app.ron");
         let seen = Arc::new(Seen { clock: AtomicI64::new(NOW), ..Seen::default() });
@@ -1431,7 +1430,7 @@ mod tests {
 
     #[test]
     fn with_no_window_unchanged_settings_are_not_written() {
-        let dir = std::env::temp_dir().join(format!("artcraft-launcher-tray-nosave-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("terralauncher-tray-nosave-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         let (_, show_requests) = channel();
         let mut launcher = Launcher::new(Box::new(Quiet(Arc::new(Seen::default()))), show_requests, Some(dir.join("app.ron")));
@@ -1514,16 +1513,16 @@ mod tests {
         // English is the lookup key, so the dialog reads the same before a catalog has the row.
         assert_eq!(
             startup_failure_message(i18n::Lang::EN, "Direct3D 12", error),
-            "ArtCraft Launcher couldn't start its window on Direct3D 12: The parameter is incorrect. (0x80070057)"
+            "terraLauncher couldn't start its window on Direct3D 12: The parameter is incorrect. (0x80070057)"
         );
         // A catalog translates the sentence and carries the two placeholders' text over.
         assert_eq!(
             startup_failure_message(i18n::Lang::DE, "Direct3D 12", error),
-            "ArtCraft Launcher konnte sein Fenster auf Direct3D 12 nicht starten: The parameter is incorrect. (0x80070057)"
+            "terraLauncher konnte sein Fenster auf Direct3D 12 nicht starten: The parameter is incorrect. (0x80070057)"
         );
         assert_eq!(
             startup_failure_message(i18n::Lang::JA, "OpenGL", error),
-            "ArtCraft Launcher のウィンドウを OpenGL で起動できませんでした: The parameter is incorrect. (0x80070057)"
+            "terraLauncher のウィンドウを OpenGL で起動できませんでした: The parameter is incorrect. (0x80070057)"
         );
     }
 

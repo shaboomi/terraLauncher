@@ -201,6 +201,11 @@ impl GitHubSource {
         // Not `note_pages_error`: this one redirects to GitHub's asset CDN, so its failure says
         // nothing about whether github.com itself can be reached for the next app.
         let sums = self.http.get_text(&sums_url)?.map(|t| release::parse_sha256sums(&t)).unwrap_or_default();
+        if sums.is_empty() {
+            // A release with no SHA256SUMS.txt (its files carry GitHub's own digests instead) can't be
+            // described from the release page: let the saved answer stand in until the API answers.
+            return Err("this release publishes no SHA256SUMS.txt, so only GitHub's API can describe it".into());
+        }
         let r = release::release_from_sums(repo, &tag, &sums);
         self.store(repo, Entry { etag: None, release: Some(r.clone()), prereleases: false, fetched_at: crate::now() });
         Ok(Answer { latest: LatestRelease::Found(r), source: Source::GitHubPages })

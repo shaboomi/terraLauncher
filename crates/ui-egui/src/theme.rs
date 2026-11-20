@@ -1,6 +1,6 @@
-//! Colours, type and shapes, matching getartcraft.com: hard edges, hairline rules, Archivo
-//! display type, Inter body text and Geist Mono labels. Widgets read [`Tokens::get`]; nothing
-//! hard-codes a colour.
+//! Colours, type and shapes, matching terraForge's interface (its `--tf-*` tokens in
+//! `src/renderer/src/index.css`): navy surfaces, a coral accent, filled navy buttons with gently
+//! rounded corners, and sans-serif labels. Widgets read [`Tokens::get`]; nothing hard-codes a colour.
 
 use std::sync::Arc;
 
@@ -61,6 +61,9 @@ pub struct Tokens {
     /// Primary buttons and hover inversion.
     pub invert_bg: Color32,
     pub invert_fg: Color32,
+    /// Ordinary buttons (terraForge's `--tf-bg-secondary`), and under the pointer.
+    pub secondary: Color32,
+    pub secondary_hover: Color32,
     pub good: Color32,
     pub warn: Color32,
     pub bad: Color32,
@@ -77,40 +80,45 @@ const fn hex(rgb: u32) -> Color32 {
 }
 
 impl Tokens {
+    /// terraForge's dark theme (its default).
     pub const DARK: Self = Self {
         dark: true,
-        bg: hex(0x121316),
-        sunken: hex(0x060607),
-        ink: hex(0xf2f1ee),
+        bg: hex(0x1a1a2e),
+        sunken: hex(0x16213e),
+        ink: hex(0xe0e0e0),
         ink_strong: hex(0xffffff),
-        muted: ink_alpha(0xf2f1ee, 153),
-        faint: ink_alpha(0xf2f1ee, 97),
-        line: ink_alpha(0xf2f1ee, 38),
-        line_strong: ink_alpha(0xf2f1ee, 102),
-        accent: hex(0x2d81ff),
-        accent_ink: hex(0x74aaff),
-        invert_bg: hex(0xffffff),
-        invert_fg: hex(0x0b0b0c),
-        // A green and LightCraft's amber from the site's app inks, so status colours come from its palette.
+        muted: hex(0x9ca3af),
+        faint: hex(0x818ea5),
+        line: ink_alpha(0x5c7a9e, 96),
+        line_strong: hex(0x5c7a9e),
+        accent: hex(0xe94560),
+        accent_ink: hex(0xff6b81),
+        invert_bg: hex(0xe94560),
+        invert_fg: hex(0xffffff),
+        secondary: hex(0x0f3460),
+        secondary_hover: hex(0x1a4a8a),
         good: hex(0x3fd6b8),
         warn: hex(0xffc14d),
         bad: hex(0xff6259),
     };
 
+    /// terraForge's light theme.
     pub const LIGHT: Self = Self {
         dark: false,
-        bg: hex(0xf2f1ee),
-        sunken: hex(0xe9e8e4),
-        ink: hex(0x101014),
+        bg: hex(0xf0f2f9),
+        sunken: hex(0xffffff),
+        ink: hex(0x1a1e2e),
         ink_strong: hex(0x000000),
-        muted: ink_alpha(0x101014, 158),
-        faint: ink_alpha(0x101014, 107),
-        line: ink_alpha(0x101014, 41),
-        line_strong: ink_alpha(0x101014, 102),
-        accent: hex(0x2d81ff),
-        accent_ink: hex(0x1659c4),
-        invert_bg: hex(0x101014),
-        invert_fg: hex(0xf2f1ee),
+        muted: hex(0x5a6080),
+        faint: hex(0x5d6e88),
+        line: ink_alpha(0x7584a8, 110),
+        line_strong: hex(0x7584a8),
+        accent: hex(0xb82d45),
+        accent_ink: hex(0xb82d45),
+        invert_bg: hex(0xb82d45),
+        invert_fg: hex(0xffffff),
+        secondary: hex(0xdde4f5),
+        secondary_hover: hex(0xc5d0ec),
         good: hex(0x0a7563),
         warn: hex(0x8a5800),
         bad: hex(0xb3261e),
@@ -175,8 +183,8 @@ fn visuals(t: &Tokens) -> Visuals {
     v.faint_bg_color = t.sunken;
     v.code_bg_color = t.sunken;
     v.window_stroke = Stroke::new(1.0, t.line_strong);
-    v.window_corner_radius = CornerRadius::ZERO;
-    v.menu_corner_radius = CornerRadius::ZERO;
+    v.window_corner_radius = CornerRadius::same(8);
+    v.menu_corner_radius = CornerRadius::same(6);
     v.window_shadow = shadow(t);
     v.popup_shadow = shadow(t);
     v.override_text_color = Some(t.ink);
@@ -187,15 +195,15 @@ fn visuals(t: &Tokens) -> Visuals {
     v.error_fg_color = t.bad;
     for (w, fill, stroke, fg) in [
         (&mut v.widgets.noninteractive, t.bg, t.line, t.muted),
-        (&mut v.widgets.inactive, t.bg, t.line, t.ink),
-        (&mut v.widgets.hovered, t.sunken, t.line_strong, t.ink_strong),
-        (&mut v.widgets.active, t.sunken, t.line_strong, t.ink_strong),
-        (&mut v.widgets.open, t.sunken, t.line_strong, t.ink_strong),
+        (&mut v.widgets.inactive, t.sunken, t.line_strong, t.ink),
+        (&mut v.widgets.hovered, t.secondary, t.line_strong, t.ink_strong),
+        (&mut v.widgets.active, t.secondary_hover, t.line_strong, t.ink_strong),
+        (&mut v.widgets.open, t.secondary, t.line_strong, t.ink_strong),
     ] {
         w.bg_fill = fill;
         w.weak_bg_fill = fill;
         w.bg_stroke = Stroke::new(1.0, stroke);
-        w.corner_radius = CornerRadius::ZERO;
+        w.corner_radius = RADIUS;
         w.fg_stroke = Stroke::new(1.0, fg);
         w.expansion = 0.0;
     }
@@ -231,6 +239,9 @@ pub fn apply(ctx: &egui::Context, choice: ThemeChoice) {
         .into();
     });
 }
+
+/// The corner of buttons, inputs and badges: terraForge's `rounded` (4 px).
+pub const RADIUS: CornerRadius = CornerRadius::same(4);
 
 /// Height of buttons, inputs and filter cells (the site's medium button).
 pub const CONTROL_H: f32 = 34.0;
@@ -311,7 +322,6 @@ pub fn install_fonts(ctx: &egui::Context, cjk: Option<Lang>) {
 /// provider is bundled.
 fn font_definitions(cjk: Option<Lang>) -> FontDefinitions {
     const INTER: &[u8] = include_bytes!("../../../assets/fonts/Inter-Variable.ttf");
-    const ARCHIVO: &[u8] = include_bytes!("../../../assets/fonts/Archivo-Variable.ttf");
     const GEIST_MONO: &[u8] = include_bytes!("../../../assets/fonts/GeistMono-Variable.ttf");
     let mut fonts = FontDefinitions::default();
     // egui's own Latin faces and the small monochrome icon face stay behind ours.
@@ -320,7 +330,8 @@ fn font_definitions(cjk: Option<Lang>) -> FontDefinitions {
         ("Inter", INTER, &[(*b"wght", 400.0), (*b"opsz", 14.0)], FontFamily::Proportional),
         ("Inter-Medium", INTER, &[(*b"wght", 500.0), (*b"opsz", 14.0)], medium()),
         ("Inter-SemiBold", INTER, &[(*b"wght", 600.0), (*b"opsz", 14.0)], semibold()),
-        ("Archivo-Display", ARCHIVO, &[(*b"wght", 620.0), (*b"wdth", 118.0)], display()),
+        // Titles are set light, after terraForge's thin logotype.
+        ("Inter-Display", INTER, &[(*b"wght", 300.0), (*b"opsz", 32.0)], display()),
         ("GeistMono", GEIST_MONO, &[(*b"wght", 400.0)], FontFamily::Monospace),
         ("GeistMono-Medium", GEIST_MONO, &[(*b"wght", 500.0)], mono()),
         ("GeistMono-Bold", GEIST_MONO, &[(*b"wght", 700.0)], mono_bold()),

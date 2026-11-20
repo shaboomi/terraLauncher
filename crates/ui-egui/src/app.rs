@@ -774,7 +774,7 @@ impl LauncherUi {
         if self.settings.notify {
             let (title, body) = match fresh.as_slice() {
                 [(_, name, v)] => {
-                    let body: String = tl!("Open ArtCraft Launcher to update.").to_string();
+                    let body: String = tl!("Open terraLauncher to update.").to_string();
                     (crate::i18n::fmt(tl!("{name} {v} is available"), &[("name", name), ("v", v)]), body)
                 }
                 many => {
@@ -798,7 +798,7 @@ impl LauncherUi {
         }
         self.settings.tray_hint_shown = true;
         host.notify(
-            tl!("ArtCraft Launcher is still running"),
+            tl!("terraLauncher is still running"),
             tl!("It's in the tray: open it or quit it from the tray icon, or turn this off in the settings."),
         );
     }
@@ -949,6 +949,9 @@ impl LauncherUi {
                             ViewMode::Table => self.table(ui, &ids),
                         }
                     }
+                    // Web apps and products: links, under the apps whichever view is on.
+                    let query = self.search.clone();
+                    self.link_sections(ui, &query);
                     ui.add_space(16.0);
                     // The drop targets have seen this frame's pointer: a released drag ends here.
                     if !ui.input(|i| i.pointer.primary_down()) {

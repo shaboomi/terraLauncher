@@ -312,7 +312,7 @@ fn ask_once(dir: &Path, manifest: &Path, apps: usize) -> Prompt {
     use winsafe::ShellExecuteEx;
     use winsafe::co;
 
-    let exe = std::env::current_exe().unwrap_or_else(|_| PathBuf::from("artcraft-launcher.exe"));
+    let exe = std::env::current_exe().unwrap_or_else(|_| PathBuf::from("terralauncher.exe"));
     let (Some(exe), Some(manifest), Some(dir)) = (super::msi_batch::text(&exe).ok(), super::msi_batch::text(manifest).ok(), dir.to_str()) else {
         return Prompt::Failed("unusual characters in a path".into());
     };

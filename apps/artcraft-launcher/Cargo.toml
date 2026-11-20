@@ -1,11 +1,11 @@
 [package]
 name = "artcraft-launcher"
-description = "ArtCraft Launcher: install, update and open the Craft App Suite"
+description = "terraLauncher: install, update and open the terraPen apps"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
-default-run = "artcraft-launcher"
+default-run = "terralauncher"
 build = "build.rs"
 publish = false
 
@@ -15,6 +15,10 @@ workspace = true
 [features]
 # Development only: install from `cargo xtask local serve` (see the README).
 local-mirror = ["artcraft-launcher-native/local-mirror"]
+
+[[bin]]
+name = "terralauncher"
+path = "src/main.rs"
 
 [dependencies]
 artcraft-launcher-core = { workspace = true }

@@ -1,7 +1,7 @@
 //! The Simplified Chinese UI, in its own test binary: the UI language is process-wide, so it can't
 //! share one with the English UI tests. Chinese is drawn with the system's Chinese font; where
 //! there is none (CI, minimal Linux installs), the UI must stay in English and say why.
-//! `ARTCRAFT_LAUNCHER_SNAPSHOTS=<dir>` also saves screenshots (run with `-- --test-threads=1`).
+//! `TERRALAUNCHER_SNAPSHOTS=<dir>` also saves screenshots (run with `-- --test-threads=1`).
 
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
@@ -143,7 +143,7 @@ fn harness_language(
 }
 
 fn snapshot(h: &mut Harness<'_, Option<LauncherUi>>, name: &str) {
-    let Some(dir) = std::env::var_os("ARTCRAFT_LAUNCHER_SNAPSHOTS") else { return };
+    let Some(dir) = std::env::var_os("TERRALAUNCHER_SNAPSHOTS") else { return };
     let img = h.render().unwrap();
     img.save(std::path::Path::new(&dir).join(format!("{name}.png"))).unwrap();
 }
@@ -164,7 +164,7 @@ fn simplified_chinese_switches_persists_and_keeps_install_actions() {
     let before_scroll = h.get_by_label("Simplified Chinese").rect();
     let first_row = h.get_by_label("Auto").rect();
     let popup_bottom = first_row.top() + h.ctx.global_style().spacing.combo_height;
-    if std::env::var_os("ARTCRAFT_LAUNCHER_CHINESE_SCROLL_DIAGNOSTICS").is_some() {
+    if std::env::var_os("TERRALAUNCHER_CHINESE_SCROLL_DIAGNOSTICS").is_some() {
         let node = h.get_by_label("Simplified Chinese");
         eprintln!("ScrollIntoView target {:?}: {node:?}", node.accesskit_node().locate());
         node.scroll_to_me();

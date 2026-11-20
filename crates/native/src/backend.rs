@@ -1,3 +1,4 @@
+#![allow(dead_code)] // terraLauncher uses no release feed; the feed code stays so merges from upstream stay small.
 //! [`NativeBackend`]: the desktop implementation of the UI's [`Backend`].
 
 use std::collections::HashMap;
@@ -88,7 +89,7 @@ struct Shared {
     /// A detection pass is running; another request waits for the next one.
     detecting: AtomicBool,
     last_check: Mutex<Option<i64>>,
-    /// The newer ArtCraft Launcher release, once a check has found one, with the repo that check
+    /// The newer terraLauncher release, once a check has found one, with the repo that check
     /// read it from (the feed's rename, if any): its download links must be that repo's.
     launcher_release: Mutex<Option<(Release, String)>>,
     /// How this launcher is installed, when it can replace itself. Worked out on the check thread
@@ -257,7 +258,7 @@ impl NativeBackend {
         let waker: Waker = Arc::new(waker);
         let paths = Paths::new().unwrap_or_else(|e| {
             log::error!("{e}; keeping files in the temporary folder");
-            Paths::under(&std::env::temp_dir().join("artcraft-launcher"))
+            Paths::under(&std::env::temp_dir().join("terralauncher"))
         });
         let http = match Http::new() {
             Ok(h) => Some(h),
@@ -313,13 +314,14 @@ impl NativeBackend {
     fn replay_cache(&self) {
         let options = self.options();
         let pre = options.prereleases;
-        let feed = if pre { None } else { load_feed(&self.paths) };
+        // No release feed is used: GitHub's saved answers are the only ones.
+        let feed: Option<Feed> = None;
         let now = crate::now();
         for app in artcraft_launcher_core::hosted_catalog::apps().iter().filter(|a| self.platform.is_none_or(|p| a.runs_on(p.os))) {
             let answer = match feed.as_ref().map(|f| f.answer(app, now)) {
                 Some(FeedAnswer::Fresh(Some(r))) => Some((LatestRelease::Found(r), Origin::ArtCraftApi)),
                 Some(FeedAnswer::Fresh(None)) => Some((LatestRelease::None, Origin::ArtCraftApi)),
-                _ => self.source.as_ref().and_then(|s| s.cached(&feed_repo(feed.as_ref(), app), pre)).map(|l| (l, Origin::GitHub)),
+                _ => self.source.as_ref().and_then(|s| s.cached(&feed_repo(feed.as_ref(), app), pre || app.prereleases)).map(|l| (l, Origin::GitHub)),
             };
             if let Some((latest, from)) = answer {
                 publish_latest(app, latest, from, &self.shared, self.platform);
@@ -385,7 +387,6 @@ impl NativeBackend {
     /// day old, or no answer at all), at most once an hour per app unless `force`.
     fn check(&self, force: bool) {
         let (Some(source), Some(http)) = (self.source.clone(), self.http.clone()) else {
-            crate::hosted_catalog::load_once(None, &self.paths);
             self.shared.emit(Event::CatalogUpdated);
             for app in artcraft_launcher_core::hosted_catalog::apps().iter().filter(|a| self.platform.is_none_or(|p| a.runs_on(p.os))) {
                 self.shared.emit(Event::Latest {
@@ -411,7 +412,6 @@ impl NativeBackend {
         std::thread::spawn(move || {
             let busy = busy;
             shared.emit(Event::CheckStarted);
-            crate::hosted_catalog::load_once(Some(&http), &paths);
             shared.emit(Event::CatalogUpdated);
             let (feed, fallback) = check_plan(&http, mirror.as_ref(), pre, &paths, &shared);
             if let Some(f) = &feed {
@@ -422,7 +422,7 @@ impl NativeBackend {
                 artcraft_launcher_core::hosted_catalog::apps()
                     .iter()
                     .filter(|a| platform.is_none_or(|p| a.runs_on(p.os)))
-                    .chain(std::iter::once(&LAUNCHER))
+                    // The launcher is not in the queue: it has no releases to update itself from yet.
                     .collect::<Vec<&CraftApp>>(),
             );
             let sources = sweep(&queue, &mirror, feed.as_ref(), fallback, &source, &shared, &paths, (platform, &options), force, now);
@@ -483,7 +483,7 @@ impl NativeBackend {
             restarting
         };
         if restarting {
-            let result = Err("ArtCraft Launcher is restarting to finish its update. Try again once it's back.".into());
+            let result = Err("terraLauncher is restarting to finish its update. Try again once it's back.".into());
             self.shared.emit(Event::JobFinished { app: app.id.to_string(), result });
             return None;
         }
@@ -622,7 +622,7 @@ impl NativeBackend {
         let refuse = || {
             self.shared.emit(Event::JobFinished {
                 app: id.clone(),
-                result: Err("this copy of ArtCraft Launcher can't update itself; download the new version instead".into()),
+                result: Err("this copy of terraLauncher can't update itself; download the new version instead".into()),
             });
         };
         if self.shared.self_install.get().cloned().flatten().is_none() || self.platform.is_none() {
@@ -785,7 +785,7 @@ fn install_plan(
     let platform = platform.ok_or("this system isn't supported")?;
     let release = latest.ok_or("the selected release hasn't been found yet. Check for updates first.")?;
     let track = options.versions.get(app.id).unwrap_or(&VersionTrack::Stable);
-    if !release_matches_track(&release, track, options.prereleases) {
+    if !release_matches_track(&release, track, options.prereleases || app.prereleases) {
         return Err("the selected version isn't available yet. Check for updates before installing.".into());
     }
     let system = match asking {
@@ -1034,7 +1034,7 @@ fn restart_blocked(mut busy: Vec<&str>) -> String {
         _ => (busy.join(", "), "were", "them"),
     };
     format!(
-        "ArtCraft Launcher didn't restart to update: {names} {were} still installing. Answer or close any password prompt, \
+        "terraLauncher didn't restart to update: {names} {were} still installing. Answer or close any password prompt, \
          let {them} finish or cancel {them}, then press Update and restart again."
     )
 }
@@ -1174,11 +1174,10 @@ fn check_plan(http: &Http, mirror: Option<&String>, pre: bool, paths: &Paths, sh
     if let Some(base) = mirror {
         // A local mirror answers for everything: GitHub is never asked.
         (local_feed(http, base), Fallback { trust_feed: true, github_every: GITHUB_FALLBACK_EVERY })
-    } else if pre {
-        // The feed serves stable releases only; with pre-releases on, GitHub decides.
-        (None, Fallback { trust_feed: false, github_every: EARLY_GITHUB_EVERY })
     } else {
-        feed_and_fallback(http, paths, shared)
+        // There is no release feed: GitHub answers for every app.
+        let _ = (pre, paths, shared);
+        (None, Fallback { trust_feed: false, github_every: EARLY_GITHUB_EVERY })
     }
 }
 
@@ -1210,7 +1209,7 @@ fn sweep(
                             let answer = source.chosen(&feed_repo(feed, app), track);
                             (Some(answer.latest), Origin::GitHub, Some(answer.source))
                         }
-                        None => latest_for(app, feed, fallback, source.as_ref(), shared, options.prereleases, force, now),
+                        None => latest_for(app, feed, fallback, source.as_ref(), shared, options.prereleases || app.prereleases, force, now),
                     };
                     if let Some(used) = used {
                         sources.lock().unwrap_or_else(PoisonError::into_inner).push(used);
@@ -1454,10 +1453,10 @@ fn fetch_feed(http: &Http, paths: &Paths, url: &str, throttle: &Mutex<FeedThrott
     if asked { FeedFetch::Failed } else { FeedFetch::Held }
 }
 
-/// The feed's address. `ARTCRAFT_LAUNCHER_FEED_URL` points at a staging server or a local copy
+/// The feed's address. `TERRALAUNCHER_FEED_URL` points at a staging server or a local copy
 /// (only `https://`, or plain `http://` on localhost).
 fn feed_url() -> String {
-    std::env::var("ARTCRAFT_LAUNCHER_FEED_URL")
+    std::env::var("TERRALAUNCHER_FEED_URL")
         .ok()
         .filter(|u| feed_url_override_allowed(u, cfg!(feature = "local-mirror")))
         .unwrap_or_else(|| artcraft_launcher_core::feed::FEED_URL.to_string())
@@ -1471,7 +1470,7 @@ fn feed_url_override_allowed(url: &str, local_mirror: bool) -> bool {
 
 use crate::http::is_loopback;
 
-/// `ARTCRAFT_LAUNCHER_DOWNLOAD_BASE`: a mirror on this machine (`cargo xtask local serve`) that
+/// `TERRALAUNCHER_DOWNLOAD_BASE`: a mirror on this machine (`cargo xtask local serve`) that
 /// serves `release_info.json` and the builds it lists. While it's set, releases come only from
 /// there (never GitHub or ArtCraft's API), and its download links are trusted. Loopback only, so
 /// nothing but the developer's own builds can be installed this way, and only in builds with the
@@ -1480,21 +1479,19 @@ fn local_mirror() -> Option<String> {
     if !cfg!(feature = "local-mirror") {
         return None;
     }
-    let base = std::env::var("ARTCRAFT_LAUNCHER_DOWNLOAD_BASE").ok()?;
+    let base = std::env::var("TERRALAUNCHER_DOWNLOAD_BASE").ok()?;
     let base = base.trim();
     if !is_loopback(base) || base.contains(['?', '#', '\\']) {
-        log::warn!(
-            "ignoring ARTCRAFT_LAUNCHER_DOWNLOAD_BASE={base}: only http://127.0.0.1:<port>/, http://localhost:<port>/ or http://[::1]:<port>/"
-        );
+        log::warn!("ignoring TERRALAUNCHER_DOWNLOAD_BASE={base}: only http://127.0.0.1:<port>/, http://localhost:<port>/ or http://[::1]:<port>/");
         return None;
     }
     Some(if base.ends_with('/') { base.to_string() } else { format!("{base}/") })
 }
 
-/// The local mirror's feed: `ARTCRAFT_LAUNCHER_FEED_URL` if set, else `release_info.json` beside
+/// The local mirror's feed: `TERRALAUNCHER_FEED_URL` if set, else `release_info.json` beside
 /// the builds. Asked every check (it's on this machine), and never saved over ArtCraft's.
 fn local_feed(http: &Http, base: &str) -> Option<Feed> {
-    let url = std::env::var("ARTCRAFT_LAUNCHER_FEED_URL").ok().filter(|u| is_loopback(u)).unwrap_or_else(|| format!("{base}release_info.json"));
+    let url = std::env::var("TERRALAUNCHER_FEED_URL").ok().filter(|u| is_loopback(u)).unwrap_or_else(|| format!("{base}release_info.json"));
     match http.get_feed(&url) {
         Ok(body) => {
             let feed = Feed::parse(&body).map(|f| f.with_mirror(base));
@@ -2458,7 +2455,7 @@ mod tests {
         let offered = |updating: bool, release: Release| {
             let dir = tempfile::tempdir().unwrap();
             let mut backend = backend(dir.path(), platform, None);
-            let install = crate::self_update::Install::Portable(dir.path().join("artcraft-launcher.exe"));
+            let install = crate::self_update::Install::Portable(dir.path().join("terralauncher.exe"));
             assert!(backend.shared.self_install.set(Some(install)).is_ok());
             assert!(backend.shared.self_updating.set(updating).is_ok());
             *backend.shared.launcher_release.lock().unwrap() = Some((release, String::new()));
@@ -2474,8 +2471,8 @@ mod tests {
             }
             (offered, backend.launcher_kind())
         };
-        let portable = release("artcraft-launcher-0.9.0-windows-x64-portable.zip");
-        let msi_only = release("artcraft-launcher-0.9.0-windows-x64.msi");
+        let portable = release("terralauncher-0.9.0-windows-x64-portable.zip");
+        let msi_only = release("terralauncher-0.9.0-windows-x64.msi");
         assert_eq!(offered(true, portable.clone()), (true, Some(PackageKind::PortableZip)));
         assert_eq!(offered(false, portable), (false, Some(PackageKind::PortableZip)), "a copy that can't update itself (unsigned on Windows)");
         assert_eq!(offered(true, msi_only), (false, Some(PackageKind::PortableZip)), "a release without a file for this copy");
@@ -3203,15 +3200,15 @@ mod tests {
     #[test]
     fn a_launcher_release_without_a_file_for_this_copy_is_offered_as_a_download() {
         use crate::self_update::Install;
-        // ArtCraft Launcher v0.17.0's macOS file: the disk image only.
-        let name = "artcraft-launcher-0.17.0-macos-universal.dmg";
+        // terraLauncher v0.17.0's macOS file: the disk image only.
+        let name = "terralauncher-0.17.0-macos-universal.dmg";
         let release = Release {
             assets: vec![Asset { name: name.into(), size: 1, url: format!("https://example.invalid/{name}"), sha256: None }],
             ..Release::default()
         };
         let mac = Platform { os: Os::MacOs, arch: Arch::Arm64 };
         for (install, updates) in
-            [(Install::MacApp("/Applications/ArtCraft Launcher.app".into()), true), (Install::Standalone("/tmp/artcraft-launcher".into()), false)]
+            [(Install::MacApp("/Applications/terraLauncher.app".into()), true), (Install::Standalone("/tmp/artcraft-launcher".into()), false)]
         {
             let dir = tempfile::tempdir().unwrap();
             let mut backend = backend(dir.path(), mac, None);

@@ -1,5 +1,5 @@
 //! `craft-ai-mcp`: the gateway through which MCP clients (Claude, Cursor, LM Studio) reach every
-//! installed Craft app. The ArtCraft Launcher ships it beside itself; Settings › AI agents copies
+//! installed Craft app. The terraLauncher ships it beside itself; Settings › AI agents copies
 //! it into `ArtCraft/mcp/bin` and registers that copy (`artcraft_launcher_native::agents`). The
 //! program itself is `craft_ai_mcp::cli` from storytold/craft-ai-integrations.
 

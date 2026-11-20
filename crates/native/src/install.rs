@@ -218,7 +218,7 @@ pub fn install_at(
         // No team to check the signature against: refuse rather than install it unchecked.
         #[cfg(target_os = "macos")]
         PackageKind::Dmg if app.mac_team.is_none() => {
-            Err("ArtCraft Launcher has no macOS signing team recorded for this app, so it wasn't installed here".into())
+            Err("terraLauncher has no macOS signing team recorded for this app, so it wasn't installed here".into())
         }
         #[cfg(target_os = "macos")]
         PackageKind::Dmg => macos::install_dmg(
@@ -258,6 +258,9 @@ pub fn install_at(
             }
             .map(|_| None)
         }
+        // The setup program registers the app itself; the registry is where it is found afterwards.
+        #[cfg(windows)]
+        PackageKind::Setup => windows::run_setup(app, &file, job.stop, &mut *job.phase).map(|()| None),
         #[cfg(windows)]
         PackageKind::PortableZip => {
             crate::portable::install(app, &file, &version, previous, job.paths, destination.as_deref(), job.replace, &mut |record| {
@@ -616,6 +619,7 @@ pub(crate) fn choose_kinds_with(
             InstallSource::Launcher => record.map(|r| r.kind),
             InstallSource::MacApp => Some(PackageKind::Dmg),
             InstallSource::Msi => Some(PackageKind::Msi),
+            InstallSource::Setup => Some(PackageKind::Setup),
             InstallSource::Deb => Some(PackageKind::Deb),
             InstallSource::Rpm => Some(PackageKind::Rpm),
             // The release's own Arch package is updated like a .deb. AUR builds and repository
@@ -664,7 +668,7 @@ pub fn available_kinds() -> Vec<PackageKind> {
     #[cfg(target_os = "macos")]
     return vec![PackageKind::Dmg];
     #[cfg(windows)]
-    return vec![PackageKind::Msi, PackageKind::PortableZip];
+    return vec![PackageKind::Setup, PackageKind::Msi, PackageKind::PortableZip];
     #[cfg(target_os = "linux")]
     return linux::available_kinds();
     #[cfg(target_os = "freebsd")]
@@ -832,8 +836,10 @@ pub fn uninstall(
     if let Some(msg) = managed_elsewhere(app, installed, true) {
         return Err(msg);
     }
-    if matches!(installed.source, InstallSource::MacApp | InstallSource::Msi | InstallSource::AppImage | InstallSource::Launcher)
-        && process::is_running(&path)
+    if matches!(
+        installed.source,
+        InstallSource::MacApp | InstallSource::Msi | InstallSource::Setup | InstallSource::AppImage | InstallSource::Launcher
+    ) && process::is_running(&path)
     {
         return Err(format!("{} is running. Quit it, then try again.", app.name));
     }
@@ -844,6 +850,8 @@ pub fn uninstall(
         }
         #[cfg(windows)]
         InstallSource::Msi => windows::uninstall_msi(app, stop, phase),
+        #[cfg(windows)]
+        InstallSource::Setup => windows::uninstall_setup(app, stop, phase),
         #[cfg(target_os = "macos")]
         InstallSource::MacApp | InstallSource::Launcher => macos::move_to_trash(&path),
         #[cfg(target_os = "linux")]
@@ -933,7 +941,7 @@ pub fn launch(app: &CraftApp, installed: &Installed, paths: &Paths, args: &[Stri
         _ if cfg!(target_os = "macos") && path.extension().is_some_and(|e| e == "app") => process::open_app(path, args),
         _ => {
             if !is_resolved_location(path) {
-                if cfg!(windows) && installed.source == InstallSource::Msi && path.components().count() < 2 {
+                if cfg!(windows) && matches!(installed.source, InstallSource::Msi | InstallSource::Setup) && path.components().count() < 2 {
                     return Err(format!(
                         "{} is registered with Windows, but the launcher can't find where it put the program. Reinstall it from here.",
                         app.name
@@ -1524,7 +1532,7 @@ pub(crate) mod linux {
         let dest = dir.join(name);
         let ours = previous.is_some_and(|r| r.kind == PackageKind::AppImage && r.path == dest);
         if std::fs::symlink_metadata(&dest).is_ok_and(|m| m.is_dir() || !(replace || ours && m.is_file())) {
-            return Err(format!("{} already exists and wasn't installed by ArtCraft Launcher", dest.display()));
+            return Err(format!("{} already exists and wasn't installed by terraLauncher", dest.display()));
         }
         let staging = super::staging_dir(&dir)?;
         let partial = staging.path().join(name);
@@ -1874,13 +1882,13 @@ pub mod macos {
         if let Some(approved) = approved_replace
             && dest != approved
         {
-            return Err(format!("{} already exists and wasn't installed by ArtCraft Launcher", dest.display()));
+            return Err(format!("{} already exists and wasn't installed by terraLauncher", dest.display()));
         }
         if approved_replace.is_none_or(|approved| approved != dest)
             && std::fs::symlink_metadata(&dest).is_ok()
             && (std::fs::symlink_metadata(&dest).is_ok_and(|m| m.file_type().is_symlink()) || crate::detect::macos::read_bundle(app, &dest).is_none())
         {
-            return Err(format!("{} already exists and wasn't installed by ArtCraft Launcher", dest.display()));
+            return Err(format!("{} already exists and wasn't installed by terraLauncher", dest.display()));
         }
         let staging = super::staging_dir(&dir)?;
         let staged = staging.path().join(&bundle);
@@ -2459,6 +2467,78 @@ pub mod windows {
             }
         };
         Ok((ended != msi_downgrade::Ended::LaunchFailed).then_some(ended))
+    }
+
+    /// Runs an app's setup program (`.exe`) with the switches its catalog entry names, so it shows
+    /// at most a progress window, and waits for it. The file was checked against the release's
+    /// checksum before this is called. These installers install for the current account; one that
+    /// needs administrator rights can't be started this way and says so.
+    pub(super) fn run_setup(app: &CraftApp, file: &Path, stop: &Stop, phase: &mut dyn FnMut(JobPhase)) -> Result<(), String> {
+        in_turn(stop, phase, JobPhase::Installing, || {
+            let status = process::command(file).args(app.setup_args).status().map_err(|e| match e.raw_os_error() {
+                Some(740) => format!("{}'s installer needs administrator rights. Run it yourself from {}", app.name, file.display()),
+                _ => format!("couldn't start {}'s installer ({e})", app.name),
+            })?;
+            match status.code() {
+                Some(0) => Ok(()),
+                // NSIS: 1 is "cancelled by the user", 2 "aborted by the script".
+                Some(1) => Err(CANCELLED.into()),
+                Some(code) => Err(format!("{}'s installer stopped with code {code}", app.name)),
+                None => Err(format!("{}'s installer was stopped", app.name)),
+            }
+        })
+    }
+
+    /// Splits an uninstall command into its program and the rest: `"C:\a b\un.exe" /S`.
+    pub(super) fn split_command(command: &str) -> Option<(PathBuf, String)> {
+        let command = command.trim();
+        let (program, rest) = match command.strip_prefix('"') {
+            Some(quoted) => quoted.split_once('"')?,
+            None => match command.to_ascii_lowercase().find(".exe") {
+                Some(at) => command.split_at(at + 4),
+                None => (command, ""),
+            },
+        };
+        let program = PathBuf::from(program);
+        (program.is_absolute() && program.extension().is_some_and(|e| e.eq_ignore_ascii_case("exe"))).then(|| (program, rest.trim().to_string()))
+    }
+
+    /// Removes an app its setup program installed, with that program's own uninstaller, quietly.
+    /// An NSIS uninstaller hands over to a copy of itself and returns at once, so this waits until
+    /// the app's uninstall record is gone.
+    pub fn uninstall_setup(app: &CraftApp, stop: &Stop, phase: &mut dyn FnMut(JobPhase)) -> Result<(), String> {
+        use std::os::windows::process::CommandExt;
+        in_turn(stop, phase, JobPhase::Removing, || {
+            let Some(install) = crate::detect::windows::setup_installs(app).into_iter().next() else {
+                return Err(format!("{} isn't registered with Windows", app.name));
+            };
+            let (command, quiet) = install.uninstall.ok_or_else(|| format!("{} names no uninstaller", app.name))?;
+            let (program, arguments) = split_command(&command).ok_or_else(|| format!("{}'s uninstall command can't be read", app.name))?;
+            if !program.exists() {
+                return Err(format!("{}'s uninstaller is missing ({})", app.name, program.display()));
+            }
+            let mut uninstaller = process::command(&program);
+            uninstaller.raw_arg(&arguments);
+            if !quiet {
+                uninstaller.arg("/S");
+            }
+            let status = uninstaller.status().map_err(|e| format!("couldn't start {}'s uninstaller ({e})", app.name))?;
+            if !status.success() {
+                return Err(match status.code() {
+                    Some(1) => CANCELLED.into(),
+                    Some(code) => format!("{}'s uninstaller stopped with code {code}", app.name),
+                    None => format!("{}'s uninstaller was stopped", app.name),
+                });
+            }
+            let gone = || !crate::detect::windows::setup_installs(app).iter().any(|s| s.key == install.key);
+            for _ in 0..240 {
+                if gone() {
+                    return Ok(());
+                }
+                std::thread::sleep(std::time::Duration::from_millis(250));
+            }
+            Err(format!("{}'s uninstaller did not finish", app.name))
+        })
     }
 
     pub fn uninstall_msi(app: &CraftApp, stop: &Stop, phase: &mut dyn FnMut(JobPhase)) -> Result<(), String> {

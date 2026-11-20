@@ -1,5 +1,5 @@
 //! The Ukrainian UI, in its own test binary: the UI language is process-wide, so it can't share one
-//! with the English UI tests. `ARTCRAFT_LAUNCHER_SNAPSHOTS=<dir>` also saves screenshots (run with
+//! with the English UI tests. `TERRALAUNCHER_SNAPSHOTS=<dir>` also saves screenshots (run with
 //! `-- --test-threads=1`, see `ui.rs`).
 
 use std::cell::Cell;
@@ -109,9 +109,9 @@ fn harness(view: ViewMode) -> Harness<'static, Option<LauncherUi>> {
     )
 }
 
-/// Save a PNG of `h` under `ARTCRAFT_LAUNCHER_SNAPSHOTS`, if that directory is set.
+/// Save a PNG of `h` under `TERRALAUNCHER_SNAPSHOTS`, if that directory is set.
 fn snapshot(h: &mut Harness<'_, Option<LauncherUi>>, name: &str) {
-    let Some(dir) = std::env::var_os("ARTCRAFT_LAUNCHER_SNAPSHOTS") else { return };
+    let Some(dir) = std::env::var_os("TERRALAUNCHER_SNAPSHOTS") else { return };
     let img = h.render().unwrap();
     img.save(std::path::Path::new(&dir).join(format!("{name}.png"))).unwrap();
 }
@@ -124,7 +124,7 @@ fn ukrainian_ui_translates_labels_dates_and_messages() {
     snapshot(&mut h, "grid-uk-dark");
     // Product names stay in English.
     assert!(h.query_by_label("Launcher").is_none());
-    h.get_by_label("Craft App Suite");
+    h.get_by_label("terraPen apps");
     h.get_by_label("Редагування зображень");
     h.get_by_label("Оновити до 0.5.0");
     h.get_by_label_contains("Перевірка контрольної суми…");

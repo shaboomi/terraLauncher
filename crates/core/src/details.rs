@@ -20,6 +20,7 @@ pub struct Shot {
     pub caption: &'static str,
 }
 
+#[allow(dead_code)] // no app lists screenshots yet
 const fn shot(key: &'static str, caption: &'static str) -> Shot {
     Shot { key, caption }
 }

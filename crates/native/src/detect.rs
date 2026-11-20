@@ -94,13 +94,33 @@ pub(crate) fn appimage_version(name: &str, stems: &[&str]) -> Option<Option<Stri
 /// Who our Windows Installer packages name as their publisher. A community app's names its own
 /// ([`CraftApp::msi_publisher`]).
 #[cfg_attr(not(windows), allow(dead_code))]
-const PUBLISHER: &str = "Learning Machines LLC";
+const PUBLISHER: &str = artcraft_launcher_core::catalog::PUBLISHER;
 
 /// Whether an uninstall entry's `DisplayName` and `Publisher` are `app`'s, under any name its
 /// installers have registered.
 #[cfg_attr(not(windows), allow(dead_code))]
 fn is_installer_entry(app: &CraftApp, display_name: &str, publisher: &str) -> bool {
     publisher == app.msi_publisher.unwrap_or(PUBLISHER) && app.names().any(|n| n == display_name)
+}
+
+/// Whether a setup program's (NSIS) uninstall entry is `app`'s. Tauri registers the bare product name
+/// (`TerraGen`); electron-builder adds the version (`terraForge 1.5.1`).
+#[cfg_attr(not(windows), allow(dead_code))]
+fn is_setup_entry(app: &CraftApp, display_name: &str, publisher: &str) -> bool {
+    publisher == app.msi_publisher.unwrap_or(PUBLISHER)
+        && app.names().any(|n| display_name == n || display_name.strip_prefix(n).is_some_and(|rest| rest.starts_with(' ')))
+}
+
+/// The exe a `DisplayIcon` value names: `"C:\…\app.exe"` or `C:\…\app.exe,0`.
+#[cfg_attr(not(windows), allow(dead_code))]
+fn display_icon_exe(value: &str) -> Option<PathBuf> {
+    let value = value.trim();
+    let path = match value.rsplit_once(',') {
+        Some((path, index)) if !index.is_empty() && index.trim_start_matches('-').bytes().all(|b| b.is_ascii_digit()) => path,
+        _ => value,
+    };
+    let path = PathBuf::from(path.trim().trim_matches('"'));
+    (path.is_absolute() && path.extension().is_some_and(|e| e.eq_ignore_ascii_case("exe"))).then_some(path)
 }
 
 /// Where a Windows install of `app` may keep its exe, in the order to try: the entry's
@@ -235,7 +255,10 @@ pub mod windows {
     use winreg::enums::{HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, KEY_READ, KEY_WOW64_32KEY, KEY_WOW64_64KEY};
     use winreg::{HKEY, RegKey};
 
-    use super::{CraftApp, InstallSource, Installed, exe_candidates, install_dir_keys, is_installer_entry, suite_folders, version};
+    use super::{
+        CraftApp, InstallSource, Installed, display_icon_exe, exe_candidates, install_dir_keys, is_installer_entry, is_setup_entry, suite_folders,
+        version,
+    };
 
     const UNINSTALL: &str = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
 
@@ -437,8 +460,63 @@ pub mod windows {
         matching.or_else(|| candidates.first()).cloned()
     }
 
+    /// An install a setup program (`.exe`, NSIS) registered.
+    pub struct SetupInstall {
+        /// The name of its uninstall key.
+        pub key: String,
+        pub version: Option<artcraft_launcher_core::version::Version>,
+        pub exe: Option<PathBuf>,
+        /// The command that removes it, and whether that command is already the quiet one.
+        pub uninstall: Option<(String, bool)>,
+    }
+
+    /// Every setup-program entry for `app`, newest first. Windows Installer records (a braced product
+    /// code, or `WindowsInstaller = 1`) are [`msi_installs`]' business and are skipped here.
+    pub fn setup_installs(app: &CraftApp) -> Vec<SetupInstall> {
+        let mut out: Vec<SetupInstall> = Vec::new();
+        for (hive, flags) in UNINSTALL_ROOTS {
+            let Ok(root) = RegKey::predef(hive).open_subkey_with_flags(UNINSTALL, KEY_READ | flags) else { continue };
+            for name in root.enum_keys().flatten() {
+                if crate::msi_context::valid_product_code(&name) || out.iter().any(|s| s.key == name) {
+                    continue;
+                }
+                let Ok(key) = root.open_subkey_with_flags(&name, KEY_READ | flags) else { continue };
+                let display: String = key.get_value("DisplayName").unwrap_or_default();
+                let publisher: String = key.get_value("Publisher").unwrap_or_default();
+                if !is_setup_entry(app, &display, &publisher) || key.get_value::<u32, _>("WindowsInstaller").is_ok_and(|v| v == 1) {
+                    continue;
+                }
+                let version = key.get_value::<String, _>("DisplayVersion").ok().and_then(|v| version::parse(&v));
+                let location: String = key.get_value("InstallLocation").unwrap_or_default();
+                let location = location.trim().trim_matches('"');
+                let icon: String = key.get_value("DisplayIcon").unwrap_or_default();
+                let exe = display_icon_exe(&icon).filter(|p| p.exists()).or_else(|| {
+                    exe_candidates(app, (!location.is_empty()).then(|| std::path::Path::new(location)), &[]).into_iter().find(|p| p.exists())
+                });
+                let text = |value: &str| key.get_value::<String, _>(value).ok().filter(|v| !v.trim().is_empty());
+                let uninstall = text("QuietUninstallString").map(|c| (c, true)).or_else(|| text("UninstallString").map(|c| (c, false)));
+                out.push(SetupInstall { key: name, version, exe, uninstall });
+            }
+        }
+        out.sort_by(|a, b| super::newest_first(a.version.as_ref(), b.version.as_ref()));
+        out
+    }
+
+    fn detect_setup(app: &CraftApp) -> Option<Installed> {
+        let s = setup_installs(app).into_iter().next()?;
+        Some(Installed {
+            version: s.version,
+            source: InstallSource::Setup,
+            location: s.exe.map_or_else(|| app.name.to_string(), |p| location_text(&p)),
+            package: Some(s.key),
+            externally_managed: false,
+            origin: None,
+            installation: None,
+        })
+    }
+
     pub fn detect(app: &CraftApp) -> Option<Installed> {
-        let m = msi_installs(app).into_iter().next()?;
+        let Some(m) = msi_installs(app).into_iter().next() else { return detect_setup(app) };
         let location = m.exe.or_else(|| exe_in_any_scope(app, m.version.as_ref())).map_or_else(|| app.name.to_string(), |p| location_text(&p));
         Some(Installed {
             version: m.version,
@@ -1229,7 +1307,7 @@ mod tests {
     fn the_launcher_records_its_folder_under_the_publisher_key() {
         assert_eq!(
             install_dir_keys(&artcraft_launcher_core::catalog::LAUNCHER),
-            [r"SOFTWARE\ArtCraft Launcher".to_string(), format!(r"SOFTWARE\{LEARNING_MACHINES}\ArtCraft Launcher")]
+            [r"SOFTWARE\terraLauncher".to_string(), format!(r"SOFTWARE\{LEARNING_MACHINES}\terraLauncher")]
         );
         let photo = CraftApp::by_id("photocraft").unwrap();
         assert_eq!(install_dir_keys(photo), [r"SOFTWARE\PhotoCraft".to_string()]);

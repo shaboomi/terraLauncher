@@ -13,6 +13,8 @@ pub enum InstallSource {
     MacApp,
     /// A Windows Installer (MSI) install.
     Msi,
+    /// A Windows setup program (`.exe`, NSIS) install, found by its uninstall record.
+    Setup,
     /// A Debian package.
     Deb,
     /// An RPM package.
@@ -31,9 +33,10 @@ pub enum InstallSource {
 impl InstallSource {
     pub fn label(self) -> &'static str {
         match self {
-            Self::Launcher => "ArtCraft Launcher",
+            Self::Launcher => "terraLauncher",
             Self::MacApp => "Applications folder",
             Self::Msi => "Windows Installer",
+            Self::Setup => "Windows setup program",
             Self::Deb => "Debian package",
             Self::Rpm => "RPM package",
             Self::Pacman => "Arch package",
@@ -46,7 +49,7 @@ impl InstallSource {
     /// Whether the launcher may replace or remove this copy itself. Packages owned by a system
     /// package manager (deb, rpm, Flatpak) are updated through that manager instead.
     pub fn launcher_can_update(self) -> bool {
-        matches!(self, Self::Launcher | Self::MacApp | Self::Msi | Self::AppImage)
+        matches!(self, Self::Launcher | Self::MacApp | Self::Msi | Self::Setup | Self::AppImage)
     }
 }
 

@@ -256,7 +256,7 @@ fn cli_path_for(location: &str, app: &CraftApp) -> Option<PathBuf> {
 }
 
 /// Names another `craft-ai-mcp` than the one beside the launcher (development, tests).
-pub const GATEWAY_PATH_ENV: &str = "ARTCRAFT_LAUNCHER_GATEWAY_PATH";
+pub const GATEWAY_PATH_ENV: &str = "TERRALAUNCHER_GATEWAY_PATH";
 
 /// The `craft-ai-mcp` gateway the launcher ships beside itself, or [`GATEWAY_PATH_ENV`].
 pub fn locate_gateway() -> Option<PathBuf> {

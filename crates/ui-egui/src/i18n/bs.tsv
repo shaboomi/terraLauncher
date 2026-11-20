@@ -1,4 +1,4 @@
-# Bosnian (bs) catalog for ArtCraft Launcher.
+# Bosnian (bs) catalog for terraLauncher.
 # Format: context<TAB>source<TAB>translation
 # Empty context = plain UI string (tl!, t). @id = command-id keyed. @plural = one|few|other.
 # @msg = status/error message template. Other context = disambiguation for tr_ctx.
@@ -6,7 +6,7 @@
 # Product and app names, shortcuts, units, file formats, placeholders and trailing ellipses are kept.
 
 	Launcher	Launcher
-	Craft App Suite	Craft App Suite
+	terraPen apps	terraPen apps
 	by {name}	od {name}
 	Open Source Tools for Creatives, Makers, and Builders	Alati otvorenog koda za kreativce, majstore i graditelje
 	Settings	Postavke
@@ -61,7 +61,7 @@
 	Reinstall	Ponovo instaliraj
 	Uninstall…	Deinstaliraj…
 	All releases	Sva izdanja
-	ArtCraft Launcher {version} is available.	Dostupan je ArtCraft Launcher {version}.
+	terraLauncher {version} is available.	Dostupan je terraLauncher {version}.
 	Dismiss	Odbaci
 	Update and restart	Ažuriraj i ponovo pokreni
 	A new version is available. Would you like to relaunch with the updated version?	Dostupna je nova verzija. Želite li ponovo pokrenuti ažuriranu verziju?
@@ -72,7 +72,7 @@
 	Released {date}	Objavljeno {date}
 	Open on GitHub	Otvori na GitHubu
 	Close	Zatvori
-	ArtCraft Launcher {version}	ArtCraft Launcher {version}
+	terraLauncher {version}	terraLauncher {version}
 	Only when I ask	Samo kad zatražim
 	Automatically download and install updates	Automatski preuzmi i instaliraj ažuriranja
 	Notify me when an installed app has an update	Obavijesti me kad instalirana aplikacija ima ažuriranje
@@ -84,14 +84,14 @@
 	Updates always use the format an app was installed with.	Ažuriranja uvijek koriste format s kojim je aplikacija instalirana.
 	Running in the background	Radi u pozadini
 	Keep running in the tray when the window is closed	Nastavi raditi u sistemskoj traci kad se prozor zatvori
-	ArtCraft Launcher is still running	ArtCraft Launcher i dalje radi
+	terraLauncher is still running	terraLauncher i dalje radi
 	It's in the tray: open it or quit it from the tray icon, or turn this off in the settings.	Nalazi se u sistemskoj traci: otvorite ga ili zatvorite preko ikone u traci ili ovo isključite u postavkama.
 	Show the window on the current desktop	Prikaži prozor na trenutnoj radnoj površini
-	Start ArtCraft Launcher when I log in	Pokreni ArtCraft Launcher pri prijavi
+	Start terraLauncher when I log in	Pokreni terraLauncher pri prijavi
 	Community	Zajednica
 	Questions, ideas and news from the ArtCraft team	Pitanja, ideje i novosti od ArtCraft tima
 	Appearance	Izgled
-	Quit ArtCraft Launcher	Zatvori ArtCraft Launcher
+	Quit terraLauncher	Zatvori terraLauncher
 	Done	Gotovo
 	Uninstall {name}?	Deinstalirati {name}?
 	The app will be moved to the Trash. Your documents and settings stay.	Aplikacija će biti premještena u Smeće. Vaši dokumenti i postavke ostaju.
@@ -131,7 +131,7 @@
 	Open link	Otvori vezu
 	Update	Ažuriraj
 	{name} icon	Ikona: {name}
-	Loading ArtCraft Launcher…	Učitavanje ArtCraft Launchera…
+	Loading terraLauncher…	Učitavanje terraLaunchera…
 	Cancel update	Otkaži ažuriranje
 	Stop waiting; the update can be started again later	Prestani čekati; ažuriranje se može ponovo pokrenuti kasnije
 	Download again	Preuzmi ponovo
@@ -207,7 +207,7 @@ month	Dec	dec
 	Version {version} installed	Instalirana verzija {version}
 	Version {latest}	Verzija {latest}
 	No release published yet	Još nije objavljeno nijedno izdanje
-	ArtCraft Launcher	ArtCraft Launcher
+	terraLauncher	terraLauncher
 	App	Aplikacija
 	Latest	Najnovije
 	Released	Objavljeno
@@ -242,7 +242,7 @@ month	Dec	dec
 	Full changelog	Potpuni popis izmjena
 	link	veza
 	No apps match	Nijedna aplikacija ne odgovara
-	Open ArtCraft Launcher to update.	Otvorite ArtCraft Launcher za ažuriranje.
+	Open terraLauncher to update.	Otvorite terraLauncher za ažuriranje.
 	{name} {v} is available	Dostupno je {name} {v}
 	{count} updates are available	Dostupno je ažuriranja: {count}
 	These notes weren't fetched (GitHub's request limit was reached). They're on the release page.	Ove bilješke nisu preuzete (dostignuto je ograničenje zahtjeva GitHuba). Nalaze se na stranici izdanja.
@@ -300,7 +300,7 @@ filter	Installed	Instalirano
 @id	launcher.notes	Šta je novo
 @id	launcher.dismiss	Odbaci
 @id	settings.open	Postavke
-@id	settings.quit	Zatvori ArtCraft Launcher
+@id	settings.quit	Zatvori terraLauncher
 @id	view.grid	Mreža
 @id	view.table	Tabela
 @id	filter.all	Sve
@@ -324,14 +324,14 @@ filter	Installed	Instalirano
 @id	linux.preferred_kind	Instaliraj nove aplikacije kao
 @id	tray.close_to_tray	Nastavi raditi u sistemskoj traci kad se prozor zatvori
 @id	tray.show_on_current_desktop	Prikaži prozor na trenutnoj radnoj površini
-@id	tray.login_item	Pokreni ArtCraft Launcher pri prijavi
+@id	tray.login_item	Pokreni terraLauncher pri prijavi
 @id	appearance.theme	Izgled
-	Show ArtCraft Launcher	Prikaži ArtCraft Launcher
+	Show terraLauncher	Prikaži terraLauncher
 	Check for Updates	Provjeri ažuriranja
 	Visit getartcraft.com	Posjetite getartcraft.com
 	ArtCraft on GitHub	ArtCraft na GitHubu
 	Join the ArtCraft Discord	Pridružite se ArtCraft Discordu
-@plural	ArtCraft Launcher · {n} update available|ArtCraft Launcher · {n} updates available	ArtCraft Launcher · dostupno {n} ažuriranje|ArtCraft Launcher · dostupna {n} ažuriranja|ArtCraft Launcher · dostupno {n} ažuriranja
+@plural	terraLauncher · {n} update available|terraLauncher · {n} updates available	terraLauncher · dostupno {n} ažuriranje|terraLauncher · dostupna {n} ažuriranja|terraLauncher · dostupno {n} ažuriranja
 	Install folder	Folder za instalaciju
 	Default install folder	Zadani folder za instalaciju
 	System default	Zadano sistemom
@@ -344,7 +344,7 @@ filter	Installed	Instalirano
 @msg	couldn't use install folder {path}: {reason}	nije moguće koristiti folder za instalaciju {path}: {reason}
 @msg	this release has no AppImage for a custom install folder	ovo izdanje nema AppImage za prilagođeni folder za instalaciju
 @msg	custom install folders aren't supported on this system	prilagođeni folderi za instalaciju nisu podržani na ovom sistemu
-@msg	{path} already exists and wasn't installed by ArtCraft Launcher	{path} već postoji i nije ga instalirao ArtCraft Launcher
+@msg	{path} already exists and wasn't installed by terraLauncher	{path} već postoji i nije ga instalirao terraLauncher
 @msg	couldn't move {path} to Trash ({reason}). Remove it in Finder instead.	nije moguće premjestiti {path} u Smeće ({reason}). Uklonite ga u Finderu.
 	Apps are placed inside this folder.	Aplikacije se smještaju u ovaj folder.
 	Replace what's there?	Zamijeniti postojeće?
@@ -421,7 +421,7 @@ materialcraft	Preview materials in 2D and on 3D models.	Pregledajte materijale u
 	Simultaneous downloads	Istovremena preuzimanja
 	The Craft gateway (craft-ai-mcp) is not installed beside the launcher.	Craft gateway (craft-ai-mcp) nije instaliran pored pokretača.
 	Waiting for another download…	Čeka se drugo preuzimanje…
-	{latest} is out, but ArtCraft Launcher can't install it over this copy.	Izašla je verzija {latest}, ali ArtCraft Launcher je ne može instalirati preko ove kopije.
+	{latest} is out, but terraLauncher can't install it over this copy.	Izašla je verzija {latest}, ali terraLauncher je ne može instalirati preko ove kopije.
 	{name} launch options	{name}: opcije pokretanja
 	{name} wasn't opened: a quote in its launch options isn't closed.	{name} nije otvoren: navodnik u opcijama pokretanja nije zatvoren.
 
@@ -436,7 +436,7 @@ anicraft	Vector animation on a timeline you know.	Vektorska animacija na vremens
 mailcraft	Mail, calendar and contacts	Pošta, kalendar i kontakti
 
 # Version pinning, desktop shortcuts and the MCP setting.
-	ArtCraft Launcher can't install version {version} over this copy.	ArtCraft Launcher ne može instalirati verziju {version} preko ove kopije.
+	terraLauncher can't install version {version} over this copy.	terraLauncher ne može instalirati verziju {version} preko ove kopije.
 	Add desktop shortcut	Dodaj prečicu na radnu površinu
 	Version pinned to {version}. Click to unlock.	Verzija je zaključana na {version}. Kliknite da je otključate.
 	Unlock version?	Otključati verziju?
@@ -445,7 +445,7 @@ mailcraft	Mail, calendar and contacts	Pošta, kalendar i kontakti
 	While this is on, AI apps that use MCP, such as Claude, Cursor or LM Studio, can work with every installed Craft app through one entry. While it is off, no agent can reach them, and the entries added here are removed.	Dok je ovo uključeno, AI aplikacije koje koriste MCP, poput Claudea, Cursora ili LM Studija, mogu raditi sa svakom instaliranom Craft aplikacijom preko jednog unosa. Dok je isključeno, nijedan agent ih ne može dosegnuti, a unosi dodani ovdje se uklanjaju.
 	{client} loads its MCP servers only when it starts, so the Craft apps appear after a restart. Restarting closes {client}, including a reply it is still writing.	{client} učitava svoje MCP servere samo pri pokretanju, pa se Craft aplikacije pojavljuju nakon ponovnog pokretanja. Ponovno pokretanje zatvara {client}, uključujući odgovor koji još piše.
 artcraft	AI image and video creation	Kreiranje slika i videa pomoću AI
-@msg	ArtCraft Launcher couldn't start its window on {backend}: {e}	ArtCraft Launcher nije mogao otvoriti svoj prozor na {backend}: {e}
+@msg	terraLauncher couldn't start its window on {backend}: {e}	terraLauncher nije mogao otvoriti svoj prozor na {backend}: {e}
 @msg	Desktop shortcut created for {name}	Prečica na radnoj površini je kreirana za {name}
 @msg	Couldn't create the desktop shortcut: {e}	Nije moguće kreirati prečicu na radnoj površini: {e}
 @msg	A desktop shortcut named {name} already exists	Prečica na radnoj površini s nazivom {name} već postoji
@@ -453,4 +453,4 @@ artcraft	AI image and video creation	Kreiranje slika i videa pomoću AI
 # Pinning apps to the top and the macOS Dock setting.
 	Pin {name} to top	Prikači {name} na vrh
 	Unpin {name}	Otkači {name}
-	Hide ArtCraft Launcher from the Dock while in the background	Sakrij ArtCraft Launcher iz Docka dok radi u pozadini
+	Hide terraLauncher from the Dock while in the background	Sakrij terraLauncher iz Docka dok radi u pozadini

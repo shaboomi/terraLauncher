@@ -21,8 +21,8 @@ use crate::widgets::{self, Kind};
 fn kind_badge(ui: &mut Ui, app: &artcraft_launcher_core::CraftApp, t: &Tokens) {
     let text = fmt(tl!("by {name}"), &[("name", app.publisher)]);
     let color = match app.kind {
-        AppKind::Official => t.accent_ink,
-        AppKind::Community => t.muted,
+        AppKind::Official => t.muted,
+        AppKind::Community => t.faint,
     };
     widgets::badge(ui, &text, color);
 }
@@ -138,7 +138,7 @@ fn update_split<'a>(ui: &Ui, place: Place, main_w: f32, open: &'a str, update: &
 /// Why a newer release noted beside an installed copy isn't offered as an update: `newer` from
 /// [`LauncherUi::out_of_reach`].
 fn out_of_reach_tip(newer: Option<String>) -> Option<String> {
-    Some(fmt(tl!("{latest} is out, but ArtCraft Launcher can't install it over this copy."), &[("latest", &newer?)]))
+    Some(fmt(tl!("{latest} is out, but terraLauncher can't install it over this copy."), &[("latest", &newer?)]))
 }
 
 /// The width of the main button: what's left of `width` beside the square `⋯` menu.
@@ -180,10 +180,15 @@ impl LauncherUi {
             if bar == TitleBar::MacOs {
                 ui.add_space(TRAFFIC_LIGHTS_W);
             }
-            // The ArtCraft wordmark exactly as supplied, in its own cell.
-            let logo = vec2(14.0 * crate::icons::ARTCRAFT_LOGO_ASPECT, 14.0);
-            let (cell, _) = ui.allocate_exact_size(vec2(logo.x + 40.0, h), Sense::hover());
-            egui::Image::new(crate::icons::artcraft_logo(t.dark)).alt_text(tl!("ArtCraft")).paint_at(ui, Rect::from_center_size(cell.center(), logo));
+            // The launcher's name in the display face, in its own cell: "terra", then "Launcher" in the accent.
+            let mut name = egui::text::LayoutJob::default();
+            let face =
+                |color| egui::TextFormat { font_id: FontId::new(17.0, theme::display()), color, extra_letter_spacing: -0.4, ..Default::default() };
+            name.append("terra", 0.0, face(t.ink_strong));
+            name.append("Launcher", 0.0, face(t.accent));
+            let name = ui.painter().layout_job(name);
+            let (cell, _) = ui.allocate_exact_size(vec2(name.size().x + 40.0, h), Sense::hover());
+            ui.painter().galley(cell.center() - name.size() / 2.0, name, t.ink_strong);
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 if bar == TitleBar::Custom {
                     widgets::window_buttons(ui, h);
@@ -191,14 +196,6 @@ impl LauncherUi {
                 if widgets::nav_icon(ui, widgets::Glyph::Settings, tl!("Settings"), h, false).clicked() {
                     self.dialog = Some(Dialog::Settings);
                 }
-                // The controls reserve their actual widths before the secondary text gets space.
-                ui.with_layout(egui::Layout::left_to_right(egui::Align::Center), |ui| {
-                    if ui.available_width() >= 17.0 + widgets::hud_galley(ui, tl!("Craft App Suite"), t.muted).size().x {
-                        widgets::rule(ui, h);
-                        ui.add_space(16.0);
-                        widgets::hud(ui, tl!("Craft App Suite"), t.muted);
-                    }
-                });
             });
         });
     }
@@ -222,7 +219,7 @@ impl LauncherUi {
         }
     }
 
-    /// A banner over the toolbar when a newer ArtCraft Launcher release is known: either the
+    /// A banner over the toolbar when a newer terraLauncher release is known: either the
     /// update-in-place controls, or a plain link when this build can't update itself.
     fn launcher_update_banner(&mut self, ui: &mut Ui, t: &Tokens, r: &artcraft_launcher_core::Release) {
         egui::Frame::new()
@@ -234,7 +231,7 @@ impl LauncherUi {
                     widgets::tag(ui, tl!("Update"), t.accent, Color32::WHITE);
                     ui.add_space(4.0);
                     ui.label(
-                        RichText::new(fmt(tl!("ArtCraft Launcher {version} is available."), &[("version", &r.version_label())]))
+                        RichText::new(fmt(tl!("terraLauncher {version} is available."), &[("version", &r.version_label())]))
                             .family(theme::medium())
                             .color(t.ink_strong),
                     );
@@ -456,25 +453,11 @@ impl LauncherUi {
             (format!("· {full}"), format!("· {short}"))
         });
         use artcraft_launcher_core::catalog::{GITHUB_URL, SOCIAL, WEBSITE_URL};
-        // Every link is an icon, reading Website, GitHub, Discord, then the social accounts.
+        // Every link is an icon, reading Website, GitHub, then any social accounts.
         let named =
             |name: &'static str, label: &str, url: &'static str| widgets::IconLink { name, label: label.to_string(), tip: label.to_string(), url };
-        let mut links = vec![
-            named("Website", tl!("Website"), WEBSITE_URL),
-            named("GitHub", tl!("GitHub"), GITHUB_URL),
-            widgets::IconLink {
-                name: "Discord",
-                label: tl!("Discord").to_string(),
-                tip: tl!("Join the ArtCraft community on Discord").to_string(),
-                url: self.discord_url,
-            },
-        ];
-        links.extend(SOCIAL.iter().map(|(name, url)| widgets::IconLink {
-            name,
-            label: (*name).to_string(),
-            tip: fmt(tl!("ArtCraft on {name}"), &[("name", name)]),
-            url,
-        }));
+        let mut links = vec![named("Website", tl!("Website"), WEBSITE_URL), named("GitHub", tl!("GitHub"), GITHUB_URL)];
+        links.extend(SOCIAL.iter().map(|(name, url)| widgets::IconLink { name, label: (*name).to_string(), tip: (*name).to_string(), url }));
         let icon = 13.0;
         let spacing = ui.spacing().item_spacing.x;
         // The icons on the right keep their size; the status on the left gets what is left and
@@ -1617,7 +1600,7 @@ mod tests {
         Release {
             tag: "v0.4.1".into(),
             version: None,
-            name: "ArtCraft Launcher v0.4.1".into(),
+            name: "terraLauncher v0.4.1".into(),
             published_at: None,
             html_url: "https://github.com/storytold/craft-launcher/releases/tag/v0.4.1".into(),
             notes: String::new(),

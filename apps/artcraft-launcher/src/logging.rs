@@ -20,7 +20,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, PoisonError};
 
 /// The current log file's name inside the log directory.
-pub const LOG_FILE: &str = "artcraft-launcher.log";
+pub const LOG_FILE: &str = "terralauncher.log";
 /// How many previous logs are kept (`artcraft-launcher.1.log` … `artcraft-launcher.<KEEP>.log`).
 pub const KEEP: usize = 2;
 /// The log file stops growing past this size (a runaway warning can't fill the disk).
@@ -28,10 +28,10 @@ pub const MAX_FILE_BYTES: u64 = 16 * 1024 * 1024;
 /// Records kept in memory until the log file is attached.
 pub const MAX_PENDING: usize = 512;
 /// The filter when `RUST_LOG` is unset (env_logger matches `artcraft_launcher` as a prefix).
-pub const DEFAULT_FILTER: &str = "warn,artcraft_launcher=info";
+pub const DEFAULT_FILTER: &str = "warn,terralauncher=info,artcraft_launcher=info";
 
 fn numbered(dir: &Path, n: usize) -> PathBuf {
-    if n == 0 { dir.join(LOG_FILE) } else { dir.join(format!("artcraft-launcher.{n}.log")) }
+    if n == 0 { dir.join(LOG_FILE) } else { dir.join(format!("terralauncher.{n}.log")) }
 }
 
 /// Shift the previous logs up one (`.log` → `.1.log` → … → `.<KEEP>.log`, the oldest dropped)
@@ -208,7 +208,7 @@ fn builder(sink: Arc<Mutex<Sink>>, stderr: bool) -> env_logger::Builder {
 
 /// Whether a record is a raw HTTP wire dump. `ureq_proto` traces every byte it sends and
 /// receives as hex-and-ASCII rows, `Authorization` header included (the optional
-/// `ARTCRAFT_LAUNCHER_GITHUB_TOKEN`). The rows split the header across lines, so
+/// `TERRALAUNCHER_GITHUB_TOKEN`). The rows split the header across lines, so
 /// [`redact_credentials`] can't find the token in them.
 fn is_wire_dump(metadata: &log::Metadata<'_>) -> bool {
     let target = metadata.target();
@@ -260,7 +260,7 @@ pub fn install_panic_hook() {
         if log::log_enabled!(log::Level::Error) {
             log::error!("{report}");
         } else {
-            let _ = writeln!(std::io::stderr(), "artcraft-launcher: {report}");
+            let _ = writeln!(std::io::stderr(), "terralauncher: {report}");
         }
     }));
 }
@@ -273,7 +273,7 @@ mod tests {
 
     fn temp_dir(tag: &str) -> PathBuf {
         static N: AtomicUsize = AtomicUsize::new(0);
-        let d = std::env::temp_dir().join(format!("artcraft-launcher-logging-{tag}-{}-{}", std::process::id(), N.fetch_add(1, Ordering::Relaxed)));
+        let d = std::env::temp_dir().join(format!("terralauncher-logging-{tag}-{}-{}", std::process::id(), N.fetch_add(1, Ordering::Relaxed)));
         let _ = std::fs::remove_dir_all(&d);
         d
     }
@@ -292,9 +292,9 @@ mod tests {
             std::fs::write(&path, format!("run {run}")).unwrap();
         }
         assert_eq!(read(&dir.join(LOG_FILE)), "run 4");
-        assert_eq!(read(&dir.join("artcraft-launcher.1.log")), "run 3");
-        assert_eq!(read(&dir.join("artcraft-launcher.2.log")), "run 2");
-        assert!(!dir.join("artcraft-launcher.3.log").exists(), "only {KEEP} old logs are kept");
+        assert_eq!(read(&dir.join("terralauncher.1.log")), "run 3");
+        assert_eq!(read(&dir.join("terralauncher.2.log")), "run 2");
+        assert!(!dir.join("terralauncher.3.log").exists(), "only {KEEP} old logs are kept");
         let _ = std::fs::remove_dir_all(&dir);
     }
 

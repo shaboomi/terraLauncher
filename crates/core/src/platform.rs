@@ -55,6 +55,8 @@ pub enum PackageKind {
     Msi,
     /// Windows zip with the exe at the top level.
     PortableZip,
+    /// Windows setup program (`.exe`, NSIS): what Tauri and electron-builder apps ship.
+    Setup,
     /// macOS disk image with the `.app` bundle.
     Dmg,
     AppImage,
@@ -72,6 +74,7 @@ impl PackageKind {
         match self {
             Self::Msi => "Installer (.msi)",
             Self::PortableZip => "Portable (.zip)",
+            Self::Setup => "Installer (.exe)",
             Self::Dmg => "Disk image (.dmg)",
             Self::AppImage => "AppImage",
             Self::Deb => "Debian package (.deb)",
@@ -86,6 +89,7 @@ impl PackageKind {
         match self {
             Self::Msi => ".msi",
             Self::PortableZip => "-portable.zip",
+            Self::Setup => ".exe",
             Self::Dmg => ".dmg",
             Self::AppImage => ".AppImage",
             Self::Deb => ".deb",
@@ -161,7 +165,7 @@ impl Platform {
     /// Package formats the launcher installs on this OS, in order of preference.
     pub fn default_kinds(self) -> &'static [PackageKind] {
         match self.os {
-            Os::Windows => &[PackageKind::Msi, PackageKind::PortableZip],
+            Os::Windows => &[PackageKind::Setup, PackageKind::Msi, PackageKind::PortableZip],
             Os::MacOs => &[PackageKind::Dmg],
             Os::Linux => &[PackageKind::AppImage, PackageKind::TarGz],
             Os::FreeBsd => &[PackageKind::TarGz],
@@ -171,7 +175,7 @@ impl Platform {
     /// Every format offered as a manual download on this OS (the web build's download menu).
     pub fn download_kinds(self) -> &'static [PackageKind] {
         match self.os {
-            Os::Windows => &[PackageKind::Msi, PackageKind::PortableZip],
+            Os::Windows => &[PackageKind::Setup, PackageKind::Msi, PackageKind::PortableZip],
             Os::MacOs => &[PackageKind::Dmg],
             Os::Linux => &[PackageKind::AppImage, PackageKind::Deb, PackageKind::Rpm, PackageKind::ArchPkg, PackageKind::Flatpak, PackageKind::TarGz],
             Os::FreeBsd => &[PackageKind::TarGz],
@@ -211,10 +215,45 @@ fn strip_stem_prefix<'a>(base: &'a str, stem: &str, sep: char) -> Option<&'a str
     }
 }
 
-/// Reads `<stem>-<version>-<os>-<arch>[-portable].<ext>` or Studio's `<Stem>_<version>_<arch>[_<locale>].<ext>`;
+fn is_version(version: &str) -> bool {
+    crate::version::parse(version).is_some() && version.starts_with(|c: char| c.is_ascii_digit())
+}
+
+/// The platform token of a `<version>_<arch>` (Tauri) asset of `kind`.
+fn underscore_token(kind: PackageKind, arch: &str) -> Option<&'static str> {
+    use PackageKind::{AppImage, Deb, Dmg, Msi, PortableZip, Rpm, Setup};
+    Some(match (kind, arch) {
+        (Dmg, "universal") => "macos-universal",
+        (Dmg, "x86_64" | "x64") => "macos-x86_64",
+        (Dmg, "aarch64" | "arm64") => "macos-aarch64",
+        (Msi | PortableZip | Setup, "x86_64" | "x64") => "windows-x64",
+        (Msi | PortableZip | Setup, "x86") => "windows-x86",
+        (Msi | PortableZip | Setup, "arm64" | "aarch64") => "windows-arm64",
+        (AppImage | Deb | Rpm, "amd64" | "x86_64" | "x64") => "linux-x86_64",
+        (AppImage | Deb | Rpm, "arm64" | "aarch64") => "linux-aarch64",
+        _ => return None,
+    })
+}
+
+/// The platform token of an electron-builder asset (`<stem>-<version>[-<arch>].<ext>`): a file
+/// that names no architecture is the x64 build.
+fn plain_token(kind: PackageKind, arch: Option<&str>) -> Option<&'static str> {
+    use PackageKind::{AppImage, Deb, Dmg, Rpm};
+    Some(match (kind, arch) {
+        (Dmg, None | Some("x64" | "x86_64")) => "macos-x86_64",
+        (Dmg, Some("arm64" | "aarch64")) => "macos-aarch64",
+        (Dmg, Some("universal")) => "macos-universal",
+        (AppImage | Deb | Rpm, None | Some("x64" | "x86_64" | "amd64")) => "linux-x86_64",
+        (AppImage | Deb | Rpm, Some("arm64" | "aarch64")) => "linux-aarch64",
+        _ => return None,
+    })
+}
+
+/// Reads `<stem>-<version>-<os>-<arch>[-portable].<ext>`, Tauri's `<Stem>_<version>_<arch>[-setup].<ext>`,
+/// or electron-builder's `<stem>-<version>[-<arch>].<ext>` and `<stem>.Setup.<version>.exe`;
 /// `None` for checksums, zsync files, CLI and web bundles, or anything else.
 pub fn parse_asset_name(name: &str, stems: &[&str]) -> Option<AssetName> {
-    const KINDS: [PackageKind; 9] = [
+    const KINDS: [PackageKind; 10] = [
         PackageKind::PortableZip,
         PackageKind::TarGz,
         PackageKind::Msi,
@@ -224,36 +263,62 @@ pub fn parse_asset_name(name: &str, stems: &[&str]) -> Option<AssetName> {
         PackageKind::Rpm,
         PackageKind::ArchPkg,
         PackageKind::Flatpak,
+        PackageKind::Setup,
     ];
+    const ARCHES: [&str; 6] = ["arm64", "aarch64", "x64", "x86_64", "amd64", "universal"];
     let (kind, base) = KINDS.iter().find_map(|k| name.strip_suffix(k.suffix()).map(|b| (*k, b)))?;
+    let found = |stem: &str, version: &str, token: &str| {
+        Some(AssetName { stem: stem.to_string(), version: version.to_string(), token: token.to_string(), kind })
+    };
     for stem in stems {
         if let Some(rest) = strip_stem_prefix(base, stem, '-') {
             // rest = <version>-<os>-<arch>; os and arch never contain '-', versions may.
             let mut parts = rest.rsplitn(3, '-');
-            let (Some(arch), Some(os), Some(version)) = (parts.next(), parts.next(), parts.next()) else { continue };
-            if crate::version::parse(version).is_none() || !version.starts_with(|c: char| c.is_ascii_digit()) {
+            if let (Some(arch), Some(os), Some(version)) = (parts.next(), parts.next(), parts.next())
+                && matches!(os, "windows" | "macos" | "linux" | "freebsd")
+                && is_version(version)
+            {
+                return found(stem, version, &format!("{os}-{arch}"));
+            }
+            // electron-builder: <version>[-<arch>], or Setup-<version> for the Windows installer.
+            if kind == PackageKind::Setup {
+                if let Some(version) = rest.strip_prefix("Setup-").or_else(|| rest.strip_prefix("setup-")).filter(|v| is_version(v)) {
+                    return found(stem, version, "windows-x64");
+                }
                 continue;
             }
-            return Some(AssetName { stem: (*stem).to_string(), version: version.to_string(), token: format!("{os}-{arch}"), kind });
+            let (version, arch) =
+                ARCHES.iter().find_map(|a| rest.strip_suffix(a).and_then(|v| v.strip_suffix('-')).map(|v| (v, Some(*a)))).unwrap_or((rest, None));
+            if is_version(version)
+                && let Some(token) = plain_token(kind, arch)
+            {
+                return found(stem, version, token);
+            }
+            continue;
         }
         if let Some(rest) = strip_stem_prefix(base, stem, '_') {
             // Studio / Tauri format: <version>_<arch>[_<locale>] where <arch> may be `x86_64`.
             let Some((version, suffix)) = rest.split_once('_') else { continue };
-            if crate::version::parse(version).is_none() || !version.starts_with(|c: char| c.is_ascii_digit()) {
+            if !is_version(version) {
                 continue;
             }
+            let suffix = if kind == PackageKind::Setup { suffix.strip_suffix("-setup").unwrap_or(suffix) } else { suffix };
             let arch_token = if suffix == "x86_64" || suffix.starts_with("x86_64_") { "x86_64" } else { suffix.split('_').next().unwrap_or("") };
-            let token = match (kind, arch_token) {
-                (PackageKind::Dmg, "universal") => Some("macos-universal".to_string()),
-                (PackageKind::Dmg, "x86_64" | "x64") => Some("macos-x86_64".to_string()),
-                (PackageKind::Dmg, "aarch64" | "arm64") => Some("macos-aarch64".to_string()),
-                (PackageKind::Msi | PackageKind::PortableZip, "x86_64" | "x64") => Some("windows-x64".to_string()),
-                (PackageKind::Msi | PackageKind::PortableZip, "x86") => Some("windows-x86".to_string()),
-                (PackageKind::Msi | PackageKind::PortableZip, "arm64" | "aarch64") => Some("windows-arm64".to_string()),
-                _ => None,
-            };
-            if let Some(token) = token {
-                return Some(AssetName { stem: (*stem).to_string(), version: version.to_string(), token, kind });
+            if let Some(token) = underscore_token(kind, arch_token) {
+                return found(stem, version, token);
+            }
+            continue;
+        }
+        // electron-builder's Windows installer, `<Name> Setup <version>.exe`; GitHub turns the spaces into dots.
+        if kind == PackageKind::Setup {
+            for sep in ['.', ' '] {
+                if let Some(version) = strip_stem_prefix(base, stem, sep)
+                    .and_then(|rest| rest.strip_prefix("Setup").or_else(|| rest.strip_prefix("setup")))
+                    .and_then(|rest| rest.strip_prefix(sep))
+                    .filter(|v| is_version(v))
+                {
+                    return found(stem, version, "windows-x64");
+                }
             }
         }
     }
@@ -524,5 +589,25 @@ mod tests {
         for kind in [PackageKind::AppImage, PackageKind::Deb, PackageKind::Rpm, PackageKind::ArchPkg, PackageKind::Flatpak, PackageKind::TarGz] {
             assert_eq!(pick_asset(&arm_only_release, &["photocraft"], p_x64, &[kind]), None, "x86_64 must never match an aarch64 asset for {kind:?}");
         }
+    }
+
+    #[test]
+    fn reads_tauri_and_electron_builder_asset_names() {
+        let token = |name: &str, stem: &str| parse_asset_name(name, &[stem]).map(|n| (n.kind, n.version, n.token));
+        let some = |kind, version: &str, token: &str| Some((kind, version.to_string(), token.to_string()));
+        assert_eq!(token("TerraGen_0.2.0_x64-setup.exe", "terragen"), some(PackageKind::Setup, "0.2.0", "windows-x64"));
+        assert_eq!(token("TerraGen_0.2.0_universal.dmg", "terragen"), some(PackageKind::Dmg, "0.2.0", "macos-universal"));
+        assert_eq!(token("TerraGen_0.2.0_amd64.AppImage", "terragen"), some(PackageKind::AppImage, "0.2.0", "linux-x86_64"));
+        assert_eq!(token("TerraGen_0.2.0_amd64.deb", "terragen"), some(PackageKind::Deb, "0.2.0", "linux-x86_64"));
+        assert_eq!(token("terraForge.Setup.1.5.1.exe", "terraforge"), some(PackageKind::Setup, "1.5.1", "windows-x64"));
+        assert_eq!(token("terraForge Setup 1.5.1.exe", "terraforge"), some(PackageKind::Setup, "1.5.1", "windows-x64"));
+        assert_eq!(token("terraForge-Setup-1.5.1.exe", "terraforge"), some(PackageKind::Setup, "1.5.1", "windows-x64"));
+        assert_eq!(token("terraForge-1.5.1.dmg", "terraforge"), some(PackageKind::Dmg, "1.5.1", "macos-x86_64"));
+        assert_eq!(token("terraForge-1.5.1-arm64.dmg", "terraforge"), some(PackageKind::Dmg, "1.5.1", "macos-aarch64"));
+        assert_eq!(token("terraForge-1.5.1.AppImage", "terraforge"), some(PackageKind::AppImage, "1.5.1", "linux-x86_64"));
+        assert_eq!(token("terraForge-1.5.1-pen-preview.1-arm64.dmg", "terraforge"), some(PackageKind::Dmg, "1.5.1-pen-preview.1", "macos-aarch64"));
+        assert_eq!(token("terraForge.Setup.1.5.1.exe.blockmap", "terraforge"), None);
+        assert_eq!(token("playwright-e2e-results.html", "terraforge"), None);
+        assert_eq!(token("other.Setup.1.5.1.exe", "terraforge"), None);
     }
 }

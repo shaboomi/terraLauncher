@@ -1,4 +1,4 @@
-//! "Start ArtCraft Launcher when I log in".
+//! "Start terraLauncher when I log in".
 //!
 //! - macOS: a LaunchAgent in `~/Library/LaunchAgents`.
 //! - Windows: a value under `HKCU\…\CurrentVersion\Run`.
@@ -11,12 +11,12 @@ use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
 #[cfg_attr(windows, allow(dead_code))]
-const ID: &str = "ai.storyteller.artcraft-launcher";
+const ID: &str = "xyz.terrapen.terralauncher";
 /// The command-line flag a login start passes.
 pub const HIDDEN_FLAG: &str = "--hidden";
 /// The command the Flatpak exports (`command:` in `packaging/linux/flatpak/*.yml`).
 #[cfg_attr(any(target_os = "macos", windows), allow(dead_code))]
-const FLATPAK_COMMAND: &str = "artcraft-launcher";
+const FLATPAK_COMMAND: &str = "terralauncher";
 
 /// The program to start at login: the AppImage when running from one, else this executable.
 /// Windows has no AppImage, so a leftover `$APPIMAGE` is ignored there and the running
@@ -48,7 +48,7 @@ pub fn is_enabled() -> bool {
     #[cfg(target_os = "macos")]
     return agent().is_ok_and(|p| p.exists());
     #[cfg(windows)]
-    return windows_run().and_then(|k| k.get_value::<String, _>("ArtCraft Launcher").ok()).is_some();
+    return windows_run().and_then(|k| k.get_value::<String, _>("terraLauncher").ok()).is_some();
     #[cfg(not(any(target_os = "macos", windows)))]
     return {
         let flatpak = this_flatpak();
@@ -86,9 +86,9 @@ pub fn set_enabled(on: bool) -> Result<(), String> {
             .map_err(|e| format!("couldn't change the startup list ({e})"))?;
         if on {
             let value = run_value(&program()?);
-            key.set_value("ArtCraft Launcher", &value).map_err(|e| format!("couldn't change the startup list ({e})"))
+            key.set_value("terraLauncher", &value).map_err(|e| format!("couldn't change the startup list ({e})"))
         } else {
-            match key.delete_value("ArtCraft Launcher") {
+            match key.delete_value("terraLauncher") {
                 Ok(()) => Ok(()),
                 Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(()),
                 Err(e) => Err(format!("couldn't change the startup list ({e})")),
@@ -254,7 +254,7 @@ fn repointed(stored: &str, exe: &std::path::Path, exists: impl Fn(&std::path::Pa
 pub fn refresh() {
     #[cfg(windows)]
     {
-        let Some(stored) = windows_run().and_then(|k| k.get_value::<String, _>("ArtCraft Launcher").ok()) else {
+        let Some(stored) = windows_run().and_then(|k| k.get_value::<String, _>("terraLauncher").ok()) else {
             return;
         };
         let exe = match program() {
@@ -343,7 +343,7 @@ fn flatpak_exec(app_id: &str) -> String {
 #[cfg_attr(any(target_os = "macos", windows), allow(dead_code))]
 fn entry_text(exec: &str, extra: &str) -> String {
     format!(
-        "[Desktop Entry]\nType=Application\nName=ArtCraft Launcher\nComment=Install and update the Craft App Suite\nExec={exec} {HIDDEN_FLAG}\nIcon={ID}\nTerminal=false\nX-GNOME-Autostart-enabled=true\n{extra}"
+        "[Desktop Entry]\nType=Application\nName=terraLauncher\nComment=Install and update the terraPen apps\nExec={exec} {HIDDEN_FLAG}\nIcon={ID}\nTerminal=false\nX-GNOME-Autostart-enabled=true\n{extra}"
     )
 }
 
@@ -375,8 +375,8 @@ fn remove(path: &std::path::Path) -> Result<(), String> {
 mod tests {
     use super::*;
 
-    const ENTRY: &str = "/home/u/.config/autostart/ai.storyteller.artcraft-launcher.desktop";
-    const SANDBOX_CONFIG: &str = "/home/u/.var/app/ai.storyteller.artcraft-launcher/config";
+    const ENTRY: &str = "/home/u/.config/autostart/xyz.terrapen.terralauncher.desktop";
+    const SANDBOX_CONFIG: &str = "/home/u/.var/app/xyz.terrapen.terralauncher/config";
 
     fn env<'a>(vars: &'a [(&str, &str)]) -> impl Fn(&str) -> Option<OsString> + 'a {
         move |name| vars.iter().find(|(k, _)| *k == name).map(|(_, v)| OsString::from(v))
@@ -403,7 +403,7 @@ mod tests {
     #[test]
     fn flatpak_entry_follows_host_xdg_config_home() {
         let vars = [("HOME", "/home/u"), ("XDG_CONFIG_HOME", SANDBOX_CONFIG), ("HOST_XDG_CONFIG_HOME", "/home/u/cfg")];
-        assert_eq!(autostart_path(Some(ID), env(&vars), home), Some(PathBuf::from("/home/u/cfg/autostart/ai.storyteller.artcraft-launcher.desktop")));
+        assert_eq!(autostart_path(Some(ID), env(&vars), home), Some(PathBuf::from("/home/u/cfg/autostart/xyz.terrapen.terralauncher.desktop")));
         // A relative one isn't allowed by the XDG spec: ~/.config.
         let vars = [("HOME", "/home/u"), ("XDG_CONFIG_HOME", SANDBOX_CONFIG), ("HOST_XDG_CONFIG_HOME", "cfg")];
         assert_eq!(autostart_path(Some(ID), env(&vars), home), Some(PathBuf::from(ENTRY)));
@@ -412,13 +412,13 @@ mod tests {
     /// A renamed build beside the stable one keeps its own entry; outside a Flatpak the name stays.
     #[test]
     fn entry_file_is_named_after_the_flatpak_app_id() {
-        let devel = "ai.storyteller.artcraft-launcher.Devel";
+        let devel = "xyz.terrapen.terralauncher.Devel";
         assert_eq!(
             autostart_path(Some(devel), env(&[]), home),
-            Some(PathBuf::from("/home/u/.config/autostart/ai.storyteller.artcraft-launcher.Devel.desktop"))
+            Some(PathBuf::from("/home/u/.config/autostart/xyz.terrapen.terralauncher.Devel.desktop"))
         );
         let host = autostart_path(None, env(&[("FLATPAK_ID", devel)]), home);
-        assert_eq!(host, dirs::config_dir().map(|c| c.join("autostart").join("ai.storyteller.artcraft-launcher.desktop")));
+        assert_eq!(host, dirs::config_dir().map(|c| c.join("autostart").join("xyz.terrapen.terralauncher.desktop")));
     }
 
     /// An entry left by the host build doesn't count in the Flatpak, and turning the setting on
@@ -444,7 +444,7 @@ mod tests {
         let entry = flatpak_autostart_entry(ID);
         assert!(is_flatpak_entry(&entry, ID));
         assert!(is_flatpak_entry(&entry.replace('\n', " \r\n"), ID));
-        assert!(!is_flatpak_entry(&entry, "ai.storyteller.artcraft-launcher.Devel"));
+        assert!(!is_flatpak_entry(&entry, "xyz.terrapen.terralauncher.Devel"));
         assert!(!is_flatpak_entry(&autostart_entry(Path::new("/usr/bin/artcraft-launcher")).unwrap(), ID));
         // Flatpak-looking id but a host Exec line: not ours.
         let host_exec = entry.replace("Exec=flatpak run --command=artcraft-launcher", "Exec=/usr/bin/artcraft-launcher");
@@ -469,7 +469,7 @@ mod tests {
     fn flatpak_entry_must_start_this_app() {
         let entry = flatpak_autostart_entry(ID);
         let other = entry.replace(
-            "Exec=flatpak run --command=artcraft-launcher ai.storyteller.artcraft-launcher --hidden",
+            "Exec=flatpak run --command=artcraft-launcher xyz.terrapen.terralauncher --hidden",
             "Exec=flatpak run --command=other com.example.Other --hidden",
         );
         assert!(!is_flatpak_entry(&other, ID));
@@ -498,25 +498,25 @@ mod tests {
     fn flatpak_form_needs_flatpak_info() {
         assert_eq!(flatpak_app(false, Some("com.example.Ide")), None);
         assert_eq!(flatpak_app(false, None), None);
-        assert_eq!(flatpak_app(true, Some("ai.storyteller.artcraft-launcher.Devel")), Some("ai.storyteller.artcraft-launcher.Devel"));
+        assert_eq!(flatpak_app(true, Some("xyz.terrapen.terralauncher.Devel")), Some("xyz.terrapen.terralauncher.Devel"));
         assert_eq!(flatpak_app(true, None), Some(ID));
     }
 
     /// #1204: /app/bin/artcraft-launcher exists only inside the sandbox.
     #[test]
     fn flatpak_entry_starts_the_app_through_flatpak_run() {
-        let entry = flatpak_autostart_entry("ai.storyteller.artcraft-launcher");
+        let entry = flatpak_autostart_entry("xyz.terrapen.terralauncher");
         let exec = exec_line(&entry);
         assert!(exec.starts_with("flatpak run "), "{exec}");
         assert!(exec.ends_with(" --hidden"), "{exec}");
-        assert_eq!(exec, "flatpak run --command=artcraft-launcher ai.storyteller.artcraft-launcher --hidden");
-        assert!(entry.contains("\nX-Flatpak=ai.storyteller.artcraft-launcher\n"), "{entry}");
+        assert_eq!(exec, "flatpak run --command=artcraft-launcher xyz.terrapen.terralauncher --hidden");
+        assert!(entry.contains("\nX-Flatpak=xyz.terrapen.terralauncher\n"), "{entry}");
         assert!(!entry.contains("/app/"), "{entry}");
     }
 
     #[test]
     fn flatpak_id_is_the_sandboxes_when_it_is_a_valid_one() {
-        assert_eq!(flatpak_id(Some("ai.storyteller.artcraft-launcher.Devel")), "ai.storyteller.artcraft-launcher.Devel");
+        assert_eq!(flatpak_id(Some("xyz.terrapen.terralauncher.Devel")), "xyz.terrapen.terralauncher.Devel");
         for bad in [None, Some(""), Some("-a.b"), Some("a b.c"), Some("a.b\nExec=evil"), Some("a.b%u"), Some("nodot")] {
             assert_eq!(flatpak_id(bad), ID, "{bad:?}");
         }
@@ -527,7 +527,7 @@ mod tests {
         assert_eq!(
             autostart_entry(Path::new("/usr/bin/artcraft-launcher")).as_deref(),
             Some(
-                "[Desktop Entry]\nType=Application\nName=ArtCraft Launcher\nComment=Install and update the Craft App Suite\nExec=\"/usr/bin/artcraft-launcher\" --hidden\nIcon=ai.storyteller.artcraft-launcher\nTerminal=false\nX-GNOME-Autostart-enabled=true\n"
+                "[Desktop Entry]\nType=Application\nName=terraLauncher\nComment=Install and update the terraPen apps\nExec=\"/usr/bin/artcraft-launcher\" --hidden\nIcon=xyz.terrapen.terralauncher\nTerminal=false\nX-GNOME-Autostart-enabled=true\n"
             )
         );
     }

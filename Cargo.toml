@@ -7,7 +7,7 @@ version = "0.19.2"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 rust-version = "1.95"
-repository = "https://github.com/storytold/craft-launcher"
+repository = "https://github.com/shaboomi/terraLauncher"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

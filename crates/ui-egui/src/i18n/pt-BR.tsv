@@ -1,4 +1,4 @@
-# Brazilian Portuguese (pt-BR) catalog for ArtCraft Launcher.
+# Brazilian Portuguese (pt-BR) catalog for terraLauncher.
 # Format: context<TAB>source<TAB>translation
 # Empty context = plain UI string (tl!, t).
 # @id = command-id keyed (tr_id).
@@ -7,7 +7,7 @@
 # Other context = disambiguation for tr_ctx.
 
 	Launcher	Launcher
-	Craft App Suite	Craft App Suite
+	terraPen apps	terraPen apps
 	by {name}	por {name}
 	Open Source Tools for Creatives, Makers, and Builders	Ferramentas de código aberto para criadores, artistas e desenvolvedores
 	Settings	Configurações
@@ -40,8 +40,8 @@
 	Open	Abrir
 	Open {version}	Abrir {version}
 	Open {installed} without updating. {latest} stays available.	Abrir {installed} sem atualizar. A {latest} continua disponível.
-	{latest} is out, but ArtCraft Launcher can't install it over this copy.	A {latest} já saiu, mas o ArtCraft Launcher não consegue instalá-la sobre esta cópia.
-	ArtCraft Launcher can't install version {version} over this copy.	O ArtCraft Launcher não consegue instalar a versão {version} sobre esta cópia.
+	{latest} is out, but terraLauncher can't install it over this copy.	A {latest} já saiu, mas o terraLauncher não consegue instalá-la sobre esta cópia.
+	terraLauncher can't install version {version} over this copy.	O terraLauncher não consegue instalar a versão {version} sobre esta cópia.
 	Download for {os}	Baixar para {os}
 	Download	Baixar
 	Coming soon	Em breve
@@ -74,7 +74,7 @@
 	{name} wasn't opened: a quote in its launch options isn't closed.	{name} não foi aberto: há aspas não fechadas nas opções de inicialização.
 	Save	Salvar
 	All releases	Todos os lançamentos
-	ArtCraft Launcher {version} is available.	ArtCraft Launcher {version} está disponível.
+	terraLauncher {version} is available.	terraLauncher {version} está disponível.
 	Dismiss	Dispensar
 	Update and restart	Atualizar e reiniciar
 	A new version is available. Would you like to relaunch with the updated version?	Uma nova versão está disponível. Reiniciar com a nova versão?
@@ -85,7 +85,7 @@
 	Released {date}	Lançado em {date}
 	Open on GitHub	Abrir no GitHub
 	Close	Fechar
-	ArtCraft Launcher {version}	ArtCraft Launcher {version}
+	terraLauncher {version}	terraLauncher {version}
 	Only when I ask	Apenas quando eu pedir
 	Automatically download and install updates	Baixar e instalar atualizações automaticamente
 	Ask for permission once when updating all apps	Pedir permissão uma única vez ao atualizar todos os aplicativos
@@ -98,15 +98,15 @@
 	Updates always use the format an app was installed with.	As atualizações sempre usam o formato com o qual o aplicativo foi instalado.
 	Running in the background	Execução em segundo plano
 	Keep running in the tray when the window is closed	Continuar na bandeja do sistema ao fechar a janela
-	Hide ArtCraft Launcher from the Dock while in the background	Ocultar o ArtCraft Launcher do Dock em segundo plano
-	ArtCraft Launcher is still running	O ArtCraft Launcher continua aberto
+	Hide terraLauncher from the Dock while in the background	Ocultar o terraLauncher do Dock em segundo plano
+	terraLauncher is still running	O terraLauncher continua aberto
 	It's in the tray: open it or quit it from the tray icon, or turn this off in the settings.	Ele está na bandeja do sistema: abra-o ou encerre-o pelo ícone, ou desative isso nas configurações.
 	Show the window on the current desktop	Mostrar a janela na área de trabalho atual
-	Start ArtCraft Launcher when I log in	Iniciar o ArtCraft Launcher ao fazer login
+	Start terraLauncher when I log in	Iniciar o terraLauncher ao fazer login
 	Community	Comunidade
 	Questions, ideas and news from the ArtCraft team	Dúvidas, ideias e novidades da equipe ArtCraft
 	Appearance	Aparência
-	Quit ArtCraft Launcher	Sair do ArtCraft Launcher
+	Quit terraLauncher	Sair do terraLauncher
 	Done	Concluído
 	Uninstall {name}?	Desinstalar {name}?
 	The app will be moved to the Trash. Your documents and settings stay.	O aplicativo será movido para a Lixeira. Seus documentos e configurações serão mantidos.
@@ -149,7 +149,7 @@
 	Open link	Abrir link
 	Update	Atualizar
 	{name} icon	Ícone do {name}
-	Loading ArtCraft Launcher…	Carregando ArtCraft Launcher…
+	Loading terraLauncher…	Carregando terraLauncher…
 	Cancel update	Cancelar atualização
 	Stop waiting; the update can be started again later	Parar de aguardar; a atualização pode ser iniciada novamente depois
 	Download again	Baixar novamente
@@ -237,7 +237,7 @@ month	Dec	dez.
 	Version {version} installed	Versão {version} instalada
 	Version {latest}	Versão {latest}
 	No release published yet	Nenhum lançamento publicado ainda
-	ArtCraft Launcher	ArtCraft Launcher
+	terraLauncher	terraLauncher
 	App	Aplicativo
 	Latest	Última
 	Released	Lançado
@@ -271,7 +271,7 @@ month	Dec	dez.
 	Full changelog	Histórico completo de alterações
 	link	link
 	No apps match	Nenhum aplicativo encontrado
-	Open ArtCraft Launcher to update.	Abra o ArtCraft Launcher para atualizar.
+	Open terraLauncher to update.	Abra o terraLauncher para atualizar.
 	{name} {v} is available	{name} {v} está disponível
 	{count} updates are available	{count} atualizações estão disponíveis
 	These notes weren't fetched (GitHub's request limit was reached). They're on the release page.	Estas notas não foram carregadas (o limite de requisições do GitHub foi atingido). Elas estão na página de lançamentos.
@@ -296,7 +296,7 @@ filter	Installed	Instalados
 
 # Message templates (@msg): toasts from the backend. {placeholders} match any text.
 @msg	Couldn't open {name}: {e}	Não foi possível abrir {name}: {e}
-@msg	ArtCraft Launcher couldn't start its window on {backend}: {e}	Não foi possível iniciar a janela do ArtCraft Launcher em {backend}: {e}
+@msg	terraLauncher couldn't start its window on {backend}: {e}	Não foi possível iniciar a janela do terraLauncher em {backend}: {e}
 @msg	Download cancelled	Download cancelado
 @msg	{name} updated to {version}	{name} atualizado para {version}
 @msg	{name} installed: {version}	{name} instalado: {version}
@@ -327,7 +327,7 @@ filter	Installed	Instalados
 @id	launcher.notes	Novidades
 @id	launcher.dismiss	Dispensar
 @id	settings.open	Configurações
-@id	settings.quit	Sair do ArtCraft Launcher
+@id	settings.quit	Sair do terraLauncher
 @id	view.grid	Grade
 @id	view.table	Tabela
 @id	filter.all	Todos
@@ -351,11 +351,11 @@ filter	Installed	Instalados
 @id	linux.preferred_kind	Instalar novos aplicativos como
 @id	tray.close_to_tray	Continuar na bandeja do sistema ao fechar a janela
 @id	tray.show_on_current_desktop	Mostrar a janela na área de trabalho atual
-@id	tray.login_item	Iniciar o ArtCraft Launcher ao fazer login
+@id	tray.login_item	Iniciar o terraLauncher ao fazer login
 @id	appearance.theme	Aparência
 
 # Tray (menu bar) menu and tooltip
-	Show ArtCraft Launcher	Mostrar ArtCraft Launcher
+	Show terraLauncher	Mostrar terraLauncher
 	Check for Updates	Verificar atualizações
 	Visit getartcraft.com	Visitar getartcraft.com
 	ArtCraft on GitHub	ArtCraft no GitHub
@@ -374,7 +374,7 @@ filter	Installed	Instalados
 	Next picture (→)	Próxima imagem (→)
 	Loading pictures…	Carregando imagens…
 	Pictures couldn't be loaded. Reopen this page to try again.	Não foi possível carregar as imagens. Abra a página novamente para tentar de novo.
-@plural	ArtCraft Launcher · {n} update available|ArtCraft Launcher · {n} updates available	ArtCraft Launcher · {n} atualização disponível|ArtCraft Launcher · {n} atualizações disponíveis
+@plural	terraLauncher · {n} update available|terraLauncher · {n} updates available	terraLauncher · {n} atualização disponível|terraLauncher · {n} atualizações disponíveis
 
 	Download size: {size}	Tamanho do download: {size}
 	Install folder	Pasta de instalação
@@ -389,7 +389,7 @@ filter	Installed	Instalados
 @msg	couldn't use install folder {path}: {reason}	não foi possível usar a pasta de instalação {path}: {reason}
 @msg	this release has no AppImage for a custom install folder	esta versão não tem um AppImage para uma pasta de instalação personalizada
 @msg	custom install folders aren't supported on this system	pastas de instalação personalizadas não são compatíveis com este sistema
-@msg	{path} already exists and wasn't installed by ArtCraft Launcher	{path} já existe e não foi instalado pelo ArtCraft Launcher
+@msg	{path} already exists and wasn't installed by terraLauncher	{path} já existe e não foi instalado pelo terraLauncher
 @msg	couldn't move {path} to Trash ({reason}). Remove it in Finder instead.	não foi possível mover {path} para o Lixo ({reason}). Remova-o pelo Finder.
 @msg	Desktop shortcut created for {name}	Atalho na área de trabalho criado para {name}
 @msg	Couldn't create the desktop shortcut: {e}	Não foi possível criar o atalho na área de trabalho: {e}

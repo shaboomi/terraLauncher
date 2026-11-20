@@ -1,4 +1,4 @@
-//! ArtCraft Launcher's interface: the Craft App Suite as a grid of cards or a table, with
+//! terraLauncher's interface: the terraPen apps as a grid of cards or a table, with
 //! install, update, open and remove, shared by the desktop and web builds.
 //!
 //! The UI is thin: it draws [`model::AppEntry`]s and sends
@@ -26,6 +26,7 @@ mod dialogs;
 pub mod i18n;
 pub mod icons;
 mod install_target;
+mod links;
 mod local_time;
 pub mod model;
 mod motion;

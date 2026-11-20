@@ -11,19 +11,19 @@
 
 ## Downloads
 
-**terraLauncher 0.2.0** — [all releases](https://github.com/shaboomi/terraLauncher/releases)
+**terraLauncher 0.2.1** — [all releases](https://github.com/shaboomi/terraLauncher/releases)
 
 | System | Download |
 |---|---|
-| Windows 10/11 (64-bit) | [terralauncher-0.2.0-windows-x64.msi](https://github.com/shaboomi/terraLauncher/releases/download/v0.2.0/terralauncher-0.2.0-windows-x64.msi) |
-| macOS 11+ (Apple silicon and Intel) | [terralauncher-0.2.0-macos-universal.dmg](https://github.com/shaboomi/terraLauncher/releases/download/v0.2.0/terralauncher-0.2.0-macos-universal.dmg) |
-| Linux (x86_64) | [terralauncher-0.2.0-linux-x86_64.tar.gz](https://github.com/shaboomi/terraLauncher/releases/download/v0.2.0/terralauncher-0.2.0-linux-x86_64.tar.gz) |
+| Windows 10/11 (64-bit) | [terralauncher-0.2.1-windows-x64.msi](https://github.com/shaboomi/terraLauncher/releases/download/v0.2.1/terralauncher-0.2.1-windows-x64.msi) |
+| macOS 11+ (Apple silicon and Intel) | [terralauncher-0.2.1-macos-universal.dmg](https://github.com/shaboomi/terraLauncher/releases/download/v0.2.1/terralauncher-0.2.1-macos-universal.dmg) |
+| Linux (x86_64) | [terralauncher-0.2.1-linux-x86_64.tar.gz](https://github.com/shaboomi/terraLauncher/releases/download/v0.2.1/terralauncher-0.2.1-linux-x86_64.tar.gz) |
 
-Checksums: [SHA256SUMS.txt](https://github.com/shaboomi/terraLauncher/releases/download/v0.2.0/SHA256SUMS.txt)
+Checksums: [SHA256SUMS.txt](https://github.com/shaboomi/terraLauncher/releases/download/v0.2.1/SHA256SUMS.txt)
 
 - **Windows:** run the `.msi`. It installs for you only (no administrator rights) and adds Start menu and desktop shortcuts; a newer `.msi` upgrades it in place. It is not code-signed, so Windows may warn about an unknown publisher.
 - **macOS:** open the disk image and drag terraLauncher to Applications. It is not notarized, so the first time, right-click the app and choose Open.
-- **Linux:** `tar -xzf terralauncher-0.2.0-linux-x86_64.tar.gz --strip-components 1 -C ~/.local`, then run `terralauncher`.
+- **Linux:** `tar -xzf terralauncher-0.2.1-linux-x86_64.tar.gz --strip-components 1 -C ~/.local`, then run `terralauncher`.
 
 The builds come from [`.github/workflows/release.yml`](.github/workflows/release.yml): pushing a tag
 `v<version>` that matches the version in `Cargo.toml` builds all three and publishes the release.
@@ -100,7 +100,8 @@ Not done yet:
 - terraGen's source repository is private, so the launcher reads its releases from the public
   [shaboomi/terragen-releases](https://github.com/shaboomi/terragen-releases). Updating terraGen
   from the launcher has not been run yet.
-- macOS installs need each app's Apple Developer team ID in the catalog.
+- macOS installs need each app's Apple Developer team ID in the catalog. Until an app has one, a
+  newer release of an installed copy shows as an update whose button opens its release page.
 - Windows gets a per-user MSI installer (`packaging/windows/terralauncher.wxs`, built by
   `build-msi.ps1`). Built locally, it installed, upgraded 0.1.0 to 0.2.0 and uninstalled cleanly on
   Windows 11. macOS (dmg) and Linux (tar.gz) are still plain

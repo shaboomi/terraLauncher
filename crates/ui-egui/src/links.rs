@@ -88,9 +88,11 @@ fn card(ui: &mut Ui, link: &Link, rect: Rect, action: &str, wipe: f32) {
     child.set_clip_rect(rect.intersect(ui.clip_rect()));
     let ui = &mut child;
     ui.spacing_mut().item_spacing.x = 14.0;
-    // The terraPen mark, where an app card has the app's icon.
+    // The link's lettermark, where an app card has the app's icon.
     let (tile, _) = ui.allocate_exact_size(vec2(TILE, TILE), Sense::hover());
-    egui::Image::new(crate::icons::terrapen()).corner_radius(CornerRadius::same(12)).paint_at(ui, tile);
+    if let Some(icon) = crate::icons::link(link.id) {
+        egui::Image::new(icon).paint_at(ui, tile);
+    }
     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
         clicked |= widgets::button(ui, action, Kind::Secondary, 0.0).on_hover_text(link.url).clicked();
         ui.with_layout(egui::Layout::top_down(egui::Align::Min), |ui| {
@@ -119,6 +121,13 @@ mod tests {
         let job = name("terraLens", Color32::WHITE, Color32::RED);
         assert_eq!(job.text, "terraLens");
         assert_eq!(job.sections.iter().map(|s| s.format.color).collect::<Vec<_>>(), [Color32::WHITE, Color32::RED]);
+    }
+
+    #[test]
+    fn every_link_has_its_icon() {
+        for link in WEB_APPS.iter().chain(&PRODUCTS) {
+            assert!(crate::icons::link(link.id).is_some(), "{}", link.id);
+        }
     }
 
     #[test]

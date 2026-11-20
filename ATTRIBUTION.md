@@ -9,9 +9,11 @@ next to them.
 
 | Path | Title | Author | Source | License |
 |---|---|---|---|---|
-| `assets/brand/terrapen.svg` | terraPen mark, shown on the web app and product cards | terraPen | The site icon of [terrapen.xyz](https://terrapen.xyz), copied unmodified | terraPen's own mark, not MIT/Apache; used to link to terraPen's pages |
+| `assets/brand/terrapen.svg` | terraPen mark, the source of the `tP` tile | terraPen | The site icon of [terrapen.xyz](https://terrapen.xyz), copied unmodified | terraPen's own mark, not MIT/Apache; used to link to terraPen's pages |
+| `design/tG.svg`, `tL.svg`, `tD.svg` | Lettermark line drawings for terraGen, terraLens and terraDial | The repository owner | Original work | The owner's own marks, not MIT/Apache |
+| `assets/brand/tG.svg`, `tL.svg`, `tD.svg`, `tP.svg` | Icon tiles on the link cards, drawn from the lettermarks above by `assets/brand/make-marks.py` | As their sources | Generated | As their sources |
 | `assets/app-icon/` (all files) | terraLauncher app icon and tray icons (placeholder mark) | terraLauncher contributors | Original work, drawn by `assets/app-icon/make-icons.ps1` to match `terralauncher.svg` | MIT OR Apache-2.0 |
-| `assets/app-icons/terragen.png` | terraGen app icon, 128 px | terraGen authors | [`shaboomi/terraGen`](https://github.com/shaboomi/terraGen) `desktop/src-tauri/icons/128x128.png`, copied unmodified | Used with the owner's permission (same owner as this repository) |
+| `assets/app-icons/terragen.png` | terraGen app icon, 128 px | The repository owner | Rendered from `assets/brand/tG.svg` | The owner's own mark, not MIT/Apache |
 | `assets/app-icons/terraforge.png` | terraForge app icon, 128 px | terraForge authors | [`theworkisthework/terraForge`](https://github.com/theworkisthework/terraForge) `build/icon.png`, scaled from 512 px | MIT |
 | `assets/social/linkedin.svg` | LinkedIn logo, unused | Fonticons, Inc. ([Font Awesome Free](https://fontawesome.com) 6.7.2) | Font Awesome Free `svgs/brands/linkedin.svg`; white fill and a square view box, see [`assets/social/README.md`](assets/social/README.md) | CC BY 4.0. The logo is a trademark of LinkedIn Corporation. |
 | `assets/social/x.svg`, `youtube.svg`, `tiktok.svg`, `instagram.svg`, `discord.svg` | X, YouTube, TikTok, Instagram and Discord logos, for links to social accounts | [Simple Icons](https://simpleicons.org/) contributors | Simple Icons, `fill` set to white for tinting; see [`assets/social/README.md`](assets/social/README.md) | CC0 1.0. The logos are trademarks of X Corp., Google LLC, TikTok / ByteDance, Meta Platforms, Inc. and Discord Inc. |

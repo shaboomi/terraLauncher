@@ -64,9 +64,15 @@ pub fn social(service: &str) -> Option<ImageSource<'static>> {
     })
 }
 
-/// The terraPen mark, on the link cards (web apps and products).
-pub fn terrapen() -> ImageSource<'static> {
-    egui::include_image!("../../../assets/brand/terrapen.svg")
+/// A link card's icon (web apps and products), by the link's id: its lettermark tile from
+/// `assets/brand/`.
+pub fn link(id: &str) -> Option<ImageSource<'static>> {
+    Some(match id {
+        "terralens" => egui::include_image!("../../../assets/brand/tL.svg"),
+        "terrapen" => egui::include_image!("../../../assets/brand/tP.svg"),
+        "terradial" => egui::include_image!("../../../assets/brand/tD.svg"),
+        _ => return None,
+    })
 }
 
 /// terraLauncher's own mark: its app icon.

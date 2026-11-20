@@ -68,13 +68,15 @@ merged from upstream; only the binary and everything a user sees are renamed.
 Working, checked on Windows 11:
 
 - Lists terraGen and terraForge, finds installed copies and their versions, and offers updates.
+- Updating terraForge from the launcher.
 - Web apps and Products sections, opening in the browser.
 - No connection to ArtCraft's servers: the hosted catalog, release feed and launcher self-update are off.
 
 Not done yet:
 
-- **Installing, updating and uninstalling have not been run end to end.** The code paths build and the
-  asset matching is tested, but no installer has been run by the launcher yet.
+- **Only updating has been run end to end**: terraForge 1.5.1-pen-preview.1 to 1.5.1 on Windows 11
+  (download, checksum, silent install, re-detection). A fresh install, uninstall and the Open
+  button have not been run yet, and nothing has been run for terraGen.
 - **terraGen's repository is private.** Without a public repo the launcher can't see or download its
   releases; it only shows the installed copy.
 - macOS installs need each app's Apple Developer team ID in the catalog.

@@ -1043,7 +1043,8 @@ impl LauncherUi {
     pub(crate) fn actions_in(&mut self, ui: &mut Ui, entry: &AppEntry, status: &AppStatus, mut width: f32, place: Place) {
         let id = entry.app.id.to_string();
         let gap = ui.spacing().item_spacing.x;
-        let show_pin = !self.settings.hidden.contains(entry.app.id);
+        // The square pin button is not shown; pinning stays in the ⋯ menu.
+        let show_pin = false;
         let show_grip = place.allows_reorder() && self.settings.is_pinned(entry.app.id);
         // Leading grip (list only), then primary, pin toggle, menu — matches main's table layout.
         if show_grip {
@@ -1072,9 +1073,9 @@ impl LauncherUi {
         if ids.first().is_some_and(|id| self.settings.is_pinned(id)) { theme::CONTROL_H + ui.spacing().item_spacing.x } else { 0.0 }
     }
 
-    /// Square + gap reserved for the pin toggle on every non-hidden table row.
-    fn pin_slot_w(&self, ui: &Ui) -> f32 {
-        theme::CONTROL_H + ui.spacing().item_spacing.x
+    /// Room reserved for a pin toggle on a table row: none, as the toggle is not shown.
+    fn pin_slot_w(&self, _ui: &Ui) -> f32 {
+        0.0
     }
 
     /// Cancel an in-progress pin reorder (Escape), restoring the pinned order from drag start
@@ -1224,7 +1225,8 @@ impl LauncherUi {
         let pct = if p.total > 0 { format!(" · {:.0}%", p.done as f32 / p.total as f32 * 100.0) } else { String::new() };
         // Resume, discard, pin toggle (unless hidden), and the menu. The reorder grip — if any —
         // was already drawn and subtracted by `actions_in`; do not reserve or draw it again.
-        let show_pin = !self.settings.hidden.contains(entry.app.id);
+        // The square pin button is not shown; pinning stays in the ⋯ menu.
+        let show_pin = false;
         let squares = 2.0 + if show_pin { 1.0 } else { 0.0 };
         let resume_w = (width - squares * (theme::CONTROL_H + gap) + gap).max(90.0);
         // Narrow (the table): just tl!("Resume"); the tooltip says how far it got.

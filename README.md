@@ -7,8 +7,26 @@
 <p align="center">One place to install, update and open the terraPen apps, with links to the web apps and hardware.</p>
 
 > [!IMPORTANT]
-> Early work in progress. It builds and runs on Windows from source; there are no installers or
-> releases yet. See [Status](#status).
+> Early work in progress. See [Status](#status).
+
+## Downloads
+
+**terraLauncher 0.1.0** — [all releases](https://github.com/shaboomi/terraLauncher/releases)
+
+| System | Download |
+|---|---|
+| Windows 10/11 (64-bit) | [terralauncher-0.1.0-windows-x64-portable.zip](https://github.com/shaboomi/terraLauncher/releases/download/v0.1.0/terralauncher-0.1.0-windows-x64-portable.zip) |
+| macOS 11+ (Apple silicon and Intel) | [terralauncher-0.1.0-macos-universal.dmg](https://github.com/shaboomi/terraLauncher/releases/download/v0.1.0/terralauncher-0.1.0-macos-universal.dmg) |
+| Linux (x86_64) | [terralauncher-0.1.0-linux-x86_64.tar.gz](https://github.com/shaboomi/terraLauncher/releases/download/v0.1.0/terralauncher-0.1.0-linux-x86_64.tar.gz) |
+
+Checksums: [SHA256SUMS.txt](https://github.com/shaboomi/terraLauncher/releases/download/v0.1.0/SHA256SUMS.txt)
+
+- **Windows:** unzip and run `terralauncher.exe`. It is not code-signed, so Windows may warn about an unknown publisher. Settings stay in the unzipped folder.
+- **macOS:** open the disk image and drag terraLauncher to Applications. It is not notarized, so the first time, right-click the app and choose Open.
+- **Linux:** `tar -xzf terralauncher-0.1.0-linux-x86_64.tar.gz --strip-components 1 -C ~/.local`, then run `terralauncher`.
+
+The builds come from [`.github/workflows/release.yml`](.github/workflows/release.yml): pushing a tag
+`v<version>` that matches the version in `Cargo.toml` builds all three and publishes the release.
 
 ## What it shows
 
@@ -80,7 +98,9 @@ Not done yet:
 - **terraGen's repository is private.** Without a public repo the launcher can't see or download its
   releases; it only shows the installed copy.
 - macOS installs need each app's Apple Developer team ID in the catalog.
-- The launcher's own installers and CI (`packaging/`) are still upstream's and have not been adapted.
+- The release builds are plain archives (zip, dmg, tar.gz) and are not signed or notarized. The macOS
+  and Linux builds have not been run by anyone yet. Upstream's installer scripts in `packaging/`
+  (MSI, .deb, .rpm, AppImage, Flatpak) have not been adapted.
 - Most of the upstream test suite still refers to the Craft apps and fails or needs rewriting.
 - New interface text is English only; the 14 translation catalogs have not been updated for it.
 - The app icon is a placeholder.

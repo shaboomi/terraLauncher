@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=terraLauncher
+GenericName=App Launcher
+Comment=Install, update and open the terraPen apps
+Exec=terralauncher
+TryExec=terralauncher
+Icon=xyz.terrapen.terralauncher
+Terminal=false
+StartupNotify=true
+StartupWMClass=xyz.terrapen.terralauncher
+Categories=Utility;
+Keywords=terrapen;terragen;terraforge;plotter;launcher;installer;updater;

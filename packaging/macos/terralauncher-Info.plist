@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>terraLauncher</string>
+    <key>CFBundleDisplayName</key>
+    <string>terraLauncher</string>
+    <key>CFBundleIdentifier</key>
+    <string>xyz.terrapen.terralauncher</string>
+    <key>CFBundleExecutable</key>
+    <string>terraLauncher</string>
+    <key>CFBundleIconFile</key>
+    <string>terralauncher</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>__VERSION__</string>
+    <key>CFBundleVersion</key>
+    <string>__VERSION__</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>11.0</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.utilities</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright (c) the terraLauncher authors and the ArtCraft Launcher contributors. MIT OR Apache-2.0.</string>
+</dict>
+</plist>

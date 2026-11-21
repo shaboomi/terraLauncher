@@ -1,63 +1,32 @@
-# Draws terraLauncher's placeholder mark (the same shapes as terralauncher.svg) at every size
-# the app needs, and packs the Windows .ico. Run from anywhere: pwsh assets/app-icon/make-icons.ps1
-Add-Type -AssemblyName System.Drawing
+# Renders terraLauncher's icon (terralauncher.svg) and menu-bar template (tray-template.svg) at
+# every size the app needs, and packs the Windows .ico. Needs Inkscape 1.x on PATH.
+# Run from anywhere: pwsh assets/app-icon/make-icons.ps1
+$ErrorActionPreference = 'Stop'
 $here = $PSScriptRoot
 $id = 'xyz.terrapen.terralauncher'
+$icon = Join-Path $here 'terralauncher.svg'
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) "terralauncher-icons-$PID"
+New-Item -ItemType Directory -Force $tmp | Out-Null
 
-function New-Mark([int]$size, [bool]$template) {
-    $bmp = New-Object System.Drawing.Bitmap $size, $size, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
-    $g = [System.Drawing.Graphics]::FromImage($bmp)
-    $g.SmoothingMode = 'AntiAlias'
-    $g.PixelOffsetMode = 'HighQuality'
-    $g.Clear([System.Drawing.Color]::Transparent)
-    $s = [single]$size
-    $ink = if ($template) { [System.Drawing.Color]::Black } else { [System.Drawing.Color]::White }
-    if (-not $template) {
-        # Rounded square, radius 22 %.
-        $r = [single]($s * 0.22); $d = $r * 2
-        $path = New-Object System.Drawing.Drawing2D.GraphicsPath
-        $path.AddArc(0, 0, $d, $d, 180, 90); $path.AddArc($s - $d, 0, $d, $d, 270, 90)
-        $path.AddArc($s - $d, $s - $d, $d, $d, 0, 90); $path.AddArc(0, $s - $d, $d, $d, 90, 90)
-        $path.CloseFigure()
-        $fill = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255, 30, 107, 88))
-        $g.FillPath($fill, $path); $fill.Dispose(); $path.Dispose()
-    }
-    # The "t": a stem that curves into a foot, and a crossbar.
-    $pen = New-Object System.Drawing.Pen $ink, ([single]($s * 0.11))
-    $pen.StartCap = 'Round'; $pen.EndCap = 'Round'; $pen.LineJoin = 'Round'
-    $stem = New-Object System.Drawing.Drawing2D.GraphicsPath
-    $stem.AddLine([single]($s * 0.42), [single]($s * 0.20), [single]($s * 0.42), [single]($s * 0.62))
-    $stem.AddBezier([single]($s * 0.42), [single]($s * 0.62), [single]($s * 0.42), [single]($s * 0.76), [single]($s * 0.50), [single]($s * 0.80), [single]($s * 0.60), [single]($s * 0.80))
-    $g.DrawPath($pen, $stem); $stem.Dispose()
-    $g.DrawLine($pen, [single]($s * 0.27), [single]($s * 0.40), [single]($s * 0.60), [single]($s * 0.40))
-    $pen.Dispose()
-    # The pen tip: a dot where the line ends.
-    $dotColor = if ($template) { [System.Drawing.Color]::Black } else { [System.Drawing.Color]::FromArgb(255, 240, 160, 72) }
-    $dot = New-Object System.Drawing.SolidBrush $dotColor
-    $dr = [single]($s * 0.065)
-    $g.FillEllipse($dot, [single]($s * 0.76) - $dr, [single]($s * 0.80) - $dr, $dr * 2, $dr * 2)
-    $dot.Dispose(); $g.Dispose()
-    $bmp
-}
-
-function Save-Png($bmp, [string]$path) {
+function Export-Png([string]$svg, [int]$size, [string]$path) {
     New-Item -ItemType Directory -Force (Split-Path $path) | Out-Null
-    $bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png); $bmp.Dispose()
+    & inkscape $svg --export-type=png "--export-filename=$path" -w $size -h $size 2>&1 | Out-Null
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path $path)) { throw "inkscape failed for $path" }
 }
 
 foreach ($n in 16, 24, 32, 48, 64, 128, 256, 512) {
-    Save-Png (New-Mark $n $false) (Join-Path $here "hicolor/${n}x${n}/apps/$id.png")
+    Export-Png $icon $n (Join-Path $here "hicolor/${n}x${n}/apps/$id.png")
 }
-Save-Png (New-Mark 1024 $false) (Join-Path $here 'terralauncher-1024.png')
-Save-Png (New-Mark 64 $false) (Join-Path $here 'tray-64.png')
-Save-Png (New-Mark 44 $true) (Join-Path $here 'tray-template-44.png')
+Export-Png $icon 1024 (Join-Path $here 'terralauncher-1024.png')
+Export-Png $icon 64 (Join-Path $here 'tray-64.png')
+Export-Png (Join-Path $here 'tray-template.svg') 44 (Join-Path $here 'tray-template-44.png')
 
 # The .ico: PNG-compressed entries, which Windows Vista and later read.
 $sizes = 16, 20, 24, 32, 40, 48, 64, 128, 256
 $images = foreach ($n in $sizes) {
-    $ms = New-Object System.IO.MemoryStream
-    $b = New-Mark $n $false; $b.Save($ms, [System.Drawing.Imaging.ImageFormat]::Png); $b.Dispose()
-    , $ms.ToArray()
+    $p = Join-Path $tmp "$n.png"
+    Export-Png $icon $n $p
+    , [System.IO.File]::ReadAllBytes($p)
 }
 $out = New-Object System.IO.MemoryStream
 $w = New-Object System.IO.BinaryWriter $out
@@ -73,4 +42,5 @@ for ($i = 0; $i -lt $sizes.Count; $i++) {
 foreach ($img in $images) { $w.Write($img) }
 $w.Flush()
 [System.IO.File]::WriteAllBytes((Join-Path $here 'terralauncher.ico'), $out.ToArray())
+Remove-Item -Recurse -Force $tmp
 "wrote icons to $here"

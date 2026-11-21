@@ -109,7 +109,6 @@ Not done yet:
   (.deb, .rpm, AppImage, Flatpak) have not been adapted.
 - Most of the upstream test suite still refers to the Craft apps and fails or needs rewriting.
 - New interface text is English only; the 14 translation catalogs have not been updated for it.
-- The app icon is a placeholder.
 
 ## Credits and license
 

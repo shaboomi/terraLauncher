@@ -142,9 +142,22 @@ jobs:
             rm -f "$RUNNER_TEMP/certificate.p12"
             security set-key-partition-list -S apple-tool:,apple: -s -k "$keychain_password" "$keychain" > /dev/null
             security list-keychains -d user -s "$keychain" $(security list-keychains -d user | tr -d '"')
+            # Apple's Developer ID intermediate: without it in reach the identity isn't valid and
+            # codesign finds none. It may be there already, so a failed import is fine.
+            curl -fsSL https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer -o "$RUNNER_TEMP/DeveloperIDG2CA.cer"
+            security import "$RUNNER_TEMP/DeveloperIDG2CA.cer" -k "$keychain" || true
+            # Sign with the Developer ID Application identity this keychain holds, by its hash, and
+            # only if it is the team's: a name typed into a secret can carry stray spaces.
+            team=$(printf '%s' "$APPLE_TEAM_ID" | tr -d '[:space:]')
+            identity=$(security find-identity -v -p codesigning "$keychain" | awk -v team="($team)" '/Developer ID Application/ && index($0, team) {print $2; exit}')
+            if [ -z "$identity" ]; then
+              echo "::error::the keychain has no valid Developer ID Application identity for the team in APPLE_TEAM_ID"
+              security find-identity -p codesigning "$keychain"
+              exit 1
+            fi
             # The hardened runtime and a secure timestamp, as notarization requires. The app is one
             # executable with no nested code and needs no entitlements.
-            codesign --force --options runtime --timestamp --sign "$APPLE_SIGNING_IDENTITY" "$app"
+            codesign --force --options runtime --timestamp --keychain "$keychain" --sign "$identity" "$app"
           else
             # An ad-hoc signature: Apple silicon runs nothing unsigned. It is not a Developer ID.
             codesign --force --deep --sign - "$app"
@@ -153,10 +166,11 @@ jobs:
           hdiutil create -volname "terraLaunch" -srcfolder dist/dmg -ov -format UDZO "$dmg"
           rm -rf dist/dmg
           if [ "$signed" -eq 1 ]; then
-            codesign --force --timestamp --sign "$APPLE_SIGNING_IDENTITY" "$dmg"
+            codesign --force --timestamp --keychain "$keychain" --sign "$identity" "$dmg"
             # Apple checks the disk image and the app in it; the ticket is stapled to the image so
             # it opens without a network check.
-            xcrun notarytool submit "$dmg" --apple-id "$APPLE_ID" --password "$APPLE_PASSWORD" --team-id "$APPLE_TEAM_ID" --wait --timeout 30m
+            apple_id=$(printf '%s' "$APPLE_ID" | tr -d '[:space:]')
+            xcrun notarytool submit "$dmg" --apple-id "$apple_id" --password "$APPLE_PASSWORD" --team-id "$team" --wait --timeout 30m
             xcrun stapler staple "$dmg"
             security delete-keychain "$keychain"
           fi

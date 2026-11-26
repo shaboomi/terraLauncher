@@ -1,4 +1,4 @@
-# Georgian (ka) catalog for terraLauncher.
+# Georgian (ka) catalog for terraLaunch.
 # Format: context<TAB>source<TAB>translation
 # Empty context = plain UI string (tl!, t).
 # @id = command-id keyed (tr_id).
@@ -6,14 +6,14 @@
 # @msg = status/error message template (message, msg).
 # Other context = disambiguation for tr_ctx.
 #
-# Clean-room: written from the meaning of terraLauncher's English labels in neutral Georgian,
+# Clean-room: written from the meaning of terraLaunch's English labels in neutral Georgian,
 # with the terms the other Craft apps use in Georgian. The user is addressed with the polite
 # plural (თქვენ), as in Georgian system software. Commands are verbal nouns (ინსტალაცია,
 # განახლება, გახსნა). Georgian has no letter case: no Mtavruli capitals, even where the English
 # uses capitals ("NEW").
 #
 # Coverage: the whole interface — every menu string and tl! literal (complete_menus = true).
-# Left in English on purpose: product name "terraLauncher" (and its "Launcher" tag), suite
+# Left in English on purpose: product name "terraLaunch" (and its "Launcher" tag), suite
 # name "terraPen apps", app names (PhotoCraft, LightCraft, FilmCraft, DesignCraft, VectorCraft,
 # PdfCraft, EffectCraft, WordCraft, DeckCraft, GridCraft, CADCraft, SoundCraft, FigCraft), "GitHub",
 # "Discord". Georgian case endings attach to them with a hyphen (GitHub-ზე, ArtCraft-ის).
@@ -55,9 +55,9 @@
 	Open	გახსნა
 	Open {version}	{version} ვერსიის გახსნა
 	Open {installed} without updating. {latest} stays available.	{installed} ვერსიის გახსნა განახლების გარეშე. {latest} ვერსია ხელმისაწვდომი რჩება.
-	{latest} is out, but terraLauncher can't install it over this copy.	{latest} უკვე გამოვიდა, მაგრამ terraLauncher ვერ დააინსტალირებს მას ამ ასლის ნაცვლად.
-	terraLauncher can't install this build itself. This opens its release page, to download and install it yourself.	terraLauncher-ს ამ ვერსიის თავად დაყენება არ შეუძლია. ეს გახსნის მის გამოშვების გვერდს, რომ თავად ჩამოტვირთოთ და დააყენოთ.
-	terraLauncher can't install version {version} over this copy.	terraLauncher ვერ დააინსტალირებს {version} ვერსიას ამ ასლის ნაცვლად.
+	{latest} is out, but terraLaunch can't install it over this copy.	{latest} უკვე გამოვიდა, მაგრამ terraLaunch ვერ დააინსტალირებს მას ამ ასლის ნაცვლად.
+	terraLaunch can't install this build itself. This opens its release page, to download and install it yourself.	terraLaunch-ს ამ ვერსიის თავად დაყენება არ შეუძლია. ეს გახსნის მის გამოშვების გვერდს, რომ თავად ჩამოტვირთოთ და დააყენოთ.
+	terraLaunch can't install version {version} over this copy.	terraLaunch ვერ დააინსტალირებს {version} ვერსიას ამ ასლის ნაცვლად.
 	Download for {os}	ჩამოტვირთვა {os}-ისთვის
 	Download	ჩამოტვირთვა
 	Coming soon	მალე
@@ -83,7 +83,7 @@
 	Add desktop shortcut	სამუშაო მაგიდის მალსახმობის დამატება
 	Uninstall…	დეინსტალაცია…
 	All releases	ყველა გამოშვება
-	terraLauncher {version} is available.	ხელმისაწვდომია terraLauncher {version}.
+	terraLaunch {version} is available.	ხელმისაწვდომია terraLaunch {version}.
 	Dismiss	უგულებელყოფა
 	Update and restart	განახლება და გადატვირთვა
 	A new version is available. Would you like to relaunch with the updated version?	ხელმისაწვდომია ახალი ვერსია. გსურთ განახლებული ვერსიით ხელახლა გაშვება?
@@ -94,7 +94,7 @@
 	Released {date}	გამოშვების თარიღი: {date}
 	Open on GitHub	GitHub-ზე გახსნა
 	Close	დახურვა
-	terraLauncher {version}	terraLauncher {version}
+	terraLaunch {version}	terraLaunch {version}
 	Only when I ask	მხოლოდ მოთხოვნისას
 	Automatically download and install updates	განახლებების ავტომატური ჩამოტვირთვა და ინსტალაცია
 	Ask for permission once when updating all apps	ყველა აპლიკაციის განახლებისას ნებართვის მოთხოვნა მხოლოდ ერთხელ
@@ -107,15 +107,15 @@
 	Updates always use the format an app was installed with.	განახლება ყოველთვის იმ ფორმატს იყენებს, რომლითაც აპლიკაცია დაინსტალირდა.
 	Running in the background	ფონურ რეჟიმში მუშაობა
 	Keep running in the tray when the window is closed	ფანჯრის დახურვის შემდეგ მუშაობის გაგრძელება შეტყობინებების არეში
-	Hide terraLauncher from the Dock while in the background	ფონურ რეჟიმში terraLauncher-ის Dock-იდან დამალვა
-	terraLauncher is still running	terraLauncher კვლავ მუშაობს
+	Hide terraLaunch from the Dock while in the background	ფონურ რეჟიმში terraLaunch-ის Dock-იდან დამალვა
+	terraLaunch is still running	terraLaunch კვლავ მუშაობს
 	It's in the tray: open it or quit it from the tray icon, or turn this off in the settings.	ის შეტყობინებების არეშია: გახსენით ან დახურეთ მისი ხატულით, ან გამორთეთ ეს ფუნქცია პარამეტრებში.
 	Show the window on the current desktop	ფანჯრის ჩვენება მიმდინარე სამუშაო მაგიდაზე
-	Start terraLauncher when I log in	terraLauncher-ის გაშვება სისტემაში შესვლისას
+	Start terraLaunch when I log in	terraLaunch-ის გაშვება სისტემაში შესვლისას
 	Community	საზოგადოება
 	Questions, ideas and news from the ArtCraft team	კითხვები, იდეები და სიახლეები ArtCraft-ის გუნდისგან
 	Appearance	იერსახე
-	Quit terraLauncher	terraLauncher-იდან გასვლა
+	Quit terraLaunch	terraLaunch-იდან გასვლა
 	Done	მზადაა
 	Uninstall {name}?	{name}-ის დეინსტალაცია?
 	The app will be moved to the Trash. Your documents and settings stay.	აპლიკაცია ნაგავში გადავა. თქვენი დოკუმენტები და პარამეტრები შენარჩუნდება.
@@ -158,7 +158,7 @@
 	Update	განახლება
 	{name} icon	{name}-ის ხატულა
 	by {name}	ავტორი: {name}
-	Loading terraLauncher…	terraLauncher იტვირთება…
+	Loading terraLaunch…	terraLaunch იტვირთება…
 	Cancel update	განახლების გაუქმება
 	Stop waiting; the update can be started again later	ლოდინის შეწყვეტა; განახლების დაწყება მოგვიანებითაც შეიძლება
 	Download again	ხელახლა ჩამოტვირთვა
@@ -254,7 +254,7 @@ month	Dec	დეკ
 	Version {version} installed	დაინსტალირებულია ვერსია {version}
 	Version {latest}	ვერსია {latest}
 	No release published yet	გამოშვება ჯერ არ გამოქვეყნებულა
-	terraLauncher	terraLauncher
+	terraLaunch	terraLaunch
 	App	აპლიკაცია
 	Latest	უახლესი
 	Released	გამოვიდა
@@ -288,11 +288,11 @@ month	Dec	დეკ
 	Full changelog	ცვლილებების სრული სია
 	link	ბმული
 	No apps match	შესაბამისი აპლიკაცია ვერ მოიძებნა
-	Open terraLauncher to update.	განახლებისთვის გახსენით terraLauncher.
+	Open terraLaunch to update.	განახლებისთვის გახსენით terraLaunch.
 	{name} {v} is available	ხელმისაწვდომია {name} {v}
 	{count} updates are available	ხელმისაწვდომია {count} განახლება
 	These notes weren't fetched (GitHub's request limit was reached). They're on the release page.	ეს შენიშვნები ვერ ჩაიტვირთა (GitHub-ის მოთხოვნების ლიმიტი ამოიწურა). ისინი გამოშვების გვერდზეა.
-	When on, opening the launcher from the menu bar brings its window to the desktop you're on. When off, macOS switches you to the desktop the window was on.	ჩართვისას მენიუს ზოლიდან გახსნილი terraLauncher-ის ფანჯარა იმ სამუშაო მაგიდაზე გამოჩნდება, რომელზეც ახლა ხართ. გამორთვისას macOS გადაგიყვანთ იმ სამუშაო მაგიდაზე, სადაც ფანჯარა იყო.
+	When on, opening the launcher from the menu bar brings its window to the desktop you're on. When off, macOS switches you to the desktop the window was on.	ჩართვისას მენიუს ზოლიდან გახსნილი terraLaunch-ის ფანჯარა იმ სამუშაო მაგიდაზე გამოჩნდება, რომელზეც ახლა ხართ. გამორთვისას macOS გადაგიყვანთ იმ სამუშაო მაგიდაზე, სადაც ფანჯარა იყო.
 	Couldn't change the login item: {e}	სისტემაში შესვლისას გაშვების შეცვლა ვერ მოხერხდა: {e}
 
 # Contextual: table column headers
@@ -327,7 +327,7 @@ filter	Installed	დაინსტალირებული
 
 # Message templates (@msg): toasts from the backend. {placeholders} match any text.
 @msg	Couldn't open {name}: {e}	{name} ვერ გაიხსნა: {e}
-@msg	terraLauncher couldn't start its window on {backend}: {e}	terraLauncher-ის ფანჯარა ვერ გაეშვა {backend}-ზე: {e}
+@msg	terraLaunch couldn't start its window on {backend}: {e}	terraLaunch-ის ფანჯარა ვერ გაეშვა {backend}-ზე: {e}
 @msg	Download cancelled	ჩამოტვირთვა გაუქმდა
 @msg	{name} updated to {version}	{name} განახლდა ვერსიამდე {version}
 @msg	{name} installed: {version}	{name} დაინსტალირდა: {version}
@@ -358,7 +358,7 @@ filter	Installed	დაინსტალირებული
 @id	launcher.notes	რა არის ახალი
 @id	launcher.dismiss	უგულებელყოფა
 @id	settings.open	პარამეტრები
-@id	settings.quit	terraLauncher-იდან გასვლა
+@id	settings.quit	terraLaunch-იდან გასვლა
 @id	view.grid	ბადე
 @id	view.table	ცხრილი
 @id	filter.all	ყველა
@@ -382,16 +382,16 @@ filter	Installed	დაინსტალირებული
 @id	linux.preferred_kind	ახალი აპლიკაციების ინსტალაციის ფორმატი
 @id	tray.close_to_tray	ფანჯრის დახურვის შემდეგ მუშაობის გაგრძელება შეტყობინებების არეში
 @id	tray.show_on_current_desktop	ფანჯრის ჩვენება მიმდინარე სამუშაო მაგიდაზე
-@id	tray.login_item	terraLauncher-ის გაშვება სისტემაში შესვლისას
+@id	tray.login_item	terraLaunch-ის გაშვება სისტემაში შესვლისას
 @id	appearance.theme	იერსახე
 
 # Tray (menu bar) menu and tooltip
-	Show terraLauncher	terraLauncher-ის ჩვენება
+	Show terraLaunch	terraLaunch-ის ჩვენება
 	Check for Updates	განახლებების შემოწმება
 	Visit getartcraft.com	getartcraft.com-ის გახსნა
 	ArtCraft on GitHub	ArtCraft GitHub-ზე
 	Join the ArtCraft Discord	შემოუერთდით ArtCraft-ის Discord-ს
-@plural	terraLauncher · {n} update available|terraLauncher · {n} updates available	terraLauncher · ხელმისაწვდომია {n} განახლება|terraLauncher · ხელმისაწვდომია {n} განახლება
+@plural	terraLaunch · {n} update available|terraLaunch · {n} updates available	terraLaunch · ხელმისაწვდომია {n} განახლება|terraLaunch · ხელმისაწვდომია {n} განახლება
 	Install folder	ინსტალაციის საქაღალდე
 	Default install folder	ნაგულისხმევი ინსტალაციის საქაღალდე
 	System default	სისტემის ნაგულისხმევი
@@ -404,7 +404,7 @@ filter	Installed	დაინსტალირებული
 @msg	couldn't use install folder {path}: {reason}	ინსტალაციის საქაღალდის ({path}) გამოყენება ვერ მოხერხდა: {reason}
 @msg	this release has no AppImage for a custom install folder	ამ გამოშვებას არჩეული ინსტალაციის საქაღალდისთვის AppImage არ აქვს
 @msg	custom install folders aren't supported on this system	ამ სისტემაზე ინსტალაციის საქაღალდის არჩევა არ არის მხარდაჭერილი
-@msg	{path} already exists and wasn't installed by terraLauncher	{path} უკვე არსებობს და ის terraLauncher-ს არ დაუინსტალირებია
+@msg	{path} already exists and wasn't installed by terraLaunch	{path} უკვე არსებობს და ის terraLaunch-ს არ დაუინსტალირებია
 @msg	couldn't move {path} to Trash ({reason}). Remove it in Finder instead.	{path} ნაგავში ვერ გადავიდა ({reason}). წაშალეთ ის Finder-ში.
 @msg	Desktop shortcut created for {name}	{name}-ის სამუშაო მაგიდის მალსახმობი შეიქმნა
 @msg	Couldn't create the desktop shortcut: {e}	სამუშაო მაგიდის მალსახმობის შექმნა ვერ მოხერხდა: {e}

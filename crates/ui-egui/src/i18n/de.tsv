@@ -1,4 +1,4 @@
-# German (de) catalog for terraLauncher.
+# German (de) catalog for terraLaunch.
 # Format: context<TAB>source<TAB>translation
 # Empty context = plain UI string (tl!, t).
 # @id = command-id keyed (tr_id).
@@ -6,12 +6,12 @@
 # @msg = status/error message template (message, msg).
 # Other context = disambiguation for tr_ctx.
 #
-# Clean-room: written from the meaning of terraLauncher's English labels in neutral German,
+# Clean-room: written from the meaning of terraLaunch's English labels in neutral German,
 # using the terms German-speaking users of creative software know. The user is addressed with
 # the informal "du", as in most current creative and community software.
 #
 # Coverage: the whole interface — every menu string and tl! literal (complete_menus = true).
-# Left in English on purpose: product name "terraLauncher" (and its "Launcher" tag), suite
+# Left in English on purpose: product name "terraLaunch" (and its "Launcher" tag), suite
 # name "terraPen apps",
 # app names (PhotoCraft, LightCraft, FilmCraft, DesignCraft, VectorCraft, PdfCraft, EffectCraft,
 # WordCraft, DeckCraft, GridCraft, CADCraft, SoundCraft, FigCraft), "GitHub", "Discord".
@@ -52,9 +52,9 @@
 	Open	Öffnen
 	Open {version}	{version} öffnen
 	Open {installed} without updating. {latest} stays available.	{installed} ohne Aktualisierung öffnen. {latest} bleibt verfügbar.
-	{latest} is out, but terraLauncher can't install it over this copy.	{latest} ist erschienen, aber terraLauncher kann es nicht über diese Installation installieren.
-	terraLauncher can't install this build itself. This opens its release page, to download and install it yourself.	terraLauncher kann diesen Build nicht selbst installieren. Hier öffnet sich seine Release-Seite, damit du ihn selbst herunterladen und installieren kannst.
-	terraLauncher can't install version {version} over this copy.	terraLauncher kann Version {version} nicht über diese Installation installieren.
+	{latest} is out, but terraLaunch can't install it over this copy.	{latest} ist erschienen, aber terraLaunch kann es nicht über diese Installation installieren.
+	terraLaunch can't install this build itself. This opens its release page, to download and install it yourself.	terraLaunch kann diesen Build nicht selbst installieren. Hier öffnet sich seine Release-Seite, damit du ihn selbst herunterladen und installieren kannst.
+	terraLaunch can't install version {version} over this copy.	terraLaunch kann Version {version} nicht über diese Installation installieren.
 	Download for {os}	Für {os} herunterladen
 	Download	Herunterladen
 	Coming soon	Demnächst
@@ -87,7 +87,7 @@
 	{name} wasn't opened: a quote in its launch options isn't closed.	{name} wurde nicht geöffnet: Ein Anführungszeichen in den Startoptionen wird nicht geschlossen.
 	Save	Speichern
 	All releases	Alle Versionen
-	terraLauncher {version} is available.	terraLauncher {version} ist verfügbar.
+	terraLaunch {version} is available.	terraLaunch {version} ist verfügbar.
 	Dismiss	Ausblenden
 	Update and restart	Aktualisieren und neu starten
 	A new version is available. Would you like to relaunch with the updated version?	Eine neue Version ist verfügbar. Mit der neuen Version neu starten?
@@ -98,7 +98,7 @@
 	Released {date}	Veröffentlicht am {date}
 	Open on GitHub	Auf GitHub öffnen
 	Close	Schließen
-	terraLauncher {version}	terraLauncher {version}
+	terraLaunch {version}	terraLaunch {version}
 	Only when I ask	Nur manuell
 	Automatically download and install updates	Updates automatisch herunterladen und installieren
 	Ask for permission once when updating all apps	Beim Aktualisieren aller Apps nur einmal nach Berechtigung fragen
@@ -111,15 +111,15 @@
 	Updates always use the format an app was installed with.	Updates verwenden immer das Format, mit dem eine App installiert wurde.
 	Running in the background	Im Hintergrund ausführen
 	Keep running in the tray when the window is closed	Beim Schließen des Fensters im Infobereich weiterlaufen
-	Hide terraLauncher from the Dock while in the background	terraLauncher im Hintergrund aus dem Dock ausblenden
-	terraLauncher is still running	terraLauncher läuft weiter
+	Hide terraLaunch from the Dock while in the background	terraLaunch im Hintergrund aus dem Dock ausblenden
+	terraLaunch is still running	terraLaunch läuft weiter
 	It's in the tray: open it or quit it from the tray icon, or turn this off in the settings.	Er ist im Infobereich: dort über das Symbol öffnen oder beenden, oder das in den Einstellungen abschalten.
 	Show the window on the current desktop	Fenster auf dem aktuellen Schreibtisch zeigen
-	Start terraLauncher when I log in	terraLauncher bei der Anmeldung starten
+	Start terraLaunch when I log in	terraLaunch bei der Anmeldung starten
 	Community	Community
 	Questions, ideas and news from the ArtCraft team	Fragen, Ideen und Neuigkeiten vom ArtCraft-Team
 	Appearance	Erscheinungsbild
-	Quit terraLauncher	terraLauncher beenden
+	Quit terraLaunch	terraLaunch beenden
 	Done	Fertig
 	Uninstall {name}?	{name} deinstallieren?
 	The app will be moved to the Trash. Your documents and settings stay.	Die App wird in den Papierkorb verschoben. Deine Dokumente und Einstellungen bleiben erhalten.
@@ -162,7 +162,7 @@
 	Open link	Link öffnen
 	Update	Aktualisieren
 	{name} icon	{name}-Symbol
-	Loading terraLauncher…	terraLauncher wird geladen…
+	Loading terraLaunch…	terraLaunch wird geladen…
 	Cancel update	Update abbrechen
 	Stop waiting; the update can be started again later	Nicht mehr warten; das Update kann später erneut gestartet werden
 	Download again	Erneut herunterladen
@@ -250,7 +250,7 @@ month	Dec	Dez.
 	Version {version} installed	Version {version} installiert
 	Version {latest}	Version {latest}
 	No release published yet	Noch keine Version veröffentlicht
-	terraLauncher	terraLauncher
+	terraLaunch	terraLaunch
 	App	App
 	Latest	Neueste
 	Released	Veröffentlicht
@@ -284,7 +284,7 @@ month	Dec	Dez.
 	Full changelog	Vollständiges Änderungsprotokoll
 	link	Link
 	No apps match	Keine passenden Apps
-	Open terraLauncher to update.	Öffne terraLauncher, um zu aktualisieren.
+	Open terraLaunch to update.	Öffne terraLaunch, um zu aktualisieren.
 	{name} {v} is available	{name} {v} ist verfügbar
 	{count} updates are available	{count} Updates sind verfügbar
 	These notes weren't fetched (GitHub's request limit was reached). They're on the release page.	Diese Hinweise wurden nicht geladen (das Anfragelimit von GitHub ist erreicht). Sie stehen auf der Release-Seite.
@@ -309,7 +309,7 @@ filter	Installed	Installiert
 
 # Message templates (@msg): toasts from the backend. {placeholders} match any text.
 @msg	Couldn't open {name}: {e}	{name} konnte nicht geöffnet werden: {e}
-@msg	terraLauncher couldn't start its window on {backend}: {e}	terraLauncher konnte sein Fenster auf {backend} nicht starten: {e}
+@msg	terraLaunch couldn't start its window on {backend}: {e}	terraLaunch konnte sein Fenster auf {backend} nicht starten: {e}
 @msg	Download cancelled	Download abgebrochen
 @msg	{name} updated to {version}	{name} auf {version} aktualisiert
 @msg	{name} installed: {version}	{name} installiert: {version}
@@ -340,7 +340,7 @@ filter	Installed	Installiert
 @id	launcher.notes	Neuigkeiten
 @id	launcher.dismiss	Ausblenden
 @id	settings.open	Einstellungen
-@id	settings.quit	terraLauncher beenden
+@id	settings.quit	terraLaunch beenden
 @id	view.grid	Raster
 @id	view.table	Tabelle
 @id	filter.all	Alle
@@ -364,11 +364,11 @@ filter	Installed	Installiert
 @id	linux.preferred_kind	Neue Apps installieren als
 @id	tray.close_to_tray	Beim Schließen des Fensters im Infobereich weiterlaufen
 @id	tray.show_on_current_desktop	Fenster auf dem aktuellen Schreibtisch zeigen
-@id	tray.login_item	terraLauncher bei der Anmeldung starten
+@id	tray.login_item	terraLaunch bei der Anmeldung starten
 @id	appearance.theme	Erscheinungsbild
 
 # Tray (menu bar) menu and tooltip
-	Show terraLauncher	terraLauncher anzeigen
+	Show terraLaunch	terraLaunch anzeigen
 	Check for Updates	Nach Updates suchen
 	Visit getartcraft.com	getartcraft.com besuchen
 	ArtCraft on GitHub	ArtCraft auf GitHub
@@ -387,7 +387,7 @@ filter	Installed	Installiert
 	Next picture (→)	Nächstes Bild (→)
 	Loading pictures…	Bilder werden geladen…
 	Pictures couldn't be loaded. Reopen this page to try again.	Die Bilder konnten nicht geladen werden. Beim erneuten Öffnen der Seite wird es noch einmal versucht.
-@plural	terraLauncher · {n} update available|terraLauncher · {n} updates available	terraLauncher · {n} Update verfügbar|terraLauncher · {n} Updates verfügbar
+@plural	terraLaunch · {n} update available|terraLaunch · {n} updates available	terraLaunch · {n} Update verfügbar|terraLaunch · {n} Updates verfügbar
 
 	Download size: {size}	Downloadgröße: {size}
 	Install folder	Installationsordner
@@ -402,7 +402,7 @@ filter	Installed	Installiert
 @msg	couldn't use install folder {path}: {reason}	Installationsordner {path} konnte nicht verwendet werden: {reason}
 @msg	this release has no AppImage for a custom install folder	diese Veröffentlichung enthält kein AppImage für einen eigenen Installationsordner
 @msg	custom install folders aren't supported on this system	eigene Installationsordner werden auf diesem System nicht unterstützt
-@msg	{path} already exists and wasn't installed by terraLauncher	{path} existiert bereits und wurde nicht von terraLauncher installiert
+@msg	{path} already exists and wasn't installed by terraLaunch	{path} existiert bereits und wurde nicht von terraLaunch installiert
 @msg	couldn't move {path} to Trash ({reason}). Remove it in Finder instead.	{path} konnte nicht in den Papierkorb verschoben werden ({reason}). Entfernen Sie es stattdessen im Finder.
 @msg	Desktop shortcut created for {name}	Desktop-Verknüpfung für {name} erstellt
 @msg	Couldn't create the desktop shortcut: {e}	Desktop-Verknüpfung konnte nicht erstellt werden: {e}

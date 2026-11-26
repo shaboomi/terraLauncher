@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  terraLauncher MSI (WiX Toolset v5). Built by build-msi.ps1 (and the release workflow):
+  terraLaunch MSI (WiX Toolset v5). Built by build-msi.ps1 (and the release workflow):
 
     wix build terralauncher.wxs -arch x64 -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext
       -culture en-US -loc terralauncher.en-us.wxl -d Version=1.2.3 -d DisplayVersion=1.2.3-rc.1
@@ -12,7 +12,7 @@
   an unpackaged app. No portable.txt is installed, so settings go to the user's profile.
 
   Double-clicked, it opens a short wizard: Welcome, a folder page, Ready, progress, and a Finish
-  page with a ticked "Launch terraLauncher" box. A later version upgrades in place.
+  page with a ticked "Launch terraLaunch" box. A later version upgrades in place.
 
   Per-user packages can't use a file as a component's KeyPath (ICE38), so each component is keyed
   on an HKCU value, and the folders we create are removed on uninstall (ICE64).
@@ -23,17 +23,17 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
      xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
   <Package
-      Name="terraLauncher"
+      Name="terraLaunch"
       Manufacturer="terraPen"
       Version="$(var.Version)"
       UpgradeCode="FFF72D30-DA45-4C7E-ABC9-15C1287B9D7F"
       Scope="perUser"
       Compressed="yes"
       Language="1033">
-    <SummaryInformation Description="terraLauncher: install and update the terraPen apps" Manufacturer="terraPen" />
+    <SummaryInformation Description="terraLaunch: install and update the terraPen apps" Manufacturer="terraPen" />
     <!-- Same-version upgrades let successive pre-releases of one X.Y.Z replace each other. -->
     <MajorUpgrade AllowSameVersionUpgrades="yes"
-        DowngradeErrorMessage="A newer version of terraLauncher is already installed." />
+        DowngradeErrorMessage="A newer version of terraLaunch is already installed." />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
     <!-- Apps & features icon only; the shortcuts use the exe's own embedded icon, which every
@@ -59,7 +59,7 @@
     <SetProperty Id="INSTALLFOLDER" Action="RestoreLauncherFolder" Value="[PREVIOUSINSTALLFOLDER]"
         Before="CostInitialize" Sequence="both" Condition="PREVIOUSINSTALLFOLDER AND NOT INSTALLFOLDER" />
 
-    <Feature Id="Main" Title="terraLauncher" Level="1">
+    <Feature Id="Main" Title="terraLaunch" Level="1">
       <ComponentGroupRef Id="LauncherFiles" />
     </Feature>
 
@@ -74,8 +74,8 @@
     </UI>
 
     <Property Id="LauncherDisplayVersion" Value="$(var.DisplayVersion)" />
-    <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT" Value="terraLauncher $(var.DisplayVersion) is installed. Start it any time from the Start menu." />
-    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch terraLauncher" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT" Value="terraLaunch $(var.DisplayVersion) is installed. Start it any time from the Start menu." />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch terraLaunch" />
     <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
     <Property Id="WixShellExecTarget" Value="[#LauncherExe]" />
     <!-- Runs in the wizard's own process, so the launcher starts as the user. -->
@@ -97,7 +97,7 @@
       </Component>
 
       <Component Id="LauncherStartMenuShortcut" Directory="ProgramMenuFolder" Guid="8C7DE9A2-4664-4D5D-B461-AA48D7A50C7D">
-        <Shortcut Id="StartMenuShortcut" Name="terraLauncher"
+        <Shortcut Id="StartMenuShortcut" Name="terraLaunch"
             Description="Install and update the terraPen apps"
             Target="[#LauncherExe]" WorkingDirectory="INSTALLFOLDER">
           <ShortcutProperty Key="System.AppUserModel.ID" Value="xyz.terrapen.terralauncher" />
@@ -106,7 +106,7 @@
       </Component>
 
       <Component Id="LauncherDesktopShortcut" Directory="DesktopFolder" Guid="7561C47A-9B88-45AE-ADAC-E3B480EA3B38">
-        <Shortcut Id="DesktopShortcut" Name="terraLauncher"
+        <Shortcut Id="DesktopShortcut" Name="terraLaunch"
             Description="Install and update the terraPen apps"
             Target="[#LauncherExe]" WorkingDirectory="INSTALLFOLDER">
           <ShortcutProperty Key="System.AppUserModel.ID" Value="xyz.terrapen.terralauncher" />

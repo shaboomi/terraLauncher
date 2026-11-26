@@ -13,10 +13,10 @@ fn main() {
     }
     let mut res = winresource::WindowsResource::new();
     res.set_icon("../../assets/app-icon/terralauncher.ico")
-        .set("ProductName", "terraLauncher")
-        .set("FileDescription", "terraLauncher")
+        .set("ProductName", "terraLaunch")
+        .set("FileDescription", "terraLaunch")
         .set("CompanyName", "terraPen")
-        .set("LegalCopyright", "Copyright (c) the terraLauncher authors and the terraLauncher contributors. MIT OR Apache-2.0.")
+        .set("LegalCopyright", "Copyright (c) the terraLaunch authors and the terraLaunch contributors. MIT OR Apache-2.0.")
         .set("OriginalFilename", "terralauncher.exe")
         .set("InternalName", "terralauncher");
     if let Err(e) = res.compile() {

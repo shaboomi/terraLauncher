@@ -75,9 +75,9 @@ pub fn link(id: &str) -> Option<ImageSource<'static>> {
     })
 }
 
-/// terraLauncher's own mark: its app icon.
+/// terraLaunch's own mark: its app icon.
 pub fn launcher_mark() -> ImageSource<'static> {
-    egui::include_image!("../../../assets/app-icon/terralauncher.svg")
+    egui::include_image!("../../../assets/brand/t.svg")
 }
 
 #[cfg(test)]

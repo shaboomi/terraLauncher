@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/app-icon/hicolor/128x128/apps/xyz.terrapen.terralauncher.png" width="96" height="96" alt="terraLauncher icon">
+  <img src="assets/app-icon/hicolor/128x128/apps/xyz.terrapen.terralauncher.png" width="96" height="96" alt="terraLaunch icon">
 </p>
 
-<h1 align="center">terraLauncher</h1>
+<h1 align="center">terraLaunch</h1>
 
 <p align="center">One place to install, update and open the terraPen apps, with links to the web apps and hardware.</p>
 
@@ -11,19 +11,19 @@
 
 ## Downloads
 
-**terraLauncher 0.2.1** — [all releases](https://github.com/shaboomi/terraLauncher/releases)
+**terraLaunch 1.0.0** — [all releases](https://github.com/shaboomi/terraLauncher/releases)
 
 | System | Download |
 |---|---|
-| Windows 10/11 (64-bit) | [terralauncher-0.2.1-windows-x64.msi](https://github.com/shaboomi/terraLauncher/releases/download/v0.2.1/terralauncher-0.2.1-windows-x64.msi) |
-| macOS 11+ (Apple silicon and Intel) | [terralauncher-0.2.1-macos-universal.dmg](https://github.com/shaboomi/terraLauncher/releases/download/v0.2.1/terralauncher-0.2.1-macos-universal.dmg) |
-| Linux (x86_64) | [terralauncher-0.2.1-linux-x86_64.tar.gz](https://github.com/shaboomi/terraLauncher/releases/download/v0.2.1/terralauncher-0.2.1-linux-x86_64.tar.gz) |
+| Windows 10/11 (64-bit) | [terralauncher-1.0.0-windows-x64.msi](https://github.com/shaboomi/terraLauncher/releases/download/v1.0.0/terralauncher-1.0.0-windows-x64.msi) |
+| macOS 11+ (Apple silicon and Intel) | [terralauncher-1.0.0-macos-universal.dmg](https://github.com/shaboomi/terraLauncher/releases/download/v1.0.0/terralauncher-1.0.0-macos-universal.dmg) |
+| Linux (x86_64) | [terralauncher-1.0.0-linux-x86_64.tar.gz](https://github.com/shaboomi/terraLauncher/releases/download/v1.0.0/terralauncher-1.0.0-linux-x86_64.tar.gz) |
 
-Checksums: [SHA256SUMS.txt](https://github.com/shaboomi/terraLauncher/releases/download/v0.2.1/SHA256SUMS.txt)
+Checksums: [SHA256SUMS.txt](https://github.com/shaboomi/terraLauncher/releases/download/v1.0.0/SHA256SUMS.txt)
 
 - **Windows:** run the `.msi`. It installs for you only (no administrator rights) and adds Start menu and desktop shortcuts; a newer `.msi` upgrades it in place. It is not code-signed, so Windows may warn about an unknown publisher.
-- **macOS:** open the disk image and drag terraLauncher to Applications. It is not notarized, so the first time, right-click the app and choose Open.
-- **Linux:** `tar -xzf terralauncher-0.2.1-linux-x86_64.tar.gz --strip-components 1 -C ~/.local`, then run `terralauncher`.
+- **macOS:** open the disk image and drag terraLaunch to Applications. It is not notarized, so the first time, right-click the app and choose Open.
+- **Linux:** `tar -xzf terralauncher-1.0.0-linux-x86_64.tar.gz --strip-components 1 -C ~/.local`, then run `terralauncher`.
 
 The builds come from [`.github/workflows/release.yml`](.github/workflows/release.yml): pushing a tag
 `v<version>` that matches the version in `Cargo.toml` builds all three and publishes the release.
@@ -89,7 +89,7 @@ Working, checked on Windows 11:
 - Updating terraForge from the launcher.
 - Web apps and Products sections, opening in the browser.
 - No connection to ArtCraft's servers: the hosted catalog and release feed are off.
-- Detects a newer terraLauncher release on GitHub and offers it as a download (checked with a
+- Detects a newer terraLaunch release on GitHub and offers it as a download (checked with a
   pretend older version). It does not replace itself in place.
 
 Not done yet:
@@ -112,7 +112,7 @@ Not done yet:
 
 ## Credits and license
 
-terraLauncher is a fork of [ArtCraft Launcher](https://github.com/storytold/craft-launcher) by the
+terraLaunch is a fork of [ArtCraft Launcher](https://github.com/storytold/craft-launcher) by the
 ArtCraft Team and its contributors, used under its MIT / Apache-2.0 license. It is not affiliated
 with or endorsed by ArtCraft. The ArtCraft name, logo and marks are not part of that license and
 have been removed from this fork.

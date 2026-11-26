@@ -1,15 +1,20 @@
 # AGENTS.md: guide for AI agents and contributors
 
-terraLauncher installs, updates and opens the terraPen apps (terraGen, terraForge) and links to
+terraLaunch installs, updates and opens the terraPen apps (terraGen, terraForge) and links to
 the web apps and products. It is a fork of `storytold/craft-launcher` (ArtCraft Launcher), kept
 mergeable with upstream: the `upstream` remote points there.
 
 ## What differs from upstream
 
-- **Names.** Everything a user sees says **terraLauncher**; the binary is `terralauncher`, the app
+- **Names.** Everything a user sees says **terraLaunch**; the binary is `terralauncher`, the app
   id `xyz.terrapen.terralauncher`. The crates keep upstream's package names
   (`artcraft-launcher-core`, `-native`, `-ui-egui`, the app package `artcraft-launcher`) so
   upstream changes still merge. Do not rename them piecemeal.
+- **Former name.** It was **terraLauncher** until 1.0. What existing installs depend on keeps that
+  name: the repo `shaboomi/terraLauncher`, the data folders (`paths.rs`, `single_instance.rs`,
+  `terraLauncherData`), the Windows Run value (`login.rs`), the MSI's install folder and
+  `Software\terraPen\terraLauncher` key, and the release asset stem `terralauncher-*`.
+  `LAUNCHER.former_names` lets detection find copies installed under the old name.
 - **No ArtCraft marks.** The ArtCraft name, logo and "A" mark are trademarks and must not come
   back in a merge (`docs/brand/`, `assets/app-icon/` upstream, the header logo, the tray icon).
 - **No ArtCraft services.** The hosted catalog (`core::hosted_catalog` only answers from the bundled

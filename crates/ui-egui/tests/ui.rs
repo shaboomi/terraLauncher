@@ -1476,7 +1476,7 @@ fn the_backends_installability_answer_decides_an_update() {
 }
 
 /// The tooltip on the note beside a copy behind a release it can't take.
-const OUT_OF_REACH_TIP: &str = "0.5.0 is out, but terraLauncher can't install it over this copy.";
+const OUT_OF_REACH_TIP: &str = "0.5.0 is out, but terraLaunch can't install it over this copy.";
 
 #[test]
 /// The note beside a copy behind a release it can't take shows in the table too.
@@ -2432,7 +2432,7 @@ fn the_first_close_to_the_tray_is_explained_once() {
     l.hidden_to_tray(&mut host);
     assert!(l.settings.tray_hint_shown);
     assert_eq!(host.0.len(), 1, "{:?}", host.0);
-    assert_eq!(host.0[0].0, "terraLauncher is still running");
+    assert_eq!(host.0[0].0, "terraLaunch is still running");
     assert!(host.0[0].1.contains("tray icon"), "{}", host.0[0].1);
 }
 
@@ -2744,9 +2744,9 @@ fn the_launcher_updates_itself_and_quits_to_restart() {
         None,
     );
     h.run_steps(6);
-    h.get_by_role_and_label(egui::accesskit::Role::Label, "terraLauncher 0.2.0 is available.");
+    h.get_by_role_and_label(egui::accesskit::Role::Label, "terraLaunch 0.2.0 is available.");
     assert_eq!(
-        h.query_all_by_label_contains("terraLauncher 0.2.0 is available").count(),
+        h.query_all_by_label_contains("terraLaunch 0.2.0 is available").count(),
         1,
         "the update title is announced once, not once by the icon and once by the heading"
     );
@@ -2773,9 +2773,9 @@ fn launcher_update_prompts_to_relaunch_with_updated_version() {
     let (mut h, _) = harness_with(ev, ViewMode::Grid, egui::Theme::Dark, true, 1.0);
     h.run_steps(6);
     // Dialog pops up on launch with the update prompt
-    h.get_by_role_and_label(egui::accesskit::Role::Label, "terraLauncher 0.2.0 is available.");
+    h.get_by_role_and_label(egui::accesskit::Role::Label, "terraLaunch 0.2.0 is available.");
     assert_eq!(
-        h.query_all_by_label_contains("terraLauncher 0.2.0 is available").count(),
+        h.query_all_by_label_contains("terraLaunch 0.2.0 is available").count(),
         1,
         "the update title is announced once, not once by the icon and once by the heading"
     );

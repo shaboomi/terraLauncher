@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=terraLauncher
+Name=terraLaunch
 GenericName=App Launcher
 Comment=Install, update and open the terraPen apps
 Exec=terralauncher

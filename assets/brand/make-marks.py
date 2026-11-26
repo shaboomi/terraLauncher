@@ -5,6 +5,9 @@ assets/brand/terrapen.svg (terraPen's own mark, for tP). Each tile is a rounded 
 drawing centred at one stroke weight, so the four read as a set; each has its own colours.
 
 Run from the repository root: python assets/brand/make-marks.py
+
+Superseded: since 1.0 the tiles in this folder are drawn by hand and checked in as they are.
+Running this overwrites them with the older generated tiles.
 """
 import re
 from pathlib import Path

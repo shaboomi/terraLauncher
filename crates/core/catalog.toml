@@ -1,4 +1,4 @@
-# terraLauncher catalog: the apps the launcher installs, updates and opens.
+# terraLaunch catalog: the apps the launcher installs, updates and opens.
 # crates/core/build.rs turns this into `catalog::SUITE`. Link-only entries (web apps and
 # products) live in crates/core/src/catalog.rs (`WEB_APPS`, `PRODUCTS`).
 #

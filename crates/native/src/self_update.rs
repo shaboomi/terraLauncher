@@ -1,4 +1,4 @@
-//! terraLauncher updating itself.
+//! terraLaunch updating itself.
 //!
 //! Delegated to [`craft_update::self_update`].
 
@@ -103,7 +103,7 @@ pub fn update(
     let update_release = to_update_release(release, repo);
     let update_platform = to_update_platform(platform);
     let update_paths = to_update_paths(paths);
-    let update_http = craft_update::Http::new("terraLauncher/SelfUpdate")?;
+    let update_http = craft_update::Http::new("terraLaunch/SelfUpdate")?;
     let mut update_phase = |p: craft_update::JobPhase| {
         phase(match p {
             craft_update::JobPhase::Downloading { done, total } => JobPhase::Downloading { done, total },
@@ -251,7 +251,7 @@ mod tests {
 
         use artcraft_launcher_core::release::Asset;
         use artcraft_launcher_core::{Arch, Os};
-        // terraLauncher v0.19.0's files, without the signatures: macOS has only the disk
+        // terraLaunch v0.19.0's files, without the signatures: macOS has only the disk
         // image, and Windows has no x86 build.
         let names = [
             "terralauncher-0.19.0-freebsd-aarch64.tar.gz",

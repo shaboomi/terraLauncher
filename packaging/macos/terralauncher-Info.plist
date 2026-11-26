@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>terraLauncher</string>
+    <string>terraLaunch</string>
     <key>CFBundleDisplayName</key>
-    <string>terraLauncher</string>
+    <string>terraLaunch</string>
     <key>CFBundleIdentifier</key>
     <string>xyz.terrapen.terralauncher</string>
     <key>CFBundleExecutable</key>
-    <string>terraLauncher</string>
+    <string>terraLaunch</string>
     <key>CFBundleIconFile</key>
     <string>terralauncher</string>
     <key>CFBundlePackageType</key>
@@ -27,6 +27,6 @@
     <key>NSHighResolutionCapable</key>
     <true/>
     <key>NSHumanReadableCopyright</key>
-    <string>Copyright (c) the terraLauncher authors and the ArtCraft Launcher contributors. MIT OR Apache-2.0.</string>
+    <string>Copyright (c) the terraLaunch authors and the ArtCraft Launcher contributors. MIT OR Apache-2.0.</string>
 </dict>
 </plist>

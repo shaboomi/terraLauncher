@@ -53,7 +53,7 @@ fn detect_language() {
 
     // Update loading text in the detected language.
     if let Some(el) = document.get_element_by_id("launcher_loading") {
-        el.set_text_content(Some(i18n::tr(i18n::system_lang(), "Loading terraLauncher…")));
+        el.set_text_content(Some(i18n::tr(i18n::system_lang(), "Loading terraLaunch…")));
     }
 }
 pub fn start() {

@@ -1,4 +1,4 @@
-//! "Start terraLauncher when I log in".
+//! "Start terraLaunch when I log in".
 //!
 //! - macOS: a LaunchAgent in `~/Library/LaunchAgents`.
 //! - Windows: a value under `HKCU\…\CurrentVersion\Run`.
@@ -343,7 +343,7 @@ fn flatpak_exec(app_id: &str) -> String {
 #[cfg_attr(any(target_os = "macos", windows), allow(dead_code))]
 fn entry_text(exec: &str, extra: &str) -> String {
     format!(
-        "[Desktop Entry]\nType=Application\nName=terraLauncher\nComment=Install and update the terraPen apps\nExec={exec} {HIDDEN_FLAG}\nIcon={ID}\nTerminal=false\nX-GNOME-Autostart-enabled=true\n{extra}"
+        "[Desktop Entry]\nType=Application\nName=terraLaunch\nComment=Install and update the terraPen apps\nExec={exec} {HIDDEN_FLAG}\nIcon={ID}\nTerminal=false\nX-GNOME-Autostart-enabled=true\n{extra}"
     )
 }
 
@@ -527,7 +527,7 @@ mod tests {
         assert_eq!(
             autostart_entry(Path::new("/usr/bin/artcraft-launcher")).as_deref(),
             Some(
-                "[Desktop Entry]\nType=Application\nName=terraLauncher\nComment=Install and update the terraPen apps\nExec=\"/usr/bin/artcraft-launcher\" --hidden\nIcon=xyz.terrapen.terralauncher\nTerminal=false\nX-GNOME-Autostart-enabled=true\n"
+                "[Desktop Entry]\nType=Application\nName=terraLaunch\nComment=Install and update the terraPen apps\nExec=\"/usr/bin/artcraft-launcher\" --hidden\nIcon=xyz.terrapen.terralauncher\nTerminal=false\nX-GNOME-Autostart-enabled=true\n"
             )
         );
     }

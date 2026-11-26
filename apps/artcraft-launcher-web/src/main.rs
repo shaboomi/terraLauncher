@@ -1,4 +1,4 @@
-//! terraLauncher in the browser.
+//! terraLaunch in the browser.
 //!
 //! A browser can't install apps, so this build lists the terraPen apps with each app's latest
 //! release (read straight from the GitHub API, which allows cross-origin requests) and offers the

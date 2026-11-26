@@ -33,7 +33,7 @@ pub enum InstallSource {
 impl InstallSource {
     pub fn label(self) -> &'static str {
         match self {
-            Self::Launcher => "terraLauncher",
+            Self::Launcher => "terraLaunch",
             Self::MacApp => "Applications folder",
             Self::Msi => "Windows Installer",
             Self::Setup => "Windows setup program",

@@ -230,7 +230,7 @@ month	Dec	Dez.
 	Downloads for {platform}	Downloads für {platform}
 	No downloads for this system	Keine Downloads für dieses System
 	Join the ArtCraft community on Discord	Tritt der ArtCraft-Community auf Discord bei
-	ArtCraft on {name}	ArtCraft auf {name}
+	terraPen on {name}	terraPen auf {name}
 	Couldn't open {name}: {e}	{name} konnte nicht geöffnet werden: {e}
 	Download cancelled	Download abgebrochen
 	Available to install	Installierbar
@@ -371,7 +371,7 @@ filter	Installed	Installiert
 	Show terraLaunch	terraLaunch anzeigen
 	Check for Updates	Nach Updates suchen
 	Visit getartcraft.com	getartcraft.com besuchen
-	ArtCraft on GitHub	ArtCraft auf GitHub
+	ArtCraft on GitHub	terraPen auf GitHub
 	Join the ArtCraft Discord	Dem ArtCraft-Discord beitreten
 	App details	App-Details
 	More actions for {name}	Weitere Aktionen für {name}

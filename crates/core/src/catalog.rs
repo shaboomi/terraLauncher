@@ -164,13 +164,15 @@ pub const WEBSITE_URL: &str = "https://terrapen.xyz";
 pub const GITHUB_OWNER: &str = "shaboomi";
 /// The launcher's source.
 pub const GITHUB_URL: &str = "https://github.com/shaboomi/terraLauncher";
-/// Social accounts: (service, URL). None yet.
-pub const SOCIAL: [(&str, &str); 0] = [];
+/// terraPen's community server: an invite link, which opens the Discord app where it is installed.
+pub const DISCORD_INVITE_URL: &str = "https://discord.gg/Q3kzyjSEb";
+/// Social accounts: (service, URL), shown as logos in the footer and in Settings.
+pub const SOCIAL: [(&str, &str); 1] = [("Discord", DISCORD_INVITE_URL)];
 
-/// There is no community server. The upstream plumbing that opens one stays (so merges from
-/// upstream stay small) but the UI no longer offers it, and both answers are the website.
-pub const DISCORD_URL: &str = WEBSITE_URL;
-pub const DISCORD_APP_URL: &str = WEBSITE_URL;
+/// Upstream's plumbing for opening its server (the web page, or a `discord://` link straight into
+/// the app) stays so merges from upstream stay small. Both answers are the invite.
+pub const DISCORD_URL: &str = DISCORD_INVITE_URL;
+pub const DISCORD_APP_URL: &str = DISCORD_INVITE_URL;
 
 /// A link the launcher shows as a card and opens in the browser: nothing is installed.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

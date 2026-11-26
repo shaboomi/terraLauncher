@@ -187,7 +187,7 @@ month	Dec	dec
 	Downloads for {platform}	Preuzimanja za {platform}
 	No downloads for this system	Nema preuzimanja za ovaj sistem
 	Join the ArtCraft community on Discord	Pridružite se ArtCraft zajednici na Discordu
-	ArtCraft on {name}	ArtCraft na {name}
+	terraPen on {name}	terraPen na {name}
 	Couldn't open {name}: {e}	Nije moguće otvoriti {name}: {e}
 	Download cancelled	Preuzimanje otkazano
 	Available to install	Dostupno za instalaciju
@@ -329,7 +329,7 @@ filter	Installed	Instalirano
 	Show terraLaunch	Prikaži terraLaunch
 	Check for Updates	Provjeri ažuriranja
 	Visit getartcraft.com	Posjetite getartcraft.com
-	ArtCraft on GitHub	ArtCraft na GitHubu
+	ArtCraft on GitHub	terraPen na GitHubu
 	Join the ArtCraft Discord	Pridružite se ArtCraft Discordu
 @plural	terraLaunch · {n} update available|terraLaunch · {n} updates available	terraLaunch · dostupno {n} ažuriranje|terraLaunch · dostupna {n} ažuriranja|terraLaunch · dostupno {n} ažuriranja
 	Install folder	Folder za instalaciju

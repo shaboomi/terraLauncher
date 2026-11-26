@@ -1,10 +1,10 @@
-# Renders terraLauncher's icon (terralauncher.svg) and menu-bar template (tray-template.svg) at
+# Renders terraLaunch's icon (assets/brand/t.svg) and menu-bar template (tray-template.svg) at
 # every size the app needs, and packs the Windows .ico. Needs Inkscape 1.x on PATH.
 # Run from anywhere: pwsh assets/app-icon/make-icons.ps1
 $ErrorActionPreference = 'Stop'
 $here = $PSScriptRoot
 $id = 'xyz.terrapen.terralauncher'
-$icon = Join-Path $here 'terralauncher.svg'
+$icon = Join-Path $here '../brand/t.svg'
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "terralauncher-icons-$PID"
 New-Item -ItemType Directory -Force $tmp | Out-Null
 

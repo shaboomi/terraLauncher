@@ -995,8 +995,8 @@ mod explorer_tests {
 
     #[test]
     fn explorer_select_uses_backslashes() {
-        let arg = explorer_select_arg(Path::new("C:/Users/A B/AppData/Local/terraLauncher/apps/photocraft.exe"));
-        assert_eq!(arg.unwrap(), r#"/select,"C:\Users\A B\AppData\Local\terraLauncher\apps\photocraft.exe""#);
+        let arg = explorer_select_arg(Path::new("C:/Users/A B/AppData/Local/terraLaunch/apps/photocraft.exe"));
+        assert_eq!(arg.unwrap(), r#"/select,"C:\Users\A B\AppData\Local\terraLaunch\apps\photocraft.exe""#);
     }
 }
 

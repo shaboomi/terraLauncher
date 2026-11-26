@@ -1,4 +1,4 @@
-//! terraLauncher's interface: the terraPen apps as a grid of cards or a table, with
+//! terraLaunch's interface: the terraPen apps as a grid of cards or a table, with
 //! install, update, open and remove, shared by the desktop and web builds.
 //!
 //! The UI is thin: it draws [`model::AppEntry`]s and sends

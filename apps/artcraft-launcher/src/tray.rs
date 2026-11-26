@@ -45,19 +45,19 @@ fn load_icon() -> Result<tray_icon::Icon, String> {
 /// Windows and macOS keep tray-icon's defaults: there the title is drawn next to the icon (macOS)
 /// or unsupported (Windows), and the id never reaches the user.
 fn identity(builder: TrayIconBuilder) -> TrayIconBuilder {
-    if cfg!(any(target_os = "macos", target_os = "windows")) { builder } else { builder.with_id("terralauncher").with_title("terraLauncher") }
+    if cfg!(any(target_os = "macos", target_os = "windows")) { builder } else { builder.with_id("terralauncher").with_title("terraLaunch") }
 }
 
 impl Tray {
     /// Creates the tray icon. `wake` repaints the UI so it sees the action, even when hidden.
     /// `on_quit` runs when Quit is picked, before the UI can see it: the UI may never get to.
     pub fn new(wake: impl Fn() + Send + Sync + Clone + 'static, on_quit: impl Fn() + Send + Sync + 'static) -> Result<Self, String> {
-        let show = MenuItem::new(i18n::t("Show terraLauncher"), true, None);
+        let show = MenuItem::new(i18n::t("Show terraLaunch"), true, None);
         let check = MenuItem::new(i18n::t("Check for Updates"), true, None);
         use artcraft_launcher_core::catalog::{GITHUB_URL, WEBSITE_URL};
         let website = MenuItem::new(i18n::t("Visit terrapen.xyz"), true, None);
-        let github = MenuItem::new(i18n::t("terraLauncher on GitHub"), true, None);
-        let quit = MenuItem::new(i18n::t("Quit terraLauncher"), true, None);
+        let github = MenuItem::new(i18n::t("terraLaunch on GitHub"), true, None);
+        let quit = MenuItem::new(i18n::t("Quit terraLaunch"), true, None);
         let menu = Menu::new();
         menu.append_items(&[&show, &check, &PredefinedMenuItem::separator(), &website, &github, &PredefinedMenuItem::separator(), &quit])
             .map_err(|e| e.to_string())?;
@@ -69,7 +69,7 @@ impl Tray {
         let builder = builder.with_icon_templated(image);
         #[cfg(not(target_os = "macos"))]
         let builder = builder.with_icon(image);
-        let icon = builder.with_menu_on_left_click(cfg!(target_os = "macos")).with_tooltip("terraLauncher").build().map_err(|e| e.to_string())?;
+        let icon = builder.with_menu_on_left_click(cfg!(target_os = "macos")).with_tooltip("terraLaunch").build().map_err(|e| e.to_string())?;
         let (tx, rx): (Sender<TrayAction>, Receiver<TrayAction>) = channel();
         let (show_id, check_id, quit_id) = (show.id().clone(), check.id().clone(), quit.id().clone());
         {
@@ -102,11 +102,11 @@ impl Tray {
             }
         }));
         let labels = vec![
-            (show, "Show terraLauncher"),
+            (show, "Show terraLaunch"),
             (check, "Check for Updates"),
             (website, "Visit terrapen.xyz"),
-            (github, "terraLauncher on GitHub"),
-            (quit, "Quit terraLauncher"),
+            (github, "terraLaunch on GitHub"),
+            (quit, "Quit terraLaunch"),
         ];
         Ok(Self { icon, show: show_id, check: check_id, quit: quit_id, rx, tooltip: String::new(), language: String::new(), labels })
     }
@@ -130,9 +130,9 @@ impl Tray {
             self.language = lang.code().to_string();
         }
         let tip = if count == 0 {
-            "terraLauncher".to_string()
+            "terraLaunch".to_string()
         } else {
-            i18n::trn(lang, count as u64, "terraLauncher · {n} update available", "terraLauncher · {n} updates available")
+            i18n::trn(lang, count as u64, "terraLaunch · {n} update available", "terraLaunch · {n} updates available")
         };
         if tip != self.tooltip {
             let _ = self.icon.set_tooltip(Some(&tip));

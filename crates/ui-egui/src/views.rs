@@ -122,7 +122,7 @@ impl UpdateLabels {
             Primary::ManualUpdate(v, url) => Some(Self {
                 label: format!("{} ↗", fmt(tl!("Update to {v}"), &[("v", &v)])),
                 shorter: vec![tl!("Update")],
-                tip: Some(tl!("terraLauncher can't install this build itself. This opens its release page, to download and install it yourself.")),
+                tip: Some(tl!("terraLaunch can't install this build itself. This opens its release page, to download and install it yourself.")),
                 link: Some(url),
             }),
             _ => None,
@@ -150,7 +150,7 @@ fn update_split<'a>(ui: &Ui, place: Place, main_w: f32, open: &'a str, update: &
 /// Why a newer release noted beside an installed copy isn't offered as an update: `newer` from
 /// [`LauncherUi::out_of_reach`].
 fn out_of_reach_tip(newer: Option<String>) -> Option<String> {
-    Some(fmt(tl!("{latest} is out, but terraLauncher can't install it over this copy."), &[("latest", &newer?)]))
+    Some(fmt(tl!("{latest} is out, but terraLaunch can't install it over this copy."), &[("latest", &newer?)]))
 }
 
 /// The width of the main button: what's left of `width` beside the square `⋯` menu.
@@ -220,6 +220,14 @@ const TITLE_SIZE: f32 = 16.0;
 const TAGLINE_SIZE: f32 = 12.0;
 /// The card's top strip: number tab and links.
 const STRIP_H: f32 = 40.0;
+/// The app whose card the web apps' cards follow in the grid.
+const WEB_APPS_AFTER: &str = "terragen";
+
+/// One card in the apps grid: an app, or a web app drawn at an app card's size.
+enum GridCell {
+    App(&'static str),
+    Link(&'static artcraft_launcher_core::catalog::Link),
+}
 const CARD_PAD: f32 = 20.0;
 /// Room macOS's traffic lights take at the left of the header.
 const TRAFFIC_LIGHTS_W: f32 = 72.0;
@@ -237,15 +245,25 @@ impl LauncherUi {
             if bar == TitleBar::MacOs {
                 ui.add_space(TRAFFIC_LIGHTS_W);
             }
-            // The launcher's name in the display face, in its own cell: "terra", then "Launcher" in the accent.
+            // The launcher's name in the display face, in its own cell: "terra", then "Launch" in the
+            // accent, and its version to the right in the mono face.
             let mut name = egui::text::LayoutJob::default();
             let face =
                 |color| egui::TextFormat { font_id: FontId::new(17.0, theme::display()), color, extra_letter_spacing: -0.4, ..Default::default() };
             name.append("terra", 0.0, face(t.ink_strong));
-            name.append("Launcher", 0.0, face(t.accent));
+            name.append("Launch", 0.0, face(t.accent));
             let name = ui.painter().layout_job(name);
-            let (cell, _) = ui.allocate_exact_size(vec2(name.size().x + 40.0, h), Sense::hover());
-            ui.painter().galley(cell.center() - name.size() / 2.0, name, t.ink_strong);
+            let version = ui.painter().layout_no_wrap(concat!("v", env!("CARGO_PKG_VERSION")).to_string(), FontId::new(theme::HUD_SIZE, theme::mono()), t.faint);
+            const GAP: f32 = 8.0;
+            let width = name.size().x + GAP + version.size().x;
+            let (cell, cell_response) = ui.allocate_exact_size(vec2(width + 40.0, h), Sense::hover());
+            cell_response.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Label, true, concat!("terraLaunch ", env!("CARGO_PKG_VERSION"))));
+            let left = cell.center().x - width / 2.0;
+            let name_pos = egui::pos2(left, cell.center().y - name.size().y / 2.0);
+            // The version sits on the name's baseline, near enough: centred on its lower half.
+            let version_pos = egui::pos2(left + name.size().x + GAP, name_pos.y + name.size().y * 0.62 - version.size().y / 2.0);
+            ui.painter().galley(name_pos, name, t.ink_strong);
+            ui.painter().galley(version_pos, version, t.faint);
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 if bar == TitleBar::Custom {
                     widgets::window_buttons(ui, h);
@@ -276,7 +294,7 @@ impl LauncherUi {
         }
     }
 
-    /// A banner over the toolbar when a newer terraLauncher release is known: either the
+    /// A banner over the toolbar when a newer terraLaunch release is known: either the
     /// update-in-place controls, or a plain link when this build can't update itself.
     fn launcher_update_banner(&mut self, ui: &mut Ui, t: &Tokens, r: &artcraft_launcher_core::Release) {
         egui::Frame::new()
@@ -288,7 +306,7 @@ impl LauncherUi {
                     widgets::tag(ui, tl!("Update"), t.accent, Color32::WHITE);
                     ui.add_space(4.0);
                     ui.label(
-                        RichText::new(fmt(tl!("terraLauncher {version} is available."), &[("version", &r.version_label())]))
+                        RichText::new(fmt(tl!("terraLaunch {version} is available."), &[("version", &r.version_label())]))
                             .family(theme::medium())
                             .color(t.ink_strong),
                     );
@@ -578,18 +596,38 @@ impl LauncherUi {
         if ids.is_empty() {
             return;
         }
+        // The web apps' cards follow terraGen's, in the same grid (see `web_apps_inline`).
+        let web_apps = if self.web_apps_inline(ids) { crate::links::web_apps_matching(&self.search) } else { Vec::new() };
+        let cells: Vec<GridCell> = ids
+            .iter()
+            .flat_map(|&id| {
+                let after = if id == WEB_APPS_AFTER { web_apps.as_slice() } else { &[] };
+                std::iter::once(GridCell::App(id)).chain(after.iter().map(|&link| GridCell::Link(link)))
+            })
+            .collect();
         let width = ui.available_width();
         // Neighbouring cards share their 1 px hairline, like the site's `gap-px` grid.
         let cols = ((width / CARD_MIN_W).floor() as usize).max(1);
         let card_w = (width + (cols as f32 - 1.0)) / cols as f32;
-        let rows = ids.len().div_ceil(cols);
+        let rows = cells.len().div_ceil(cols);
         let height = rows as f32 * (CARD_H - 1.0) + 1.0;
         let (area, _) = ui.allocate_exact_size(vec2(width, height), Sense::hover());
-        for (i, id) in ids.iter().enumerate() {
+        for (i, cell) in cells.iter().enumerate() {
             let (row, col) = (i / cols, i % cols);
             let min = area.min + vec2(col as f32 * (card_w - 1.0), row as f32 * (CARD_H - 1.0));
-            self.card(ui, id, Rect::from_min_size(min, vec2(card_w, CARD_H)));
+            let rect = Rect::from_min_size(min, vec2(card_w, CARD_H));
+            match cell {
+                GridCell::App(id) => self.card(ui, id, rect),
+                GridCell::Link(link) => crate::links::app_sized_card(ui, link, rect, STRIP_H, CARD_PAD, self.reduce_motion),
+            }
         }
+    }
+
+    /// Whether the web apps are drawn in the apps grid, after terraGen's card, rather than in a
+    /// "Web apps" section of their own: in the grid view, with every app listed (not the hidden
+    /// ones), when terraGen's card is among `ids`.
+    pub(crate) fn web_apps_inline(&self, ids: &[&'static str]) -> bool {
+        self.settings.view == ViewMode::Grid && self.settings.filter == Filter::All && ids.contains(&WEB_APPS_AFTER)
     }
 
     /// Draws one app card into the caller-allocated `rect`. A card whose app has a details page gets
@@ -1724,7 +1762,7 @@ mod tests {
         Release {
             tag: "v0.4.1".into(),
             version: None,
-            name: "terraLauncher v0.4.1".into(),
+            name: "terraLaunch v0.4.1".into(),
             published_at: None,
             html_url: "https://github.com/storytold/craft-launcher/releases/tag/v0.4.1".into(),
             notes: String::new(),

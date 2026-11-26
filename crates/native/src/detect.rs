@@ -145,14 +145,13 @@ fn suite_folders(app: &CraftApp, roots: &[PathBuf]) -> Vec<PathBuf> {
 }
 
 /// The registry keys an MSI records its install folder in (value `InstallDir`). The launcher's package
-/// keeps its own key, under the publisher name.
+/// keeps its own key, under the publisher name, and still writes it under its former name.
 #[cfg_attr(not(windows), allow(dead_code))]
 fn install_dir_keys(app: &CraftApp) -> Vec<String> {
-    let mut keys = vec![format!(r"SOFTWARE\{}", app.name)];
-    if app.id == artcraft_launcher_core::catalog::LAUNCHER_ID {
-        keys.push(format!(r"SOFTWARE\{PUBLISHER}\{}", app.name));
+    if app.id != artcraft_launcher_core::catalog::LAUNCHER_ID {
+        return vec![format!(r"SOFTWARE\{}", app.name)];
     }
-    keys
+    app.names().flat_map(|name| [format!(r"SOFTWARE\{name}"), format!(r"SOFTWARE\{PUBLISHER}\{name}")]).collect()
 }
 
 /// Version from `<app> --version` output. Binaries print the machine id (`photocraft 0.7.0`),
@@ -1307,7 +1306,12 @@ mod tests {
     fn the_launcher_records_its_folder_under_the_publisher_key() {
         assert_eq!(
             install_dir_keys(&artcraft_launcher_core::catalog::LAUNCHER),
-            [r"SOFTWARE\terraLauncher".to_string(), format!(r"SOFTWARE\{LEARNING_MACHINES}\terraLauncher")]
+            [
+                r"SOFTWARE\terraLaunch".to_string(),
+                r"SOFTWARE\terraPen\terraLaunch".to_string(),
+                r"SOFTWARE\terraLauncher".to_string(),
+                r"SOFTWARE\terraPen\terraLauncher".to_string(),
+            ]
         );
         let photo = CraftApp::by_id("photocraft").unwrap();
         assert_eq!(install_dir_keys(photo), [r"SOFTWARE\PhotoCraft".to_string()]);

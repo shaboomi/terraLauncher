@@ -1,6 +1,6 @@
 [package]
 name = "artcraft-launcher"
-description = "terraLauncher: install, update and open the terraPen apps"
+description = "terraLaunch: install, update and open the terraPen apps"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

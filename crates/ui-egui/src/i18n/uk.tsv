@@ -1,4 +1,4 @@
-# Ukrainian (uk) catalog for terraLauncher.
+# Ukrainian (uk) catalog for terraLaunch.
 # Format: context<TAB>source<TAB>translation
 # Empty context = plain UI string (tl!, t).
 # @id = command-id keyed (tr_id).
@@ -6,11 +6,11 @@
 # @msg = status/error message template (message, msg).
 # Other context = disambiguation for tr_ctx.
 #
-# Clean-room: written from the meaning of terraLauncher's English labels in clear,
+# Clean-room: written from the meaning of terraLaunch's English labels in clear,
 # idiomatic Ukrainian for users of creative software.
 #
 # Coverage: the whole interface — every menu string and tl! literal (complete_menus = true).
-# Left in English on purpose: product name "terraLauncher" (and its "Launcher" tag), suite
+# Left in English on purpose: product name "terraLaunch" (and its "Launcher" tag), suite
 # name "terraPen apps",
 # app names (PhotoCraft, LightCraft, FilmCraft, DesignCraft, VectorCraft, PdfCraft, EffectCraft,
 # WordCraft, DeckCraft, GridCraft, CADCraft, SoundCraft, FigCraft, Craft Anything, TextureCraft,
@@ -51,9 +51,9 @@
 	Open	Відкрити
 	Open {version}	Відкрити {version}
 	Open {installed} without updating. {latest} stays available.	Відкрити {installed} без оновлення. Версія {latest} залишиться доступною.
-	{latest} is out, but terraLauncher can't install it over this copy.	Версія {latest} уже вийшла, але terraLauncher не може встановити її поверх цієї копії.
-	terraLauncher can't install this build itself. This opens its release page, to download and install it yourself.	terraLauncher не може сам установити цю збірку. Відкриється сторінка випуску, щоб ви завантажили й установили її самі.
-	terraLauncher can't install version {version} over this copy.	terraLauncher не може встановити версію {version} поверх цієї копії.
+	{latest} is out, but terraLaunch can't install it over this copy.	Версія {latest} уже вийшла, але terraLaunch не може встановити її поверх цієї копії.
+	terraLaunch can't install this build itself. This opens its release page, to download and install it yourself.	terraLaunch не може сам установити цю збірку. Відкриється сторінка випуску, щоб ви завантажили й установили її самі.
+	terraLaunch can't install version {version} over this copy.	terraLaunch не може встановити версію {version} поверх цієї копії.
 	Download for {os}	Завантажити для {os}
 	Download	Завантажити
 	Coming soon	Незабаром
@@ -86,7 +86,7 @@
 	{name} wasn't opened: a quote in its launch options isn't closed.	{name} не відкрито: у параметрах запуску не закрито лапку.
 	Save	Зберегти
 	All releases	Усі випуски
-	terraLauncher {version} is available.	Доступний terraLauncher {version}.
+	terraLaunch {version} is available.	Доступний terraLaunch {version}.
 	Dismiss	Закрити
 	Update and restart	Оновити й перезапустити
 	A new version is available. Would you like to relaunch with the updated version?	Доступна нова версія. Перезапустити з оновленою версією?
@@ -97,7 +97,7 @@
 	Released {date}	Випущено {date}
 	Open on GitHub	Відкрити на GitHub
 	Close	Закрити
-	terraLauncher {version}	terraLauncher {version}
+	terraLaunch {version}	terraLaunch {version}
 	Only when I ask	Лише за моїм запитом
 	Automatically download and install updates	Автоматично завантажувати й встановлювати оновлення
 	Ask for permission once when updating all apps	Запитувати дозвіл один раз під час оновлення всіх застосунків
@@ -110,15 +110,15 @@
 	Updates always use the format an app was installed with.	Оновлення завжди використовують формат, у якому застосунок було встановлено.
 	Running in the background	Робота у фоновому режимі
 	Keep running in the tray when the window is closed	Продовжувати роботу в треї після закриття вікна
-	Hide terraLauncher from the Dock while in the background	Приховувати terraLauncher з Dock під час роботи у фоновому режимі
-	terraLauncher is still running	terraLauncher усе ще працює
+	Hide terraLaunch from the Dock while in the background	Приховувати terraLaunch з Dock під час роботи у фоновому режимі
+	terraLaunch is still running	terraLaunch усе ще працює
 	It's in the tray: open it or quit it from the tray icon, or turn this off in the settings.	Він у треї: відкрийте або закрийте його через значок у треї або вимкніть це в налаштуваннях.
 	Show the window on the current desktop	Показувати вікно на поточному робочому столі
-	Start terraLauncher when I log in	Запускати terraLauncher під час входу в систему
+	Start terraLaunch when I log in	Запускати terraLaunch під час входу в систему
 	Community	Спільнота
 	Questions, ideas and news from the ArtCraft team	Запитання, ідеї та новини від команди ArtCraft
 	Appearance	Зовнішній вигляд
-	Quit terraLauncher	Вийти з terraLauncher
+	Quit terraLaunch	Вийти з terraLaunch
 	Done	Готово
 	Uninstall {name}?	Видалити {name}?
 	The app will be moved to the Trash. Your documents and settings stay.	Застосунок буде переміщено в Кошик. Ваші документи та налаштування залишаться.
@@ -161,7 +161,7 @@
 	Open link	Відкрити посилання
 	Update	Оновити
 	{name} icon	Значок {name}
-	Loading terraLauncher…	Завантаження terraLauncher…
+	Loading terraLaunch…	Завантаження terraLaunch…
 	Cancel update	Скасувати оновлення
 	Stop waiting; the update can be started again later	Припинити чекати; оновлення можна буде запустити знову пізніше
 	Download again	Завантажити ще раз
@@ -244,7 +244,7 @@ month	Dec	груд.
 	Version {version} installed	Версія {version} встановлена
 	Version {latest}	Версія {latest}
 	No release published yet	Випуск ще не опубліковано
-	terraLauncher	terraLauncher
+	terraLaunch	terraLaunch
 	App	Застосунок
 	Latest	Остання
 	Released	Випущено
@@ -277,7 +277,7 @@ month	Dec	груд.
 	Full changelog	Повний список змін
 	link	посилання
 	No apps match	Немає відповідних застосунків
-	Open terraLauncher to update.	Відкрийте terraLauncher, щоб оновити.
+	Open terraLaunch to update.	Відкрийте terraLaunch, щоб оновити.
 	{name} {v} is available	Доступне оновлення {name} {v}
 	{count} updates are available	Доступні оновлення ({count})
 	These notes weren't fetched (GitHub's request limit was reached). They're on the release page.	Ці примітки не вдалося отримати (вичерпано ліміт запитів GitHub). Вони є на сторінці випуску.
@@ -334,7 +334,7 @@ filter	Installed	Встановлені
 @id	launcher.notes	Що нового
 @id	launcher.dismiss	Закрити
 @id	settings.open	Налаштування
-@id	settings.quit	Вийти з terraLauncher
+@id	settings.quit	Вийти з terraLaunch
 @id	view.grid	Сітка
 @id	view.table	Таблиця
 @id	filter.all	Усі
@@ -357,11 +357,11 @@ filter	Installed	Встановлені
 @id	linux.preferred_kind	Встановлювати нові застосунки як
 @id	tray.close_to_tray	Продовжувати роботу в треї після закриття вікна
 @id	tray.show_on_current_desktop	Показувати вікно на поточному робочому столі
-@id	tray.login_item	Запускати terraLauncher під час входу в систему
+@id	tray.login_item	Запускати terraLaunch під час входу в систему
 @id	appearance.theme	Зовнішній вигляд
 
 # Tray (menu bar) menu and tooltip
-	Show terraLauncher	Показати terraLauncher
+	Show terraLaunch	Показати terraLaunch
 	Check for Updates	Перевірити оновлення
 	Visit getartcraft.com	Відкрити getartcraft.com
 	ArtCraft on GitHub	ArtCraft на GitHub
@@ -380,7 +380,7 @@ filter	Installed	Встановлені
 	Next picture (→)	Наступне зображення (→)
 	Loading pictures…	Завантаження зображень…
 	Pictures couldn't be loaded. Reopen this page to try again.	Не вдалося завантажити зображення. Відкрийте цю сторінку ще раз.
-@plural	terraLauncher · {n} update available|terraLauncher · {n} updates available	terraLauncher · {n} оновлення|terraLauncher · {n} оновлення|terraLauncher · {n} оновлень
+@plural	terraLaunch · {n} update available|terraLaunch · {n} updates available	terraLaunch · {n} оновлення|terraLaunch · {n} оновлення|terraLaunch · {n} оновлень
 	Download size: {size}	Розмір завантаження: {size}
 	Install folder	Папка встановлення
 	Default install folder	Папка встановлення за замовчуванням
@@ -394,7 +394,7 @@ filter	Installed	Встановлені
 @msg	couldn't use install folder {path}: {reason}	не вдалося використати папку встановлення {path}: {reason}
 @msg	this release has no AppImage for a custom install folder	у цьому випуску немає AppImage для власної папки встановлення
 @msg	custom install folders aren't supported on this system	ця система не підтримує власні папки встановлення
-@msg	{path} already exists and wasn't installed by terraLauncher	{path} уже існує і не був встановлений через terraLauncher
+@msg	{path} already exists and wasn't installed by terraLaunch	{path} уже існує і не був встановлений через terraLaunch
 @msg	couldn't move {path} to Trash ({reason}). Remove it in Finder instead.	не вдалося перемістити {path} у Кошик ({reason}). Натомість видаліть його у Finder.
 @msg	Desktop shortcut created for {name}	Ярлик на робочому столі для {name} створено
 @msg	Couldn't create the desktop shortcut: {e}	Не вдалося створити ярлик на робочому столі: {e}

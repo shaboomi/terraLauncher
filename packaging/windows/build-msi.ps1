@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Build the terraLauncher MSI from an already built terralauncher.exe.
+  Build the terraLaunch MSI from an already built terralauncher.exe.
 
 .DESCRIPTION
   Stages terralauncher.exe with its licence files and runs WiX v5 on terralauncher.wxs, writing

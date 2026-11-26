@@ -1,4 +1,4 @@
-# Russian (ru) catalog for terraLauncher.
+# Russian (ru) catalog for terraLaunch.
 # Format: context<TAB>source<TAB>translation
 # Empty context = plain UI string (tl!, t).
 # @id = command-id keyed (tr_id).
@@ -6,11 +6,11 @@
 # @msg = status/error message template (message, msg).
 # Other context = disambiguation for tr_ctx.
 #
-# Clean-room: written from the meaning of terraLauncher's English labels in neutral,
+# Clean-room: written from the meaning of terraLaunch's English labels in neutral,
 # international Russian, using terms Russian-speaking users of creative software know.
 #
 # Coverage: the whole interface — every menu string and tl! literal (complete_menus = true).
-# Left in English on purpose: product name "terraLauncher" (and its "Launcher" tag), suite
+# Left in English on purpose: product name "terraLaunch" (and its "Launcher" tag), suite
 # name "terraPen apps",
 # app names (PhotoCraft, LightCraft, FilmCraft, DesignCraft, VectorCraft, PdfCraft, EffectCraft,
 # WordCraft, DeckCraft, GridCraft, CADCraft, SoundCraft, FigCraft), "GitHub", "Discord", "Website".
@@ -50,9 +50,9 @@
 	Open	Открыть
 	Open {version}	Открыть {version}
 	Open {installed} without updating. {latest} stays available.	Открыть {installed} без обновления. Версия {latest} останется доступной.
-	{latest} is out, but terraLauncher can't install it over this copy.	Вышла версия {latest}, но terraLauncher не может установить её поверх этой копии.
-	terraLauncher can't install this build itself. This opens its release page, to download and install it yourself.	terraLauncher не может сам установить эту сборку. Откроется страница выпуска, чтобы вы скачали и установили её сами.
-	terraLauncher can't install version {version} over this copy.	terraLauncher не может установить версию {version} поверх этой копии.
+	{latest} is out, but terraLaunch can't install it over this copy.	Вышла версия {latest}, но terraLaunch не может установить её поверх этой копии.
+	terraLaunch can't install this build itself. This opens its release page, to download and install it yourself.	terraLaunch не может сам установить эту сборку. Откроется страница выпуска, чтобы вы скачали и установили её сами.
+	terraLaunch can't install version {version} over this copy.	terraLaunch не может установить версию {version} поверх этой копии.
 	Download for {os}	Скачать для {os}
 	Download	Скачать
 	Coming soon	Скоро
@@ -85,7 +85,7 @@
 	{name} wasn't opened: a quote in its launch options isn't closed.	{name} не открыто: в параметрах запуска не закрыта кавычка.
 	Save	Сохранить
 	All releases	Все релизы
-	terraLauncher {version} is available.	Доступен terraLauncher {version}.
+	terraLaunch {version} is available.	Доступен terraLaunch {version}.
 	Dismiss	Закрыть
 	Update and restart	Обновить и перезапустить
 	A new version is available. Would you like to relaunch with the updated version?	Доступна новая версия. Перезапустить с обновленной версией?
@@ -96,7 +96,7 @@
 	Released {date}	Релиз {date}
 	Open on GitHub	Открыть на GitHub
 	Close	Закрыть
-	terraLauncher {version}	terraLauncher {version}
+	terraLaunch {version}	terraLaunch {version}
 	Only when I ask	Только по запросу
 	Automatically download and install updates	Автоматически скачивать и устанавливать обновления
 	Ask for permission once when updating all apps	Запрашивать разрешение один раз при обновлении всех приложений
@@ -109,15 +109,15 @@
 	Updates always use the format an app was installed with.	Обновления всегда используют формат, с которым приложение было установлено.
 	Running in the background	Работа в фоне
 	Keep running in the tray when the window is closed	Оставаться в трее при закрытии окна
-	Hide terraLauncher from the Dock while in the background	Скрывать terraLauncher из Dock при работе в фоне
-	terraLauncher is still running	terraLauncher продолжает работать
+	Hide terraLaunch from the Dock while in the background	Скрывать terraLaunch из Dock при работе в фоне
+	terraLaunch is still running	terraLaunch продолжает работать
 	It's in the tray: open it or quit it from the tray icon, or turn this off in the settings.	Он в трее: откройте или закройте его через значок в трее, либо отключите это в настройках.
 	Show the window on the current desktop	Показывать окно на текущем рабочем столе
-	Start terraLauncher when I log in	Запускать terraLauncher при входе в систему
+	Start terraLaunch when I log in	Запускать terraLaunch при входе в систему
 	Community	Сообщество
 	Questions, ideas and news from the ArtCraft team	Вопросы, идеи и новости от команды ArtCraft
 	Appearance	Внешний вид
-	Quit terraLauncher	Выйти из terraLauncher
+	Quit terraLaunch	Выйти из terraLaunch
 	Done	Готово
 	Uninstall {name}?	Удалить {name}?
 	The app will be moved to the Trash. Your documents and settings stay.	Приложение будет перемещено в Корзину. Ваши документы и настройки сохранятся.
@@ -160,7 +160,7 @@
 	Open link	Открыть ссылку
 	Update	Обновить
 	{name} icon	Значок {name}
-	Loading terraLauncher…	Загрузка terraLauncher…
+	Loading terraLaunch…	Загрузка terraLaunch…
 	Cancel update	Отменить обновление
 	Stop waiting; the update can be started again later	Не ждать; обновление можно будет запустить позже
 	Download again	Скачать заново
@@ -248,7 +248,7 @@ month	Dec	дек.
 	Version {version} installed	Версия {version} установлена
 	Version {latest}	Версия {latest}
 	No release published yet	Релиз ещё не опубликован
-	terraLauncher	terraLauncher
+	terraLaunch	terraLaunch
 	App	Приложение
 	Latest	Последняя
 	Released	Релиз
@@ -281,7 +281,7 @@ month	Dec	дек.
 	Full changelog	Полный список изменений
 	link	ссылка
 	No apps match	Нет подходящих приложений
-	Open terraLauncher to update.	Откройте terraLauncher, чтобы обновить.
+	Open terraLaunch to update.	Откройте terraLaunch, чтобы обновить.
 	{name} {v} is available	Доступно обновление {name} {v}
 	{count} updates are available	Доступны обновления ({count})
 	These notes weren't fetched (GitHub's request limit was reached). They're on the release page.	Заметки не были загружены (достигнут лимит запросов GitHub). Они есть на странице релиза.
@@ -306,7 +306,7 @@ filter	Installed	Установлены
 
 # Message templates (@msg): toasts from the backend. {placeholders} match any text.
 @msg	Couldn't open {name}: {e}	Не удалось открыть {name}: {e}
-@msg	terraLauncher couldn't start its window on {backend}: {e}	Не удалось открыть окно terraLauncher на {backend}: {e}
+@msg	terraLaunch couldn't start its window on {backend}: {e}	Не удалось открыть окно terraLaunch на {backend}: {e}
 @msg	Download cancelled	Скачивание отменено
 @msg	{name} updated to {version}	Приложение {name} обновлено до {version}
 @msg	{name} installed: {version}	Приложение {name} установлено: {version}
@@ -337,7 +337,7 @@ filter	Installed	Установлены
 @id	launcher.notes	Что нового
 @id	launcher.dismiss	Закрыть
 @id	settings.open	Настройки
-@id	settings.quit	Выйти из terraLauncher
+@id	settings.quit	Выйти из terraLaunch
 @id	view.grid	Сетка
 @id	view.table	Таблица
 @id	filter.all	Все
@@ -360,11 +360,11 @@ filter	Installed	Установлены
 @id	linux.preferred_kind	Устанавливать новые приложения как
 @id	tray.close_to_tray	Оставаться в трее при закрытии окна
 @id	tray.show_on_current_desktop	Показывать окно на текущем рабочем столе
-@id	tray.login_item	Запускать terraLauncher при входе в систему
+@id	tray.login_item	Запускать terraLaunch при входе в систему
 @id	appearance.theme	Внешний вид
 
 # Tray (menu bar) menu and tooltip
-	Show terraLauncher	Показать terraLauncher
+	Show terraLaunch	Показать terraLaunch
 	Check for Updates	Проверить обновления
 	Visit getartcraft.com	Открыть getartcraft.com
 	ArtCraft on GitHub	ArtCraft на GitHub
@@ -383,7 +383,7 @@ filter	Installed	Установлены
 	Next picture (→)	Следующее изображение (→)
 	Loading pictures…	Загрузка изображений…
 	Pictures couldn't be loaded. Reopen this page to try again.	Не удалось загрузить изображения. Откройте страницу снова, чтобы повторить попытку.
-@plural	terraLauncher · {n} update available|terraLauncher · {n} updates available	terraLauncher · {n} обновление|terraLauncher · {n} обновления|terraLauncher · {n} обновлений
+@plural	terraLaunch · {n} update available|terraLaunch · {n} updates available	terraLaunch · {n} обновление|terraLaunch · {n} обновления|terraLaunch · {n} обновлений
 
 	Download size: {size}	Размер загрузки: {size}
 	Install folder	Папка установки
@@ -398,7 +398,7 @@ filter	Installed	Установлены
 @msg	couldn't use install folder {path}: {reason}	не удалось использовать папку установки {path}: {reason}
 @msg	this release has no AppImage for a custom install folder	в этом выпуске нет AppImage для установки в выбранную папку
 @msg	custom install folders aren't supported on this system	в этой системе выбор папки установки не поддерживается
-@msg	{path} already exists and wasn't installed by terraLauncher	{path} уже существует и не был установлен через terraLauncher
+@msg	{path} already exists and wasn't installed by terraLaunch	{path} уже существует и не был установлен через terraLaunch
 @msg	couldn't move {path} to Trash ({reason}). Remove it in Finder instead.	не удалось переместить {path} в Корзину ({reason}). Удалите его через Finder.
 @msg	Desktop shortcut created for {name}	Ярлык на рабочем столе создан для {name}
 @msg	Couldn't create the desktop shortcut: {e}	Не удалось создать ярлык на рабочем столе: {e}

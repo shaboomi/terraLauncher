@@ -1,4 +1,4 @@
-#![allow(dead_code)] // terraLauncher uses no release feed; the feed code stays so merges from upstream stay small.
+#![allow(dead_code)] // terraLaunch uses no release feed; the feed code stays so merges from upstream stay small.
 //! [`NativeBackend`]: the desktop implementation of the UI's [`Backend`].
 
 use std::collections::HashMap;
@@ -89,7 +89,7 @@ struct Shared {
     /// A detection pass is running; another request waits for the next one.
     detecting: AtomicBool,
     last_check: Mutex<Option<i64>>,
-    /// The newer terraLauncher release, once a check has found one, with the repo that check
+    /// The newer terraLaunch release, once a check has found one, with the repo that check
     /// read it from (the feed's rename, if any): its download links must be that repo's.
     launcher_release: Mutex<Option<(Release, String)>>,
     /// How this launcher is installed, when it can replace itself. Worked out on the check thread
@@ -489,7 +489,7 @@ impl NativeBackend {
             restarting
         };
         if restarting {
-            let result = Err("terraLauncher is restarting to finish its update. Try again once it's back.".into());
+            let result = Err("terraLaunch is restarting to finish its update. Try again once it's back.".into());
             self.shared.emit(Event::JobFinished { app: app.id.to_string(), result });
             return None;
         }
@@ -628,7 +628,7 @@ impl NativeBackend {
         let refuse = || {
             self.shared.emit(Event::JobFinished {
                 app: id.clone(),
-                result: Err("this copy of terraLauncher can't update itself; download the new version instead".into()),
+                result: Err("this copy of terraLaunch can't update itself; download the new version instead".into()),
             });
         };
         if self.shared.self_install.get().cloned().flatten().is_none() || self.platform.is_none() {
@@ -1040,7 +1040,7 @@ fn restart_blocked(mut busy: Vec<&str>) -> String {
         _ => (busy.join(", "), "were", "them"),
     };
     format!(
-        "terraLauncher didn't restart to update: {names} {were} still installing. Answer or close any password prompt, \
+        "terraLaunch didn't restart to update: {names} {were} still installing. Answer or close any password prompt, \
          let {them} finish or cancel {them}, then press Update and restart again."
     )
 }
@@ -3206,7 +3206,7 @@ mod tests {
     #[test]
     fn a_launcher_release_without_a_file_for_this_copy_is_offered_as_a_download() {
         use crate::self_update::Install;
-        // terraLauncher v0.17.0's macOS file: the disk image only.
+        // terraLaunch v0.17.0's macOS file: the disk image only.
         let name = "terralauncher-0.17.0-macos-universal.dmg";
         let release = Release {
             assets: vec![Asset { name: name.into(), size: 1, url: format!("https://example.invalid/{name}"), sha256: None }],
@@ -3214,7 +3214,7 @@ mod tests {
         };
         let mac = Platform { os: Os::MacOs, arch: Arch::Arm64 };
         for (install, updates) in
-            [(Install::MacApp("/Applications/terraLauncher.app".into()), true), (Install::Standalone("/tmp/artcraft-launcher".into()), false)]
+            [(Install::MacApp("/Applications/terraLaunch.app".into()), true), (Install::Standalone("/tmp/artcraft-launcher".into()), false)]
         {
             let dir = tempfile::tempdir().unwrap();
             let mut backend = backend(dir.path(), mac, None);

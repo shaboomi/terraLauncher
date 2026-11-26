@@ -2,7 +2,7 @@
 <!-- Overrides for the setup wizard's WixUI strings ([LauncherDisplayVersion] is set in terralauncher.wxs). -->
 <WixLocalization Culture="en-US" xmlns="http://wixtoolset.org/schemas/v4/wxl">
   <String Id="WelcomeDlgTitle" Value="{\WixUI_Font_Bigger}Welcome to [ProductName] [LauncherDisplayVersion]" />
-  <String Id="WelcomeDlgDescription" Value="terraLauncher installs, updates and opens the terraPen apps: terraGen and terraForge.&#13;&#10;&#13;&#10;It installs for you only, so no administrator rights are needed. Click Next to continue." />
+  <String Id="WelcomeDlgDescription" Value="terraLaunch installs, updates and opens the terraPen apps: terraGen and terraForge.&#13;&#10;&#13;&#10;It installs for you only, so no administrator rights are needed. Click Next to continue." />
   <String Id="InstallDirDlgTitle" Value="{\WixUI_Font_Title}Choose where to install" />
   <String Id="InstallDirDlgDescription" Value="Click Next to install to the default folder, or click Change to pick another you can write to." />
   <String Id="VerifyReadyDlgInstallTitle" Value="{\WixUI_Font_Title}Ready to install [ProductName] [LauncherDisplayVersion]" />

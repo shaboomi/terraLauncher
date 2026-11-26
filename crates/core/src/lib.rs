@@ -1,4 +1,4 @@
-//! terraLauncher core: everything that is pure data and logic.
+//! terraLaunch core: everything that is pure data and logic.
 //!
 //! No I/O lives here, so the desktop shell, the web build and the tests share it unchanged:
 //! the terraPen apps catalog, version handling, GitHub release parsing, choosing the right

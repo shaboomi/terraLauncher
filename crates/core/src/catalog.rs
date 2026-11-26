@@ -224,15 +224,20 @@ pub const PRODUCTS: [Link; 2] = [
     },
 ];
 
-/// terraLauncher itself, described like an app so the UI can show its version with the same
-/// machinery. Not part of [`SUITE`]; it does not update itself yet.
-pub const LAUNCHER: CraftApp = app(
-    "terralauncher",
-    "terraLauncher",
-    "Installs and updates the terraPen apps",
-    [[0x0b, 0x0b, 0x0c], [0x0b, 0x0b, 0x0c], [0xf2, 0xf1, 0xee]],
-    "shaboomi/terraLauncher",
-);
+/// terraLaunch itself, described like an app so the UI can show its version with the same
+/// machinery. Not part of [`SUITE`]; it does not update itself yet. It was called terraLauncher
+/// until 1.0: copies installed under that name (the macOS `.app`, the registry keys the MSI
+/// writes) are still found by it.
+pub const LAUNCHER: CraftApp = CraftApp {
+    former_names: &["terraLauncher"],
+    ..app(
+        "terralauncher",
+        "terraLaunch",
+        "Installs and updates the terraPen apps",
+        [[0x0b, 0x0b, 0x0c], [0x0b, 0x0b, 0x0c], [0xf2, 0xf1, 0xee]],
+        "shaboomi/terraLauncher",
+    )
+};
 
 /// The launcher's own repo.
 pub const LAUNCHER_REPO: &str = "shaboomi/terraLauncher";

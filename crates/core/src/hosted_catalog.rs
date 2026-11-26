@@ -1,5 +1,5 @@
 //! Where the rest of the launcher asks for the catalog. Upstream replaces the bundled catalog
-//! with a signed copy fetched at startup; terraLauncher has no such service, so every answer
+//! with a signed copy fetched at startup; terraLaunch has no such service, so every answer
 //! here is the bundled one ([`SUITE`]) and nothing is fetched.
 
 use crate::catalog::{CraftApp, SUITE};

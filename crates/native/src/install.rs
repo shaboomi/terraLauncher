@@ -218,7 +218,7 @@ pub fn install_at(
         // No team to check the signature against: refuse rather than install it unchecked.
         #[cfg(target_os = "macos")]
         PackageKind::Dmg if app.mac_team.is_none() => {
-            Err("terraLauncher has no macOS signing team recorded for this app, so it wasn't installed here".into())
+            Err("terraLaunch has no macOS signing team recorded for this app, so it wasn't installed here".into())
         }
         #[cfg(target_os = "macos")]
         PackageKind::Dmg => macos::install_dmg(
@@ -1532,7 +1532,7 @@ pub(crate) mod linux {
         let dest = dir.join(name);
         let ours = previous.is_some_and(|r| r.kind == PackageKind::AppImage && r.path == dest);
         if std::fs::symlink_metadata(&dest).is_ok_and(|m| m.is_dir() || !(replace || ours && m.is_file())) {
-            return Err(format!("{} already exists and wasn't installed by terraLauncher", dest.display()));
+            return Err(format!("{} already exists and wasn't installed by terraLaunch", dest.display()));
         }
         let staging = super::staging_dir(&dir)?;
         let partial = staging.path().join(name);
@@ -1882,13 +1882,13 @@ pub mod macos {
         if let Some(approved) = approved_replace
             && dest != approved
         {
-            return Err(format!("{} already exists and wasn't installed by terraLauncher", dest.display()));
+            return Err(format!("{} already exists and wasn't installed by terraLaunch", dest.display()));
         }
         if approved_replace.is_none_or(|approved| approved != dest)
             && std::fs::symlink_metadata(&dest).is_ok()
             && (std::fs::symlink_metadata(&dest).is_ok_and(|m| m.file_type().is_symlink()) || crate::detect::macos::read_bundle(app, &dest).is_none())
         {
-            return Err(format!("{} already exists and wasn't installed by terraLauncher", dest.display()));
+            return Err(format!("{} already exists and wasn't installed by terraLaunch", dest.display()));
         }
         let staging = super::staging_dir(&dir)?;
         let staged = staging.path().join(&bundle);

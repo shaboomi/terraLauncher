@@ -1,6 +1,6 @@
 name: Release
 
-# Builds terraLauncher for Windows, macOS and Linux. A pushed tag `v<version>` (matching the
+# Builds terraLaunch for Windows, macOS and Linux. A pushed tag `v<version>` (matching the
 # version in Cargo.toml) also publishes a GitHub Release with the files and their checksums.
 # Run it by hand (workflow_dispatch) to get the builds as workflow artifacts without a release.
 
@@ -84,9 +84,9 @@ jobs:
       - name: Package (macOS)
         if: matrix.name == 'macos'
         run: |
-          app="dist/dmg/terraLauncher.app"
+          app="dist/dmg/terraLaunch.app"
           mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
-          lipo -create -output "$app/Contents/MacOS/terraLauncher" \
+          lipo -create -output "$app/Contents/MacOS/terraLaunch" \
             target/aarch64-apple-darwin/release/terralauncher target/x86_64-apple-darwin/release/terralauncher
           sed "s/__VERSION__/$VERSION/g" packaging/macos/terralauncher-Info.plist > "$app/Contents/Info.plist"
           # The icon, from the PNG renders.
@@ -106,7 +106,7 @@ jobs:
           # An ad-hoc signature: Apple silicon runs nothing unsigned. It is not a Developer ID.
           codesign --force --deep --sign - "$app"
           ln -s /Applications dist/dmg/Applications
-          hdiutil create -volname "terraLauncher" -srcfolder dist/dmg -ov -format UDZO "dist/terralauncher-$VERSION-macos-universal.dmg"
+          hdiutil create -volname "terraLaunch" -srcfolder dist/dmg -ov -format UDZO "dist/terralauncher-$VERSION-macos-universal.dmg"
           rm -rf dist/dmg
 
       # ---- Linux: a tarball laid out like /usr/local (bin/, share/).
@@ -170,12 +170,12 @@ jobs:
             echo "Checksums: [SHA256SUMS.txt]($base/SHA256SUMS.txt)"
             echo
             echo "- **Windows:** run the \`.msi\`. It installs for you only (no administrator rights) and adds Start menu and desktop shortcuts. Windows may warn that it is from an unknown publisher; it is not code-signed."
-            echo "- **macOS:** open the disk image and drag terraLauncher to Applications. It is not notarized, so the first time, right-click the app and choose Open."
+            echo "- **macOS:** open the disk image and drag terraLaunch to Applications. It is not notarized, so the first time, right-click the app and choose Open."
             echo "- **Linux:** \`tar -xzf terralauncher-$version-linux-x86_64.tar.gz --strip-components 1 -C ~/.local\`, then run \`terralauncher\`."
           } > ../notes.md
           if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
             gh release upload "$GITHUB_REF_NAME" terralauncher-* SHA256SUMS.txt --clobber
             gh release edit "$GITHUB_REF_NAME" --notes-file ../notes.md
           else
-            gh release create "$GITHUB_REF_NAME" terralauncher-* SHA256SUMS.txt --title "terraLauncher $version" --notes-file ../notes.md --verify-tag
+            gh release create "$GITHUB_REF_NAME" terralauncher-* SHA256SUMS.txt --title "terraLaunch $version" --notes-file ../notes.md --verify-tag
           fi

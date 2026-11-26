@@ -22,7 +22,7 @@
 Checksums: [SHA256SUMS.txt](https://github.com/shaboomi/terraLauncher/releases/download/v1.0.0/SHA256SUMS.txt)
 
 - **Windows:** run the `.msi`. It installs for you only (no administrator rights) and adds Start menu and desktop shortcuts; a newer `.msi` upgrades it in place. It is not code-signed, so Windows may warn about an unknown publisher.
-- **macOS:** open the disk image and drag terraLaunch to Applications. It is not notarized, so the first time, right-click the app and choose Open.
+- **macOS:** open the disk image and drag terraLaunch to Applications. Releases built with the Apple signing secrets in place are signed with terraPen's Developer ID and notarized; 1.0.0 is not, so the first time, open it and then choose Open Anyway in System Settings › Privacy & Security.
 - **Linux:** `tar -xzf terralauncher-1.0.0-linux-x86_64.tar.gz --strip-components 1 -C ~/.local`, then run `terralauncher`.
 
 The builds come from [`.github/workflows/release.yml`](.github/workflows/release.yml): pushing a tag
@@ -104,8 +104,10 @@ Not done yet:
   newer release of an installed copy shows as an update whose button opens its release page.
 - Windows gets a per-user MSI installer (`packaging/windows/terralauncher.wxs`, built by
   `build-msi.ps1`). Built locally, it installed, upgraded 0.1.0 to 0.2.0 and uninstalled cleanly on
-  Windows 11. macOS (dmg) and Linux (tar.gz) are still plain
-  archives. Nothing is signed or notarized. Upstream's other installer scripts in `packaging/`
+  Windows 11. The macOS disk image is signed with the owner's Developer ID and notarized when the
+  six `APPLE_*` repository secrets are set (the release workflow checks the result with `codesign`,
+  `stapler` and `spctl`); without them it is built unsigned. The Windows MSI and the Linux tarball are
+  not signed. Upstream's other installer scripts in `packaging/`
   (.deb, .rpm, AppImage, Flatpak) have not been adapted.
 - Most of the upstream test suite still refers to the Craft apps and fails or needs rewriting.
 - New interface text is English only; the 14 translation catalogs have not been updated for it.

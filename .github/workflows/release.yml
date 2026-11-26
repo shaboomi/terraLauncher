@@ -71,7 +71,10 @@ jobs:
           wix extension add -g WixToolset.UI.wixext/5.0.2 WixToolset.Util.wixext/5.0.2
           ./packaging/windows/build-msi.ps1 -OutDir dist
 
-      # ---- macOS: a universal app in a disk image. Not signed with a Developer ID or notarized.
+      # ---- macOS: a universal app in a disk image, signed with the owner's Developer ID and
+      # notarized when the six APPLE_* secrets are set (the same ones terraGen's release uses).
+      # With none set it builds with an ad-hoc signature and says so in a warning; with only some
+      # set the job fails.
       - name: Build (macOS)
         if: matrix.name == 'macos'
         env:
@@ -81,9 +84,32 @@ jobs:
           cargo build --release --locked -p artcraft-launcher --target aarch64-apple-darwin
           cargo build --release --locked -p artcraft-launcher --target x86_64-apple-darwin
 
-      - name: Package (macOS)
+      - name: Package, sign and notarize (macOS)
         if: matrix.name == 'macos'
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
+          names="APPLE_CERTIFICATE APPLE_CERTIFICATE_PASSWORD APPLE_SIGNING_IDENTITY APPLE_ID APPLE_PASSWORD APPLE_TEAM_ID"
+          given=0
+          for name in $names; do if [ -n "${!name}" ]; then given=$((given + 1)); fi; done
+          if [ "$given" -eq 0 ]; then
+            echo "::warning::no Apple secret is set: the macOS app is built UNSIGNED (ad-hoc signature only)"
+            signed=0
+          elif [ "$given" -ne 6 ]; then
+            for name in $names; do
+              if [ -z "${!name}" ]; then echo "::error::the secret $name is not set"; fi
+            done
+            exit 1
+          else
+            signed=1
+          fi
+          echo "MAC_SIGNED=$signed" >> "$GITHUB_ENV"
+
           app="dist/dmg/terraLaunch.app"
           mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
           lipo -create -output "$app/Contents/MacOS/terraLaunch" \
@@ -103,11 +129,67 @@ jobs:
           cp "$icons/512x512/apps/$id.png" "$set/icon_512x512.png"
           cp assets/app-icon/terralauncher-1024.png "$set/icon_512x512@2x.png"
           iconutil -c icns "$set" -o "$app/Contents/Resources/terralauncher.icns"
-          # An ad-hoc signature: Apple silicon runs nothing unsigned. It is not a Developer ID.
-          codesign --force --deep --sign - "$app"
+          dmg="dist/terralauncher-$VERSION-macos-universal.dmg"
+          if [ "$signed" -eq 1 ]; then
+            # The certificate goes into a throwaway keychain that only this job uses.
+            keychain="$RUNNER_TEMP/signing.keychain-db"
+            keychain_password=$(openssl rand -hex 24)
+            security create-keychain -p "$keychain_password" "$keychain"
+            security set-keychain-settings -lut 21600 "$keychain"
+            security unlock-keychain -p "$keychain_password" "$keychain"
+            echo "$APPLE_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/certificate.p12"
+            security import "$RUNNER_TEMP/certificate.p12" -k "$keychain" -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+            rm -f "$RUNNER_TEMP/certificate.p12"
+            security set-key-partition-list -S apple-tool:,apple: -s -k "$keychain_password" "$keychain" > /dev/null
+            security list-keychains -d user -s "$keychain" $(security list-keychains -d user | tr -d '"')
+            # Apple's Developer ID intermediate: without it in reach the identity isn't valid and
+            # codesign finds none. It may be there already, so a failed import is fine.
+            curl -fsSL https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer -o "$RUNNER_TEMP/DeveloperIDG2CA.cer"
+            security import "$RUNNER_TEMP/DeveloperIDG2CA.cer" -k "$keychain" || true
+            # Sign with the Developer ID Application identity this keychain holds, by its hash, and
+            # only if it is the team's: a name typed into a secret can carry stray spaces.
+            team=$(printf '%s' "$APPLE_TEAM_ID" | tr -d '[:space:]')
+            identity=$(security find-identity -v -p codesigning "$keychain" | awk -v team="($team)" '/Developer ID Application/ && index($0, team) {print $2; exit}')
+            if [ -z "$identity" ]; then
+              echo "::error::the keychain has no valid Developer ID Application identity for the team in APPLE_TEAM_ID"
+              security find-identity -p codesigning "$keychain"
+              exit 1
+            fi
+            # The hardened runtime and a secure timestamp, as notarization requires. The app is one
+            # executable with no nested code and needs no entitlements.
+            codesign --force --options runtime --timestamp --keychain "$keychain" --sign "$identity" "$app"
+          else
+            # An ad-hoc signature: Apple silicon runs nothing unsigned. It is not a Developer ID.
+            codesign --force --deep --sign - "$app"
+          fi
           ln -s /Applications dist/dmg/Applications
-          hdiutil create -volname "terraLaunch" -srcfolder dist/dmg -ov -format UDZO "dist/terralauncher-$VERSION-macos-universal.dmg"
+          hdiutil create -volname "terraLaunch" -srcfolder dist/dmg -ov -format UDZO "$dmg"
           rm -rf dist/dmg
+          if [ "$signed" -eq 1 ]; then
+            codesign --force --timestamp --keychain "$keychain" --sign "$identity" "$dmg"
+            # Apple checks the disk image and the app in it; the ticket is stapled to the image so
+            # it opens without a network check.
+            apple_id=$(printf '%s' "$APPLE_ID" | tr -d '[:space:]')
+            xcrun notarytool submit "$dmg" --apple-id "$apple_id" --password "$APPLE_PASSWORD" --team-id "$team" --wait --timeout 30m
+            xcrun stapler staple "$dmg"
+            security delete-keychain "$keychain"
+          fi
+
+      # The disk image a user downloads, and the app inside it, as Gatekeeper will judge them.
+      - name: The macOS app is signed and notarized
+        if: matrix.name == 'macos' && env.MAC_SIGNED == '1'
+        run: |
+          dmg="dist/terralauncher-$VERSION-macos-universal.dmg"
+          codesign --verify --verbose=2 "$dmg"
+          xcrun stapler validate "$dmg"
+          spctl --assess --type open --context context:primary-signature --verbose "$dmg"
+          mnt=$(mktemp -d)
+          hdiutil attach -nobrowse -readonly -mountpoint "$mnt" "$dmg"
+          app="$mnt/terraLaunch.app"
+          codesign --verify --deep --strict --verbose=2 "$app"
+          codesign --display --verbose=2 "$app" 2>&1 | grep -E "^(Authority|TeamIdentifier|Runtime)"
+          spctl --assess --type execute --verbose "$app"
+          hdiutil detach "$mnt"
 
       # ---- Linux: a tarball laid out like /usr/local (bin/, share/).
       - name: Build (Linux)
@@ -153,8 +235,16 @@ jobs:
       - name: Create the release
         env:
           GH_TOKEN: ${{ github.token }}
+          # Only says whether the macOS build was signed: the build fails when some Apple secrets
+          # are set and others not, so one of them being set means all were.
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
           version="${GITHUB_REF_NAME#v}"
+          if [ -n "$APPLE_TEAM_ID" ]; then
+            mac_note="open the disk image and drag terraLaunch to Applications. It is signed with terraPen's Developer ID and notarized by Apple."
+          else
+            mac_note="open the disk image and drag terraLaunch to Applications. It is not notarized: the first time, open it, then choose Open Anyway in System Settings › Privacy & Security."
+          fi
           cd dist
           sha256sum terralauncher-* > SHA256SUMS.txt
           base="https://github.com/$GITHUB_REPOSITORY/releases/download/$GITHUB_REF_NAME"
@@ -170,7 +260,7 @@ jobs:
             echo "Checksums: [SHA256SUMS.txt]($base/SHA256SUMS.txt)"
             echo
             echo "- **Windows:** run the \`.msi\`. It installs for you only (no administrator rights) and adds Start menu and desktop shortcuts. Windows may warn that it is from an unknown publisher; it is not code-signed."
-            echo "- **macOS:** open the disk image and drag terraLaunch to Applications. It is not notarized, so the first time, right-click the app and choose Open."
+            echo "- **macOS:** $mac_note"
             echo "- **Linux:** \`tar -xzf terralauncher-$version-linux-x86_64.tar.gz --strip-components 1 -C ~/.local\`, then run \`terralauncher\`."
           } > ../notes.md
           if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then

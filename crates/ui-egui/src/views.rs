@@ -531,7 +531,12 @@ impl LauncherUi {
         let named =
             |name: &'static str, label: &str, url: &'static str| widgets::IconLink { name, label: label.to_string(), tip: label.to_string(), url };
         let mut links = vec![named("Website", tl!("Website"), WEBSITE_URL), named("GitHub", tl!("GitHub"), GITHUB_URL)];
-        links.extend(SOCIAL.iter().map(|(name, url)| widgets::IconLink { name, label: (*name).to_string(), tip: (*name).to_string(), url }));
+        links.extend(SOCIAL.iter().map(|(name, url)| widgets::IconLink {
+            name,
+            label: (*name).to_string(),
+            tip: fmt(tl!("terraPen on {name}"), &[("name", name)]),
+            url,
+        }));
         let icon = 13.0;
         let spacing = ui.spacing().item_spacing.x;
         // The icons on the right keep their size; the status on the left gets what is left and

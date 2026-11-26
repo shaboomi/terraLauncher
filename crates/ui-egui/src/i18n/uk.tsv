@@ -224,7 +224,7 @@ month	Dec	груд.
 	Downloads for {platform}	Завантаження для {platform}
 	No downloads for this system	Немає завантажень для цієї системи
 	Join the ArtCraft community on Discord	Приєднатися до спільноти ArtCraft у Discord
-	ArtCraft on {name}	ArtCraft на {name}
+	terraPen on {name}	terraPen на {name}
 	Couldn't open {name}: {e}	Не вдалося відкрити {name}: {e}
 	Download cancelled	Завантаження скасовано
 	Available to install	Доступно для встановлення
@@ -364,7 +364,7 @@ filter	Installed	Встановлені
 	Show terraLaunch	Показати terraLaunch
 	Check for Updates	Перевірити оновлення
 	Visit getartcraft.com	Відкрити getartcraft.com
-	ArtCraft on GitHub	ArtCraft на GitHub
+	ArtCraft on GitHub	terraPen на GitHub
 	Join the ArtCraft Discord	Приєднатися до Discord ArtCraft
 	App details	Про застосунок
 	More actions for {name}	Інші дії для {name}

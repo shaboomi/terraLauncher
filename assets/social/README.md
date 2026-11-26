@@ -21,4 +21,4 @@ from `0 0 448 512` to a centred square `-32 0 512 512`; the artwork is untouched
 ArtCraft's website.
 
 The logos themselves are trademarks of their owners (X Corp., Google LLC, TikTok / ByteDance Ltd.,
-Meta Platforms, Inc., Discord Inc. and LinkedIn Corporation). They are used only to link to ArtCraft's own accounts on those services.
+Meta Platforms, Inc., Discord Inc. and LinkedIn Corporation). They are used only to link to terraPen's own accounts on those services.

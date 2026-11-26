@@ -231,7 +231,7 @@ month	Dec	gru
 	Downloads for {platform}	Do pobrania dla {platform}
 	No downloads for this system	Brak pobrań dla tego systemu
 	Join the ArtCraft community on Discord	Dołącz do społeczności ArtCraft na Discordzie
-	ArtCraft on {name}	ArtCraft w serwisie {name}
+	terraPen on {name}	terraPen w serwisie {name}
 	Couldn't open {name}: {e}	Nie udało się otworzyć {name}: {e}
 	Download cancelled	Anulowano pobieranie
 	Available to install	Dostępna do instalacji
@@ -387,7 +387,7 @@ filter	Installed	Zainstalowane
 	Show terraLaunch	Pokaż terraLaunch
 	Check for Updates	Sprawdź dostępność aktualizacji
 	Visit getartcraft.com	Odwiedź getartcraft.com
-	ArtCraft on GitHub	ArtCraft na GitHubie
+	ArtCraft on GitHub	terraPen na GitHubie
 	Join the ArtCraft Discord	Dołącz do Discorda ArtCraft
 @plural	terraLaunch · {n} update available|terraLaunch · {n} updates available	terraLaunch · {n} dostępna aktualizacja|terraLaunch · {n} dostępne aktualizacje|terraLaunch · {n} dostępnych aktualizacji
 

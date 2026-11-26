@@ -146,14 +146,19 @@ jobs:
             # codesign finds none. It may be there already, so a failed import is fine.
             curl -fsSL https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer -o "$RUNNER_TEMP/DeveloperIDG2CA.cer"
             security import "$RUNNER_TEMP/DeveloperIDG2CA.cer" -k "$keychain" || true
-            # Sign with the Developer ID Application identity this keychain holds, by its hash, and
-            # only if it is the team's: a name typed into a secret can carry stray spaces.
-            team=$(printf '%s' "$APPLE_TEAM_ID" | tr -d '[:space:]')
-            identity=$(security find-identity -v -p codesigning "$keychain" | awk -v team="($team)" '/Developer ID Application/ && index($0, team) {print $2; exit}')
-            if [ -z "$identity" ]; then
-              echo "::error::the keychain has no valid Developer ID Application identity for the team in APPLE_TEAM_ID"
+            # Sign with the one valid Developer ID Application identity this keychain holds, by its
+            # hash, and take the team from its name ("… (TEAMID)"): names and IDs typed into secrets
+            # can be off, the certificate can't.
+            line=$(security find-identity -v -p codesigning "$keychain" | grep "Developer ID Application" | head -n1 || true)
+            identity=$(printf '%s' "$line" | awk '{print $2}')
+            team=$(printf '%s' "$line" | sed -nE 's/.*\(([A-Z0-9]{10})\)"$/\1/p')
+            if [ -z "$identity" ] || [ -z "$team" ]; then
+              echo "::error::the certificate in APPLE_CERTIFICATE gives no valid Developer ID Application identity"
               security find-identity -p codesigning "$keychain"
               exit 1
+            fi
+            if [ "$(printf '%s' "$APPLE_TEAM_ID" | tr -d '[:space:]')" != "$team" ]; then
+              echo "::warning::APPLE_TEAM_ID is not the certificate's team ($team); notarizing with the certificate's"
             fi
             # The hardened runtime and a secure timestamp, as notarization requires. The app is one
             # executable with no nested code and needs no entitlements.
@@ -170,7 +175,8 @@ jobs:
             # Apple checks the disk image and the app in it; the ticket is stapled to the image so
             # it opens without a network check.
             apple_id=$(printf '%s' "$APPLE_ID" | tr -d '[:space:]')
-            xcrun notarytool submit "$dmg" --apple-id "$apple_id" --password "$APPLE_PASSWORD" --team-id "$team" --wait --timeout 30m
+            app_password=$(printf '%s' "$APPLE_PASSWORD" | tr -d '[:space:]')
+            xcrun notarytool submit "$dmg" --apple-id "$apple_id" --password "$app_password" --team-id "$team" --wait --timeout 30m
             xcrun stapler staple "$dmg"
             security delete-keychain "$keychain"
           fi

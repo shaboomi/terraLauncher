@@ -54,7 +54,7 @@
     <!-- An update installs where the user put the previous version. -->
     <Property Id="INSTALLFOLDER" Secure="yes" />
     <Property Id="PREVIOUSINSTALLFOLDER" Secure="yes">
-      <RegistrySearch Id="PreviousInstallFolder" Root="HKCU" Key="Software\terraPen\terraLauncher"Name="InstallDir" Type="raw" />
+      <RegistrySearch Id="PreviousInstallFolder" Root="HKCU" Key="Software\terraPen\terraLauncher" Name="InstallDir" Type="raw" />
     </Property>
     <SetProperty Id="INSTALLFOLDER" Action="RestoreLauncherFolder" Value="[PREVIOUSINSTALLFOLDER]"
         Before="CostInitialize" Sequence="both" Condition="PREVIOUSINSTALLFOLDER AND NOT INSTALLFOLDER" />
@@ -89,7 +89,7 @@
         <File Id="LauncherNotice" Source="$(var.BinDir)\NOTICE" KeyPath="no" />
         <File Id="LauncherLicenseMit" Source="$(var.BinDir)\LICENSE-MIT" KeyPath="no" />
         <File Id="LauncherLicenseApache" Source="$(var.BinDir)\LICENSE-APACHE" KeyPath="no" />
-        <RegistryValue Root="HKCU" Key="Software\terraPen\terraLauncher"Name="InstallDir" Value="[INSTALLFOLDER]" Type="string" KeyPath="yes" />
+        <RegistryValue Root="HKCU" Key="Software\terraPen\terraLauncher" Name="InstallDir" Value="[INSTALLFOLDER]" Type="string" KeyPath="yes" />
         <!-- Win+R "terralauncher". -->
         <RegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\terralauncher.exe" Value="[#LauncherExe]" Type="string" />
         <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
@@ -102,7 +102,7 @@
             Target="[#LauncherExe]" WorkingDirectory="INSTALLFOLDER">
           <ShortcutProperty Key="System.AppUserModel.ID" Value="xyz.terrapen.terralauncher" />
         </Shortcut>
-        <RegistryValue Root="HKCU" Key="Software\terraPen\terraLauncher"Name="StartMenuShortcut" Value="1" Type="integer" KeyPath="yes" />
+        <RegistryValue Root="HKCU" Key="Software\terraPen\terraLauncher" Name="StartMenuShortcut" Value="1" Type="integer" KeyPath="yes" />
       </Component>
 
       <Component Id="LauncherDesktopShortcut" Directory="DesktopFolder" Guid="7561C47A-9B88-45AE-ADAC-E3B480EA3B38">
@@ -111,7 +111,7 @@
             Target="[#LauncherExe]" WorkingDirectory="INSTALLFOLDER">
           <ShortcutProperty Key="System.AppUserModel.ID" Value="xyz.terrapen.terralauncher" />
         </Shortcut>
-        <RegistryValue Root="HKCU" Key="Software\terraPen\terraLauncher"Name="DesktopShortcut" Value="1" Type="integer" KeyPath="yes" />
+        <RegistryValue Root="HKCU" Key="Software\terraPen\terraLauncher" Name="DesktopShortcut" Value="1" Type="integer" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
